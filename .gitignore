@@ -233,4 +233,10 @@ rvc/logs/
 test_*.wav
 test_*.mp3
 *_output.wav
-*_output.mp3 
+*_output.mp3
+
+# PyInstaller
+build/
+dist/
+# Keep spec files for build process
+!*.spec 
