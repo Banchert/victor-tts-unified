@@ -19,7 +19,7 @@ if exist "build" rmdir /s /q "build"
 if exist "dist" rmdir /s /q "dist"
 
 echo กำลังสร้าง .exe แบบ optimize...
-pyinstaller --clean --onefile --optimize=2 victor_tts.spec
+pyinstaller --clean victor_tts.spec
 
 echo.
 echo ========================================

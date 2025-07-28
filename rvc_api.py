@@ -25,13 +25,14 @@ logger = logging.getLogger("RVC_API")
 class RVCConverter:
     """RVC Voice Converter Wrapper"""
     
-    def __init__(self, device: str = "cpu", models_dir: str = "logs"):
+    def __init__(self, device: str = "cpu", models_dir: str = "logs", performance_config: Dict[str, Any] = None):
         """
         เริ่มต้น RVC Converter
         
         Args:
             device: อุปกรณ์ที่ใช้ (cpu, cuda:0, etc.)
             models_dir: โฟลเดอร์ที่เก็บโมเดล
+            performance_config: การตั้งค่าประสิทธิภาพ
         """
         self.device = device
         self.models_dir = Path(models_dir)
@@ -39,13 +40,48 @@ class RVCConverter:
         self.config = Config()
         self.config.device = device
         
+        # โหลดการตั้งค่าประสิทธิภาพ
+        self.performance_config = performance_config or self._get_default_performance_config()
+        
         # ตั้งค่า models directory
         self.config.weight_root = str(self.models_dir)
+        
+        # ตั้งค่าประสิทธิภาพ
+        self._apply_performance_settings()
         
         # โหลด embedder model
         self._load_embedder()
         
         logger.info(f"RVC Converter initialized on {device}")
+        logger.info(f"Performance settings: half_precision={self.performance_config.get('rvc_use_half_precision', True)}, cache_models={self.performance_config.get('rvc_cache_models', True)}")
+    
+    def _get_default_performance_config(self) -> Dict[str, Any]:
+        """การตั้งค่าเริ่มต้นสำหรับประสิทธิภาพ"""
+        return {
+            "rvc_batch_size": 1,
+            "rvc_use_half_precision": True,
+            "rvc_optimize_memory": True,
+            "rvc_cache_models": True,
+            "gpu_memory_fraction": 0.8,
+            "gpu_mixed_precision": True
+        }
+    
+    def _apply_performance_settings(self):
+        """ใช้การตั้งค่าประสิทธิภาพ"""
+        # ตั้งค่า GPU memory fraction
+        if torch.cuda.is_available() and self.performance_config.get("gpu_memory_fraction", 1.0) < 1.0:
+            fraction = self.performance_config["gpu_memory_fraction"]
+            torch.cuda.set_per_process_memory_fraction(fraction)
+            logger.info(f"Set GPU memory fraction: {fraction}")
+        
+        # ตั้งค่า mixed precision
+        if self.performance_config.get("gpu_mixed_precision", True) and torch.cuda.is_available():
+            try:
+                torch.backends.cudnn.benchmark = True
+                torch.backends.cudnn.deterministic = False
+                logger.info("Enabled GPU optimizations")
+            except Exception as e:
+                logger.warning(f"Could not enable GPU optimizations: {e}")
     
     def _load_embedder(self):
         """โหลด embedder model"""

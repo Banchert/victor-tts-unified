@@ -1,227 +1,281 @@
-# 🎙️ VICTOR-TTS UNIFIED
+# 🐉 VICTOR-TTS: Advanced Text-to-Speech with Voice Conversion
 
-**Complete Text-to-Speech with Voice Conversion Platform**
+[![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![Docker](https://img.shields.io/badge/Docker-Ready-blue.svg)](https://www.docker.com/)
+[![N8N](https://img.shields.io/badge/N8N-Integration-green.svg)](https://n8n.io/)
+[![GPU](https://img.shields.io/badge/GPU-Supported-red.svg)](https://pytorch.org/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-ระบบ TTS และ Voice Conversion ที่รวมทุกอย่างไว้ในที่เดียว ใช้งานง่าย มี API สำหรับ N8N และ Web Interface
+## 🌟 Overview
 
-## ✨ Features
+**VICTOR-TTS** เป็นระบบ Text-to-Speech แบบครบวงจรที่รวมเทคโนโลยี RVC (Retrieval-Based Voice Conversion) เข้าด้วยกัน เพื่อสร้างเสียงพูดคุณภาพสูงพร้อมการแปลงเสียงแบบ AI
 
-- 🎯 **Edge TTS Integration** - คุณภาพเสียงสูงจาก Microsoft Edge TTS
-- 🎭 **Retrieval-based Voice Conversion (RVC)** - เปลี่ยนเสียงด้วย AI
-- 🔌 **N8N Integration** - เชื่อมต่อกับ N8N workflow automation
-- 🌐 **Web Interface** - ใช้งานผ่านเว็บได้ง่าย
-- ⚡ **GPU Acceleration** - รองรับ GPU สำหรับความเร็วสูง
-- 🚀 **FastAPI Backend** - API ที่เร็วและใช้งานง่าย
-- 📱 **RESTful API** - เชื่อมต่อกับแอปพลิเคชันอื่นๆ ได้
+### ✨ Key Features
 
-## 🛠️ Requirements
-
-- Python 3.10 หรือสูงกว่า
-- FFMPEG (สำหรับประมวลผลเสียง)
-- NVIDIA GPU with CUDA support (optional, สำหรับความเร็วสูง)
-
-## 📦 Installation
-
-### 1. Clone Repository
-```bash
-git clone https://github.com/Banchert/victor-tts-unified.git
-cd victor-tts-unified
-```
-
-### 2. Install Dependencies
-```bash
-pip install -r requirements.txt
-```
-
-### 3. Install FFMPEG
-- **Windows**: ดาวน์โหลดจาก [FFmpeg.org](https://ffmpeg.org/download.html)
-- **Linux**: `sudo apt install ffmpeg`
-- **macOS**: `brew install ffmpeg`
+- 🎙️ **Edge TTS Integration** - เสียงพูดคุณภาพสูงจาก Microsoft
+- 🎭 **RVC Voice Conversion** - แปลงเสียงด้วย AI
+- 🐳 **Docker Support** - ติดตั้งง่ายด้วย Docker
+- 🔄 **N8N Integration** - Workflow automation
+- 🖥️ **GPU Acceleration** - รองรับ CUDA สำหรับความเร็วสูง
+- 🎨 **Modern UI** - Naga Dragons Theme
+- 🌐 **Multi-language Support** - รองรับหลายภาษา
+- ⚡ **Performance Optimized** - ปรับแต่งตามระบบ
 
 ## 🚀 Quick Start
 
-### Start API Server
-```bash
-python start.py --api
-```
-หรือ
-```bash
-python main_api_server.py
-```
+### Option 1: Docker (Recommended)
 
-### Start Web Interface
 ```bash
-python start.py --web
-```
-หรือ
-```bash
-python web_interface.py
+# Clone repository
+git clone https://github.com/your-username/victor-tts.git
+cd victor-tts
+
+# Start with Docker (Simple)
+docker-compose -f docker-compose.simple.yml up -d
+
+# Or use Python management script
+python docker_management.py
 ```
 
-### Use GPU Acceleration
+### Option 2: Local Installation
+
 ```bash
-python start.py --api --gpu 0  # ใช้ GPU 0
-python start.py --web --gpu 1  # ใช้ GPU 1
+# Clone repository
+git clone https://github.com/your-username/victor-tts.git
+cd victor-tts
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Start the application
+python start.bat
 ```
 
-## 🎮 Usage
+## 🌐 Access Points
 
-### Web Interface
-เปิดเบราว์เซอร์ไปที่: `http://localhost:7000`
-
-### API Endpoints
-- **Swagger UI**: `http://localhost:6969/docs`
-- **ReDoc**: `http://localhost:6969/redoc`
-
-### N8N Integration
-ใช้ URL: `http://localhost:6969` ใน N8N HTTP Request node
+| Service | URL | Description |
+|---------|-----|-------------|
+| **N8N** | http://localhost:5678 | Workflow Automation |
+| **VICTOR-TTS API** | http://localhost:6969 | REST API |
+| **VICTOR-TTS Web** | http://localhost:7000 | Web Interface |
+| **Health Check** | http://localhost:6969/health | System Status |
 
 ## 📁 Project Structure
 
 ```
-victor-tts-unified/
-├── main_api_server.py      # FastAPI server
-├── web_interface.py        # Gradio web interface
-├── tts_rvc_core.py         # Core TTS + RVC logic
-├── start.py               # Main launcher
-├── requirements.txt       # Python dependencies
-├── config/               # Configuration files
-├── storage/              # Output and temp files
-├── models/               # Model storage
-├── logs/                 # RVC model storage
-└── rvc/                  # RVC system files
+VICTOR-TTS/
+├── 🐳 Docker Files
+│   ├── Dockerfile                    # Main container
+│   ├── docker-compose.yml           # Full deployment
+│   ├── docker-compose.simple.yml    # Simple deployment
+│   ├── docker-compose.test.yml      # Test deployment
+│   └── nginx.conf                   # Reverse proxy
+├── 🔧 Core Application
+│   ├── main_api_server.py           # FastAPI server
+│   ├── web_interface.py             # Web UI
+│   ├── tts_rvc_core.py              # Core logic
+│   ├── rvc_api.py                   # RVC wrapper
+│   └── start.bat                    # Launcher
+├── 🎭 RVC System
+│   ├── rvc/                         # RVC models
+│   ├── models/                      # Voice models
+│   └── voice_models/                # Additional models
+├── 📊 Documentation
+│   ├── DOCKER_N8N_GUIDE.md         # Docker & N8N guide
+│   ├── GPU_EXE_GUIDE.md            # GPU & EXE guide
+│   ├── NAGA_THEME_UPDATE.md        # UI theme guide
+│   └── MODEL_MANAGEMENT_REPOSITION.md # UI layout guide
+└── 🔄 N8N Integration
+    └── n8n_workflows/               # Workflow templates
 ```
 
-## 🔧 Configuration
+## 🎯 Core Technologies
 
-แก้ไขไฟล์ `config/unified_config.toml` สำหรับการตั้งค่าต่างๆ:
+### **Text-to-Speech (TTS)**
+- **Microsoft Edge TTS** - เสียงพูดคุณภาพสูง
+- **Multi-language Support** - รองรับหลายภาษา
+- **Speed Control** - ปรับความเร็วการพูด
 
-```toml
-[server]
-host = "0.0.0.0"
-port = 6969
+### **Voice Conversion (RVC)**
+- **HuBERT/ContentVec** - Speaker embedding
+- **F0 Extraction** - rmvpe, crepe, fcpe
+- **Model Management** - อัปโหลดและจัดการโมเดล
 
-[gpu]
-enabled = true
-device_id = 0
-memory_limit = 0
-use_fp16 = true
+### **System Architecture**
+- **FastAPI** - REST API framework
+- **PyTorch** - AI/ML framework
+- **Docker** - Containerization
+- **N8N** - Workflow automation
 
-[tts]
-default_voice = "en-US-AndrewNeural"
-default_rate = 0
-default_volume = 0
+## 🔧 API Endpoints
 
-[rvc]
-default_pitch = 0
-default_index_rate = 0.5
-default_protect = 0.33
-```
-
-## 📚 API Documentation
-
-### TTS Endpoint
+### **Main Endpoints**
 ```http
-POST /tts
-Content-Type: application/json
-
-{
-    "text": "Hello world",
-    "voice": "en-US-AndrewNeural",
-    "rate": 0,
-    "volume": 0
-}
+POST /unified              # TTS + RVC combined
+POST /tts                  # TTS only
+POST /voice_conversion     # RVC only
+GET  /voices              # Available voices
+GET  /models              # Available models
+GET  /health              # Health check
 ```
 
-### RVC Endpoint
-```http
-POST /rvc
-Content-Type: multipart/form-data
-
-{
-    "audio_file": <audio_file>,
-    "model_name": "model_name",
-    "pitch": 0,
-    "index_rate": 0.5,
-    "protect": 0.33
-}
+### **Example Usage**
+```bash
+# TTS + RVC
+curl -X POST http://localhost:6969/unified \
+  -H "Content-Type: application/json" \
+  -d '{
+    "text": "สวัสดีครับ ยินดีต้อนรับสู่ระบบ VICTOR-TTS",
+    "tts_voice": "th-TH-NeeraNeural",
+    "speed": 1.0,
+    "enable_rvc": true,
+    "rvc_params": {
+      "model_name": "al_bundy",
+      "transpose": 0
+    }
+  }'
 ```
 
-### Combined TTS + RVC
-```http
-POST /tts-rvc
-Content-Type: application/json
+## 🐳 Docker Deployment
 
-{
-    "text": "Hello world",
-    "voice": "en-US-AndrewNeural",
-    "model_name": "model_name",
-    "pitch": 0,
-    "index_rate": 0.5,
-    "protect": 0.33
-}
+### **Simple Deployment**
+```bash
+docker-compose -f docker-compose.simple.yml up -d
 ```
 
-## 🎯 Examples
+### **Full Deployment**
+```bash
+docker-compose -f docker-compose.yml up -d
+```
 
-### Python Client
+### **Test Deployment**
+```bash
+docker-compose -f docker-compose.test.yml up -d
+```
+
+## 🔄 N8N Integration
+
+### **Workflow Automation**
+1. Import workflow จาก `n8n_workflows/victor_tts_workflow.json`
+2. Activate workflow ใน N8N
+3. เรียกใช้ผ่าน webhook
+
+### **Webhook Example**
+```bash
+curl -X POST http://localhost:5678/webhook/victor-tts-webhook \
+  -H "Content-Type: application/json" \
+  -d '{
+    "text": "Hello from N8N!",
+    "voice": "en-US-JennyNeural",
+    "enable_rvc": true
+  }'
+```
+
+## 🖥️ GPU Support
+
+### **Requirements**
+- NVIDIA GPU with CUDA support
+- CUDA Toolkit 11.8+
+- PyTorch with CUDA
+
+### **Configuration**
+```bash
+# Check GPU availability
+python -c "import torch; print(f'CUDA: {torch.cuda.is_available()}')"
+
+# Set GPU device
+export CUDA_VISIBLE_DEVICES=0
+```
+
+## 📊 Performance Optimization
+
+### **Automatic Optimization**
+- **CPU Detection** - ปรับแต่งตาม CPU cores
+- **Memory Management** - จัดการ RAM อัตโนมัติ
+- **GPU Utilization** - ใช้ GPU อย่างมีประสิทธิภาพ
+- **Batch Processing** - ประมวลผลแบบ batch
+
+### **Manual Configuration**
 ```python
-import requests
-
-# TTS
-response = requests.post("http://localhost:6969/tts", json={
-    "text": "Hello from Python!",
-    "voice": "en-US-AndrewNeural"
-})
-
-# RVC
-with open("audio.wav", "rb") as f:
-    response = requests.post("http://localhost:6969/rvc", files={
-        "audio_file": f
-    }, data={
-        "model_name": "my_model"
-    })
-```
-
-### N8N Workflow
-1. เพิ่ม **HTTP Request** node
-2. ตั้งค่า URL: `http://localhost:6969/tts-rvc`
-3. Method: `POST`
-4. Body: JSON
-```json
-{
-    "text": "{{ $json.text }}",
-    "voice": "en-US-AndrewNeural",
-    "model_name": "{{ $json.model }}"
+# Performance settings
+performance_config = {
+    "tts_concurrent": 4,    # TTS concurrent processes
+    "rvc_batch": 1,         # RVC batch size
+    "gpu_memory_fraction": 0.8,  # GPU memory usage
+    "half_precision": True  # Use FP16 for speed
 }
 ```
 
-## 🔧 Troubleshooting
+## 🎨 User Interface
 
-### Common Issues
+### **Naga Dragons Theme**
+- **Dark Blue Gradient** - พื้นหลังสวยงาม
+- **Glass Morphism** - เอฟเฟคแก้ว
+- **Responsive Design** - รองรับทุกขนาดหน้าจอ
+- **Interactive Elements** - ปุ่มและฟอร์มที่ใช้งานง่าย
 
-1. **FFMPEG not found**
-   - ติดตั้ง FFMPEG และเพิ่มใน PATH
+### **Features**
+- **Model Management** - จัดการโมเดลเสียง
+- **Device Selection** - เลือก CPU/GPU
+- **Real-time Processing** - ประมวลผลแบบ real-time
+- **Audio Preview** - ฟังเสียงตัวอย่าง
 
-2. **GPU not working**
-   - ตรวจสอบ CUDA installation
-   - ใช้ `--cpu` flag สำหรับ CPU only
+## 📚 Documentation
 
-3. **Port already in use**
-   - เปลี่ยน port ใน config หรือ kill process ที่ใช้ port นั้น
+### **Guides**
+- [🐳 Docker & N8N Guide](DOCKER_N8N_GUIDE.md)
+- [🖥️ GPU & EXE Guide](GPU_EXE_GUIDE.md)
+- [🎨 UI Theme Guide](NAGA_THEME_UPDATE.md)
+- [📁 Model Management Guide](MODEL_MANAGEMENT_REPOSITION.md)
 
-### Logs
-ตรวจสอบ logs ใน:
-- Console output
-- `storage/logs/` directory
+### **API Documentation**
+- [FastAPI Docs](http://localhost:6969/docs)
+- [Interactive API](http://localhost:6969/redoc)
+
+## 🔧 Development
+
+### **Setup Development Environment**
+```bash
+# Clone repository
+git clone https://github.com/your-username/victor-tts.git
+cd victor-tts
+
+# Create virtual environment
+python -m venv venv
+source venv/bin/activate  # Linux/Mac
+venv\Scripts\activate     # Windows
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Run development server
+python web_interface.py
+```
+
+### **Testing**
+```bash
+# Run tests
+python -m pytest tests/
+
+# Test specific components
+python test_rvc_quick.py
+python test_tts_language.py
+```
 
 ## 🤝 Contributing
 
+### **How to Contribute**
 1. Fork the repository
-2. Create feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit changes (`git commit -m 'Add AmazingFeature'`)
-4. Push to branch (`git push origin feature/AmazingFeature`)
-5. Open Pull Request
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
+
+### **Development Guidelines**
+- Follow PEP 8 style guide
+- Add type hints
+- Write docstrings
+- Update documentation
 
 ## 📄 License
 
@@ -229,17 +283,25 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🙏 Acknowledgments
 
-- [Edge-TTS](https://github.com/rany2/edge-tts) - Text-to-Speech system
-- [RVC](https://github.com/RVC-Project/Retrieval-based-Voice-Conversion-WebUI) - Voice conversion technology
-- [FastAPI](https://fastapi.tiangolo.com/) - Modern web framework
-- [Gradio](https://gradio.app/) - Web interface framework
+- **Microsoft Edge TTS** - สำหรับ TTS engine
+- **RVC Project** - สำหรับ voice conversion
+- **N8N Team** - สำหรับ workflow automation
+- **FastAPI** - สำหรับ web framework
+- **PyTorch** - สำหรับ AI framework
 
 ## 📞 Support
 
-- 🐛 **Issues**: [GitHub Issues](https://github.com/Banchert/victor-tts-unified/issues)
-- 💬 **Discussions**: [GitHub Discussions](https://github.com/Banchert/victor-tts-unified/discussions)
-- 📧 **Email**: banchert@example.com
+### **Getting Help**
+- 📖 [Documentation](DOCKER_N8N_GUIDE.md)
+- 🐛 [Issues](https://github.com/your-username/victor-tts/issues)
+- 💬 [Discussions](https://github.com/your-username/victor-tts/discussions)
+
+### **Community**
+- 🌐 [GitHub Repository](https://github.com/your-username/victor-tts)
+- 📧 [Email Support](mailto:support@victor-tts.com)
 
 ---
 
-⭐ **Star this repository if you find it helpful!**
+**Made with ❤️ by VICTOR-TTS Team**
+
+*Empowering voice technology with AI*

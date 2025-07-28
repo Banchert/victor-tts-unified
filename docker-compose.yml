@@ -6,17 +6,22 @@ services:
     build: .
     container_name: victor-tts-api
     ports:
-      - "6969:6969"
-      - "7000:7000"
+      - "6969:6969"  # Main API for N8N
+      - "7000:7000"  # Web Interface
+      - "8000:8000"  # Alternative API port
     environment:
       - PYTHONPATH=/app
       - CUDA_VISIBLE_DEVICES=0  # Use GPU 0 if available
+      - TZ=Asia/Bangkok
+      - VICTOR_TTS_MODE=docker
+      - VICTOR_TTS_N8N_INTEGRATION=true
     volumes:
       - ./storage:/app/storage
       - ./models:/app/models
       - ./logs:/app/logs
       - ./config:/app/config
       - ./voice_models:/app/voice_models
+      - ./voice_samples:/app/voice_samples
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:6969/health"]
@@ -26,6 +31,13 @@ services:
       start_period: 40s
     networks:
       - victor-network
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
 
   # N8N Workflow Automation
   n8n:
@@ -41,15 +53,19 @@ services:
       - N8N_BASIC_AUTH_ACTIVE=false
       - WEBHOOK_URL=http://localhost:5678/
       - GENERIC_TIMEZONE=Asia/Bangkok
+      - N8N_VICTOR_TTS_URL=http://victor-tts-api:6969
+      - N8N_VICTOR_TTS_WEB_URL=http://victor-tts-api:7000
     volumes:
       - n8n_data:/home/node/.n8n
+      - ./n8n_workflows:/home/node/.n8n/workflows
     restart: unless-stopped
     depends_on:
-      - victor-tts-api
+      victor-tts-api:
+        condition: service_healthy
     networks:
       - victor-network
 
-  # PostgreSQL for N8N (optional)
+  # PostgreSQL for N8N (recommended for production)
   postgres:
     image: postgres:15
     container_name: n8n-postgres
@@ -57,16 +73,34 @@ services:
       - POSTGRES_DB=n8n
       - POSTGRES_USER=n8n
       - POSTGRES_PASSWORD=n8n_password
+      - TZ=Asia/Bangkok
     volumes:
       - postgres_data:/var/lib/postgresql/data
     restart: unless-stopped
     networks:
       - victor-network
 
-  # Redis for N8N (optional)
+  # Redis for N8N (recommended for production)
   redis:
     image: redis:7-alpine
     container_name: n8n-redis
+    restart: unless-stopped
+    networks:
+      - victor-network
+
+  # Optional: Nginx reverse proxy for better routing
+  nginx:
+    image: nginx:alpine
+    container_name: victor-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - victor-tts-api
+      - n8n
     restart: unless-stopped
     networks:
       - victor-network

@@ -1,10 +1,11 @@
-# VICTOR-TTS UNIFIED Docker Image
+# VICTOR-TTS UNIFIED Docker Image for N8N Integration
 FROM python:3.10-slim
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV DEBIAN_FRONTEND=noninteractive
+ENV TZ=Asia/Bangkok
 
 # Set working directory
 WORKDIR /app
@@ -23,30 +24,42 @@ RUN apt-get update && apt-get install -y \
     wget \
     curl \
     git \
+    tzdata \
     && rm -rf /var/lib/apt/lists/*
+
+# Set timezone
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 # Copy requirements first for better caching
 COPY requirements.txt .
 
-# Install Python dependencies
+# Install Python dependencies with GPU support
 RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118 && \
     pip install --no-cache-dir -r requirements.txt
 
 # Copy application code
 COPY . .
 
 # Create necessary directories
-RUN mkdir -p /app/storage/output /app/storage/temp /app/models /app/logs
+RUN mkdir -p /app/storage/output /app/storage/temp /app/models /app/logs /app/voice_models /app/config
 
 # Set permissions
-RUN chmod +x start.py
+RUN chmod +x start.py && \
+    chmod +x main_api_server.py && \
+    chmod +x web_interface.py
+
+# Create non-root user for security
+RUN useradd -m -u 1000 victor && \
+    chown -R victor:victor /app
+USER victor
 
 # Expose ports
-EXPOSE 6969 7000
+EXPOSE 6969 7000 8000
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:6969/health || exit 1
 
-# Default command
-CMD ["python", "start.py", "--api", "--host", "0.0.0.0", "--port", "6969"] 
+# Default command - API Server for N8N integration
+CMD ["python", "main_api_server.py", "--host", "0.0.0.0", "--port", "6969"] 

@@ -1,0 +1,18 @@
+{
+  "tts_batch_size": 1,
+  "tts_chunk_size": 5000,
+  "tts_max_concurrent": 4,
+  "rvc_batch_size": 1,
+  "rvc_use_half_precision": false,
+  "rvc_optimize_memory": true,
+  "rvc_cache_models": true,
+  "audio_sample_rate": 44100,
+  "audio_chunk_duration": 10,
+  "audio_use_soxr": true,
+  "use_multiprocessing": true,
+  "max_workers": 6,
+  "memory_limit_gb": 8,
+  "gpu_memory_fraction": 0.8,
+  "gpu_allow_growth": true,
+  "gpu_mixed_precision": false
+}

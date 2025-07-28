@@ -6,9 +6,10 @@
 import os
 import sys
 import asyncio
+import re
 from pathlib import Path
 import logging
-from typing import Optional, Dict, Any, List, Union
+from typing import Optional, Dict, Any, List, Union, Tuple
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
@@ -18,7 +19,8 @@ class TTSRVCCore:
     """ระบบหลักสำหรับ TTS และ RVC"""
     
     def __init__(self, models_dir: str = "logs", temp_dir: str = "storage/temp", 
-                 device: str = None, use_gpu: bool = True, gpu_id: int = 0):
+                 device: str = None, use_gpu: bool = True, gpu_id: int = 0,
+                 performance_config: Dict[str, Any] = None):
         """
         เริ่มต้นระบบ TTS-RVC
         
@@ -28,10 +30,14 @@ class TTSRVCCore:
             device: อุปกรณ์ที่ใช้ประมวลผล (cpu, cuda:0, cuda:1, ...) - ถ้าเป็น None จะใช้ค่าตามการกำหนด use_gpu และ gpu_id
             use_gpu: เปิดใช้งาน GPU หรือไม่
             gpu_id: ID ของ GPU ที่ใช้ (0, 1, 2, ...)
+            performance_config: การตั้งค่าประสิทธิภาพ
         """
         self.models_dir = Path(models_dir)
         self.temp_dir = Path(temp_dir)
         self.temp_dir.mkdir(parents=True, exist_ok=True)
+        
+        # โหลดการตั้งค่าประสิทธิภาพ
+        self.performance_config = self._load_performance_config(performance_config)
         
         # ตั้งค่า GPU
         self.setup_device(device, use_gpu, gpu_id)
@@ -45,6 +51,41 @@ class TTSRVCCore:
         self._initialize_systems()
         
         logger.info(f"TTS-RVC Core initialized - TTS: {self.tts_available}, RVC: {self.rvc_available}, Device: {self.device}")
+        logger.info(f"Performance config: TTS concurrent={self.performance_config.get('tts_max_concurrent', 1)}, RVC batch={self.performance_config.get('rvc_batch_size', 1)}")
+    
+    def _load_performance_config(self, config: Dict[str, Any] = None) -> Dict[str, Any]:
+        """โหลดการตั้งค่าประสิทธิภาพ"""
+        if config:
+            return config
+        
+        # ลองโหลดจากไฟล์
+        config_file = Path("config/performance_config.json")
+        if config_file.exists():
+            try:
+                import json
+                with open(config_file, 'r', encoding='utf-8') as f:
+                    return json.load(f)
+            except Exception as e:
+                logger.warning(f"Failed to load performance config: {e}")
+        
+        # ใช้ค่าเริ่มต้น
+        return {
+            "tts_batch_size": 1,
+            "tts_chunk_size": 5000,
+            "tts_max_concurrent": 1,
+            "rvc_batch_size": 1,
+            "rvc_use_half_precision": True,
+            "rvc_cache_models": True,
+            "audio_sample_rate": 44100,
+            "audio_chunk_duration": 10,
+            "audio_use_soxr": True,
+            "use_multiprocessing": True,
+            "max_workers": 1,
+            "memory_limit_gb": 2,
+            "gpu_memory_fraction": 0.8,
+            "gpu_allow_growth": True,
+            "gpu_mixed_precision": True
+        }
     
     def setup_device(self, device: str = None, use_gpu: bool = True, gpu_id: int = 0):
         """
@@ -129,7 +170,11 @@ class TTSRVCCore:
         # เริ่มต้น RVC
         try:
             from rvc_api import RVCConverter
-            self.rvc_instance = RVCConverter(device=self.device, models_dir=self.models_dir)
+            self.rvc_instance = RVCConverter(
+                device=self.device, 
+                models_dir=str(self.models_dir),
+                performance_config=self.performance_config
+            )
             self.rvc_available = True
             logger.info(f"✅ RVC system loaded on {self.device}")
         except ImportError as e:
@@ -194,7 +239,7 @@ class TTSRVCCore:
             return []
     
     async def generate_tts(self, text: str, voice: str, speed: float = 1.0, 
-                          pitch: str = "+0Hz") -> bytes:
+                          pitch: str = "+0Hz", enable_multi_language: bool = True) -> bytes:
         """
         สร้างเสียงจากข้อความด้วย Edge TTS
         
@@ -203,6 +248,7 @@ class TTSRVCCore:
             voice: เสียงที่ใช้ (เช่น th-TH-PremwadeeNeural)
             speed: ความเร็วในการพูด (0.5-2.0)
             pitch: ระดับเสียง (เช่น +0Hz, +10Hz)
+            enable_multi_language: เปิดใช้งานการประมวลผลหลายภาษา
             
         Returns:
             bytes: ข้อมูลเสียงในรูปแบบ bytes
@@ -214,15 +260,14 @@ class TTSRVCCore:
             import edge_tts
             
             # Log ข้อมูลพารามิเตอร์
-            logger.info(f"Generating TTS with text='{text[:30]}...', voice='{voice}', speed={speed}, pitch={pitch}")
+            logger.info(f"Generating TTS with text='{text[:30]}...', voice='{voice}', speed={speed}, pitch={pitch}, multi_lang={enable_multi_language}")
             
             # ตรวจสอบและทำความสะอาดข้อความ
             if not text or not text.strip():
                 raise Exception("Text is empty or contains only whitespace")
             
-            # ทำความสะอาดข้อความ - ลบอักขระพิเศษที่อาจทำให้เกิดปัญหา
+            # ทำความสะอาดข้อความ - ลบอักขระควบคุมที่ไม่จำเป็น
             cleaned_text = text.strip()
-            # ลบอักขระควบคุมที่ไม่จำเป็น
             cleaned_text = ''.join(char for char in cleaned_text if ord(char) >= 32 or char in '\n\r\t')
             
             if not cleaned_text:
@@ -248,52 +293,215 @@ class TTSRVCCore:
                 logger.warning(f"Could not verify voice availability: {voice_error}")
                 # ดำเนินการต่อโดยไม่ตรวจสอบ voice
             
-            # ปรับ rate สำหรับ speed
-            if speed != 1.0:
-                rate = f"{speed:+.0%}"
+            # ถ้าเปิดใช้งานหลายภาษา ให้แยกข้อความตามภาษา
+            if enable_multi_language:
+                language_segments = self.detect_language_segments(cleaned_text)
+                logger.info(f"Detected {len(language_segments)} language segments: {[(seg[:20] + '...' if len(seg) > 20 else seg, lang) for seg, lang in language_segments]}")
+                
+                if len(language_segments) > 1:
+                    # มีหลายภาษา ให้ประมวลผลแยกกัน
+                    all_audio_data = []
+                    
+                    # ใช้การตั้งค่าประสิทธิภาพ
+                    max_concurrent = self.performance_config.get("tts_max_concurrent", 1)
+                    
+                    # กรอง segments ที่ไม่ต้องการ
+                    valid_segments = []
+                    for segment_text, language in language_segments:
+                        if not segment_text.strip():
+                            continue
+                        
+                        # ข้ามเครื่องหมายวรรคตอนเดี่ยวๆ
+                        if language == 'punctuation' and len(segment_text.strip()) <= 2:
+                            logger.debug(f"Skipping punctuation segment: '{segment_text}'")
+                            continue
+                        
+                        valid_segments.append((segment_text, language))
+                    
+                    if max_concurrent > 1 and len(valid_segments) > 1:
+                        # ใช้ concurrent processing
+                        logger.info(f"Processing {len(valid_segments)} segments with max_concurrent={max_concurrent}")
+                        
+                        semaphore = asyncio.Semaphore(max_concurrent)
+                        
+                        async def process_segment(segment_text, language):
+                            async with semaphore:
+                                segment_voice = self.get_voice_for_language(language, voice)
+                                logger.info(f"Processing segment '{segment_text[:30]}...' with language '{language}' using voice '{segment_voice}'")
+                                
+                                try:
+                                    segment_audio = await self._generate_single_tts(segment_text, segment_voice, speed, pitch)
+                                    if segment_audio and len(segment_audio) > 0:
+                                        return segment_audio
+                                except Exception as e:
+                                    logger.warning(f"Failed to generate audio for segment '{segment_text}': {e}")
+                                    return None
+                        
+                        # รัน segments แบบ concurrent
+                        tasks = [process_segment(text, lang) for text, lang in valid_segments]
+                        results = await asyncio.gather(*tasks, return_exceptions=True)
+                        
+                        # รวบรวมผลลัพธ์
+                        for result in results:
+                            if isinstance(result, bytes) and len(result) > 0:
+                                all_audio_data.append(result)
+                    else:
+                        # ใช้ sequential processing
+                        for segment_text, language in valid_segments:
+                            segment_voice = self.get_voice_for_language(language, voice)
+                            logger.info(f"Processing segment '{segment_text[:30]}...' with language '{language}' using voice '{segment_voice}'")
+                            
+                            try:
+                                segment_audio = await self._generate_single_tts(segment_text, segment_voice, speed, pitch)
+                                if segment_audio and len(segment_audio) > 0:
+                                    all_audio_data.append(segment_audio)
+                            except Exception as e:
+                                logger.warning(f"Failed to generate audio for segment '{segment_text}': {e}")
+                                continue
+                    
+                    # รวมเสียงทั้งหมด
+                    if all_audio_data:
+                        combined_audio = self._combine_audio_segments(all_audio_data)
+                        logger.info(f"Multi-language TTS generated: {len(combined_audio)} bytes from {len(all_audio_data)} segments")
+                        return combined_audio
+                    else:
+                        raise Exception("No audio was generated from any segments")
+                else:
+                    # มีภาษาเดียว ใช้วิธีเดิม
+                    logger.info("Single language detected, using standard TTS")
+                    return await self._generate_single_tts(cleaned_text, voice, speed, pitch)
             else:
-                rate = "+0%"
-            
-            logger.info(f"Using cleaned text: '{cleaned_text[:50]}...'")
-            
-            # สร้าง Communicate object
-            communicate = edge_tts.Communicate(
-                text=cleaned_text,
-                voice=voice,
-                rate=rate,
-                pitch=pitch
-            )
-            
-            # สร้างเสียง
-            audio_data = b""
-            chunk_count = 0
-            
-            try:
-                async for chunk in communicate.stream():
-                    if chunk["type"] == "audio":
-                        audio_data += chunk["data"]
-                        chunk_count += 1
-                    elif chunk["type"] == "WordBoundary":
-                        logger.debug(f"Word boundary: {chunk}")
-                    elif chunk["type"] == "SentenceBoundary":
-                        logger.debug(f"Sentence boundary: {chunk}")
-            except Exception as stream_error:
-                logger.error(f"Error during streaming: {stream_error}")
-                raise Exception(f"Streaming error: {str(stream_error)}")
-            
-            logger.info(f"Received {chunk_count} audio chunks")
-            
-            # ตรวจสอบว่าได้เสียงจริงหรือไม่
-            if not audio_data:
-                logger.error("No audio was received. Please verify that your parameters are correct.")
-                raise Exception("No audio was received. Please verify that your parameters are correct.")
-            
-            logger.info(f"TTS generated: {len(audio_data)} bytes")
-            return audio_data
+                # ไม่เปิดใช้งานหลายภาษา ใช้วิธีเดิม
+                return await self._generate_single_tts(cleaned_text, voice, speed, pitch)
             
         except Exception as e:
             logger.error(f"TTS generation failed: {e}")
             raise Exception(f"TTS generation failed: {str(e)}")
+    
+    async def _generate_single_tts(self, text: str, voice: str, speed: float = 1.0, 
+                                  pitch: str = "+0Hz") -> bytes:
+        """
+        สร้างเสียงจากข้อความภาษาเดียว
+        
+        Args:
+            text: ข้อความที่ต้องการแปลง
+            voice: เสียงที่ใช้
+            speed: ความเร็วในการพูด
+            pitch: ระดับเสียง
+            
+        Returns:
+            bytes: ข้อมูลเสียงในรูปแบบ bytes
+        """
+        import edge_tts
+        
+        # ปรับ rate สำหรับ speed
+        if speed != 1.0:
+            rate = f"{speed:+.0%}"
+        else:
+            rate = "+0%"
+        
+        logger.info(f"Generating single TTS: '{text[:50]}...' with voice '{voice}'")
+        
+        # สร้าง Communicate object
+        communicate = edge_tts.Communicate(
+            text=text,
+            voice=voice,
+            rate=rate,
+            pitch=pitch
+        )
+        
+        # สร้างเสียง
+        audio_data = b""
+        chunk_count = 0
+        
+        try:
+            async for chunk in communicate.stream():
+                if chunk["type"] == "audio":
+                    audio_data += chunk["data"]
+                    chunk_count += 1
+                elif chunk["type"] == "WordBoundary":
+                    logger.debug(f"Word boundary: {chunk}")
+                elif chunk["type"] == "SentenceBoundary":
+                    logger.debug(f"Sentence boundary: {chunk}")
+        except Exception as stream_error:
+            logger.error(f"Error during streaming: {stream_error}")
+            raise Exception(f"Streaming error: {str(stream_error)}")
+        
+        logger.info(f"Received {chunk_count} audio chunks")
+        
+        # ตรวจสอบว่าได้เสียงจริงหรือไม่
+        if not audio_data:
+            logger.error("No audio was received. Please verify that your parameters are correct.")
+            raise Exception("No audio was received. Please verify that your parameters are correct.")
+        
+        logger.info(f"Single TTS generated: {len(audio_data)} bytes")
+        return audio_data
+    
+    def _combine_audio_segments(self, audio_segments: List[bytes]) -> bytes:
+        """
+        รวมเสียงจากหลายส่วนเข้าด้วยกัน
+        
+        Args:
+            audio_segments: รายการข้อมูลเสียง
+            
+        Returns:
+            bytes: ข้อมูลเสียงที่รวมแล้ว
+        """
+        try:
+            # กรองส่วนที่ว่างเปล่าออก
+            valid_segments = [seg for seg in audio_segments if seg and len(seg) > 0]
+            
+            if not valid_segments:
+                raise Exception("No valid audio segments to combine")
+            
+            if len(valid_segments) == 1:
+                # มีส่วนเดียว ไม่ต้องรวม
+                return valid_segments[0]
+            
+            # Edge TTS ส่งมาเป็น MP3 ต้องแปลงและรวมด้วย pydub
+            from pydub import AudioSegment
+            import io
+            
+            combined_audio = None
+            
+            for i, segment_data in enumerate(valid_segments):
+                try:
+                    # แปลง bytes เป็น AudioSegment
+                    audio_io = io.BytesIO(segment_data)
+                    segment = AudioSegment.from_mp3(audio_io)
+                    
+                    if combined_audio is None:
+                        combined_audio = segment
+                    else:
+                        # เพิ่มความเงียบ 100ms ระหว่างส่วน
+                        silence = AudioSegment.silent(duration=100)
+                        combined_audio = combined_audio + silence + segment
+                        
+                except Exception as e:
+                    logger.warning(f"Failed to process segment {i}: {e}")
+                    # ถ้าแปลงไม่ได้ ให้ข้ามส่วนนี้ไป
+                    continue
+            
+            if combined_audio is None:
+                # ถ้าไม่สามารถแปลงได้เลย ให้ใช้วิธีรวม bytes แบบเดิม
+                logger.warning("Failed to combine with pydub, using byte concatenation")
+                combined_bytes = b""
+                for segment in valid_segments:
+                    combined_bytes += segment
+                return combined_bytes
+            
+            # แปลงกลับเป็น MP3 bytes
+            output_io = io.BytesIO()
+            combined_audio.export(output_io, format="mp3")
+            combined_bytes = output_io.getvalue()
+            
+            logger.info(f"Combined {len(valid_segments)} audio segments into {len(combined_bytes)} bytes")
+            return combined_bytes
+            
+        except Exception as e:
+            logger.error(f"Error combining audio segments: {e}")
+            # ถ้าไม่สามารถรวมได้ ให้ส่งคืนส่วนแรก
+            return audio_segments[0] if audio_segments else b""
     
     def convert_voice(self, audio_data: bytes, model_name: str, 
                      transpose: int = 0, index_ratio: float = 0.75,
@@ -315,12 +523,96 @@ class TTSRVCCore:
             raise Exception("RVC system not available")
         
         try:
-            # บันทึกไฟล์ input
-            temp_input = self.temp_dir / f"rvc_input_{os.getpid()}.wav"
-            temp_output = self.temp_dir / f"rvc_output_{os.getpid()}.wav"
+            # สร้างชื่อไฟล์ที่ไม่ซ้ำกัน
+            import time
+            timestamp = int(time.time() * 1000)
+            temp_input = self.temp_dir / f"rvc_input_{timestamp}.wav"
+            temp_output = self.temp_dir / f"rvc_output_{timestamp}.wav"
             
-            with open(temp_input, "wb") as f:
-                f.write(audio_data)
+            # แปลงไฟล์เสียงให้เป็นรูปแบบ WAV ที่ถูกต้อง
+            try:
+                import io
+                import soundfile as sf
+                import numpy as np
+                from pydub import AudioSegment
+                
+                # ลองอ่านเป็น MP3 ก่อน (Edge TTS ส่งมาเป็น MP3)
+                try:
+                    # แปลง MP3 เป็น WAV โดยใช้ pydub
+                    audio_io = io.BytesIO(audio_data)
+                    audio_segment = AudioSegment.from_mp3(audio_io)
+                    
+                    # แปลงเป็น numpy array
+                    samples = np.array(audio_segment.get_array_of_samples())
+                    
+                    # ถ้าเป็น stereo ให้แปลงเป็น mono
+                    if audio_segment.channels == 2:
+                        samples = samples.reshape((-1, 2))
+                        samples = np.mean(samples, axis=1)
+                    
+                    # Normalize audio
+                    samples = samples.astype(np.float32) / 32768.0
+                    
+                    # บันทึกเป็น WAV
+                    sf.write(str(temp_input), samples, audio_segment.frame_rate, format='WAV', subtype='PCM_16')
+                    
+                    logger.info(f"Converted MP3 to WAV: {temp_input} (sample_rate={audio_segment.frame_rate})")
+                    
+                except Exception as mp3_error:
+                    logger.debug(f"Not MP3 format or pydub conversion failed: {mp3_error}")
+                    
+                    # ถ้าไม่ใช่ MP3 ให้ลองอ่านเป็น WAV โดยตรง
+                    audio_io = io.BytesIO(audio_data)
+                    audio_array, sample_rate = sf.read(audio_io)
+                    
+                    # แปลงเป็น mono ถ้าเป็น stereo
+                    if len(audio_array.shape) > 1:
+                        audio_array = np.mean(audio_array, axis=1)
+                    
+                    # ตรวจสอบและแก้ไขข้อมูลเสียง
+                    if np.isnan(audio_array).any():
+                        audio_array = np.nan_to_num(audio_array, nan=0.0)
+                    
+                    # บันทึกเป็นไฟล์ WAV ที่ถูกต้อง
+                    sf.write(str(temp_input), audio_array, sample_rate, format='WAV', subtype='PCM_16')
+                    
+                    logger.info(f"Saved audio as WAV: {temp_input} (sample_rate={sample_rate})")
+                
+            except Exception as conversion_error:
+                logger.error(f"Failed to convert audio format: {conversion_error}")
+                
+                # ถ้าแปลงไม่ได้เลย ให้ลองบันทึกเป็นไฟล์ชั่วคราวและใช้ ffmpeg
+                temp_mp3 = self.temp_dir / f"temp_{timestamp}.mp3"
+                with open(temp_mp3, "wb") as f:
+                    f.write(audio_data)
+                
+                # ใช้ ffmpeg แปลงเป็น WAV
+                import subprocess
+                ffmpeg_cmd = [
+                    "ffmpeg", "-y", "-i", str(temp_mp3),
+                    "-acodec", "pcm_s16le", "-ar", "44100", "-ac", "1",
+                    str(temp_input)
+                ]
+                
+                result = subprocess.run(ffmpeg_cmd, capture_output=True, text=True)
+                if result.returncode != 0:
+                    logger.error(f"FFmpeg conversion failed: {result.stderr}")
+                    raise Exception(f"Audio format conversion failed: {result.stderr}")
+                
+                # ลบไฟล์ MP3 ชั่วคราว
+                temp_mp3.unlink(missing_ok=True)
+                logger.info(f"Converted audio using FFmpeg: {temp_input}")
+            
+            # ตรวจสอบว่าไฟล์ถูกสร้างขึ้นหรือไม่
+            if not temp_input.exists():
+                raise Exception("Failed to create input audio file")
+            
+            # ตรวจสอบขนาดไฟล์
+            file_size = temp_input.stat().st_size
+            if file_size == 0:
+                raise Exception("Input audio file is empty")
+            
+            logger.info(f"Created input file: {temp_input} ({file_size} bytes)")
             
             # แปลงเสียง
             result_path = self.rvc_instance.convert_voice(
@@ -332,28 +624,44 @@ class TTSRVCCore:
                 f0_method=f0_method
             )
             
+            # ตรวจสอบว่าไฟล์ผลลัพธ์ถูกสร้างขึ้นหรือไม่
+            if not Path(result_path).exists():
+                raise Exception(f"RVC output file not found: {result_path}")
+            
             # อ่านผลลัพธ์
             with open(result_path, "rb") as f:
                 converted_audio = f.read()
             
+            if len(converted_audio) == 0:
+                raise Exception("RVC output file is empty")
+            
             # ลบไฟล์ชั่วคราว
-            temp_input.unlink(missing_ok=True)
-            temp_output.unlink(missing_ok=True)
-            if Path(result_path) != temp_output:
-                Path(result_path).unlink(missing_ok=True)
+            try:
+                temp_input.unlink(missing_ok=True)
+                if Path(result_path) != temp_output:
+                    Path(result_path).unlink(missing_ok=True)
+                temp_output.unlink(missing_ok=True)
+            except Exception as cleanup_error:
+                logger.warning(f"Failed to cleanup temp files: {cleanup_error}")
             
             logger.info(f"Voice conversion completed: {len(converted_audio)} bytes")
             return converted_audio
             
         except Exception as e:
             logger.error(f"Voice conversion failed: {e}")
+            # ลบไฟล์ชั่วคราวในกรณี error
+            try:
+                temp_input.unlink(missing_ok=True)
+                temp_output.unlink(missing_ok=True)
+            except:
+                pass
             raise Exception(f"Voice conversion failed: {str(e)}")
     
     async def process_unified(self, text: str, tts_voice: str, 
                             enable_rvc: bool = False, rvc_model: str = None,
                             tts_speed: float = 1.0, tts_pitch: str = "+0Hz",
                             rvc_transpose: int = 0, rvc_index_ratio: float = 0.75,
-                            rvc_f0_method: str = "rmvpe") -> Dict[str, Any]:
+                            rvc_f0_method: str = "rmvpe", enable_multi_language: bool = True) -> Dict[str, Any]:
         """
         ประมวลผลรวม TTS + RVC ในคำสั่งเดียว
         
@@ -367,13 +675,16 @@ class TTSRVCCore:
             rvc_transpose: การขยับ pitch RVC
             rvc_index_ratio: อัตราส่วน index RVC
             rvc_f0_method: วิธีการ f0 RVC
+            enable_multi_language: เปิดใช้งานการประมวลผลหลายภาษา
             
         Returns:
             Dict: ผลลัพธ์รวมทั้งข้อมูลเสียงและสถิติ
         """
         result = {
             "success": False,
-            "audio_data": None,
+            "tts_audio_data": None,
+            "rvc_audio_data": None,
+            "final_audio_data": None,
             "processing_steps": [],
             "error": None,
             "stats": {}
@@ -382,11 +693,20 @@ class TTSRVCCore:
         try:
             # ขั้นตอนที่ 1: สร้าง TTS
             logger.info("Step 1: Generating TTS...")
-            tts_audio = await self.generate_tts(text, tts_voice, tts_speed, tts_pitch)
+            tts_audio = await self.generate_tts(text, tts_voice, tts_speed, tts_pitch, enable_multi_language)
             result["processing_steps"].append("tts_generation")
             result["stats"]["tts_audio_size"] = len(tts_audio)
+            result["tts_audio_data"] = tts_audio
+            
+            # เพิ่มข้อมูลการตรวจจับภาษา
+            if enable_multi_language:
+                language_segments = self.detect_language_segments(text)
+                result["stats"]["language_segments"] = len(language_segments)
+                result["stats"]["detected_languages"] = list(set(lang for _, lang in language_segments))
+                logger.info(f"Detected languages: {result['stats']['detected_languages']}")
             
             final_audio = tts_audio
+            rvc_audio = None
             
             # ขั้นตอนที่ 2: แปลงเสียงด้วย RVC (ถ้าเปิดใช้)
             if enable_rvc and rvc_model:
@@ -411,9 +731,11 @@ class TTSRVCCore:
                                 tts_audio, rvc_model, rvc_transpose, 
                                 rvc_index_ratio, rvc_f0_method
                             )
+                            rvc_audio = converted_audio
                             final_audio = converted_audio
                             result["processing_steps"].append("voice_conversion")
                             result["stats"]["rvc_audio_size"] = len(converted_audio)
+                            result["rvc_audio_data"] = converted_audio
                             logger.info(f"Voice conversion successful: {len(converted_audio)} bytes")
                         except Exception as rvc_error:
                             logger.error(f"Voice conversion failed: {rvc_error}")
@@ -428,12 +750,13 @@ class TTSRVCCore:
             # ขั้นตอนที่ 3: เตรียมผลลัพธ์
             result.update({
                 "success": True,
-                "audio_data": final_audio,
+                "final_audio_data": final_audio,
                 "stats": {
                     **result["stats"],
                     "text_length": len(text),
                     "final_audio_size": len(final_audio),
                     "voice_conversion_applied": "voice_conversion" in result["processing_steps"],
+                    "multi_language_enabled": enable_multi_language,
                     "device": self.device
                 }
             })
@@ -636,6 +959,193 @@ class TTSRVCCore:
         except Exception as e:
             logger.error(f"Error changing device: {e}")
             return False
+    
+    def get_device_info(self) -> Dict[str, Any]:
+        """ดึงข้อมูลอุปกรณ์ที่ใช้"""
+        return {
+            "current_device": self.device,
+            "gpu_available": self.gpu_available,
+            "gpu_count": len(self.gpu_info) if self.gpu_info else 0,
+            "gpu_info": self.gpu_info or [],
+            "device_options": self._get_device_options()
+        }
+    
+    def _get_device_options(self) -> List[Dict[str, Any]]:
+        """ดึงตัวเลือกอุปกรณ์ที่ใช้ได้"""
+        options = [
+            {
+                "value": "cpu",
+                "label": "CPU Only",
+                "description": "ใช้ CPU เท่านั้น (เสถียรที่สุด)",
+                "icon": "🖥️"
+            }
+        ]
+        
+        if self.gpu_available and self.gpu_info:
+            for gpu in self.gpu_info:
+                options.append({
+                    "value": f"cuda:{gpu['id']}",
+                    "label": f"GPU {gpu['id']}: {gpu['name']}",
+                    "description": f"ใช้ GPU {gpu['id']} ({gpu['memory']:.1f}GB)",
+                    "icon": "🚀"
+                })
+            
+            # เพิ่มตัวเลือก AUTO
+            if len(self.gpu_info) > 0:
+                options.append({
+                    "value": "auto",
+                    "label": "AUTO (Best GPU)",
+                    "description": "เลือก GPU ที่ดีที่สุดอัตโนมัติ",
+                    "icon": "⚡"
+                })
+        
+        return options
+    
+    def change_device_auto(self, device_choice: str) -> Dict[str, Any]:
+        """
+        เปลี่ยนอุปกรณ์ตามตัวเลือกที่เลือก
+        
+        Args:
+            device_choice: ตัวเลือก (cpu, cuda:0, cuda:1, auto)
+        """
+        try:
+            if device_choice == "auto":
+                # เลือก GPU ที่ดีที่สุด (memory มากที่สุด)
+                if self.gpu_available and self.gpu_info:
+                    best_gpu = max(self.gpu_info, key=lambda x: x['memory'])
+                    device_choice = f"cuda:{best_gpu['id']}"
+                    logger.info(f"Auto-selected GPU {best_gpu['id']}: {best_gpu['name']} ({best_gpu['memory']:.1f}GB)")
+                else:
+                    device_choice = "cpu"
+                    logger.info("No GPU available, using CPU")
+            
+            # เปลี่ยนอุปกรณ์
+            success = self.change_device(device_choice)
+            
+            return {
+                "success": success,
+                "device": self.device,
+                "device_info": self.get_device_info(),
+                "message": f"Changed to {self.device}"
+            }
+            
+        except Exception as e:
+            logger.error(f"Error in change_device_auto: {e}")
+            return {
+                "success": False,
+                "error": str(e),
+                "device": self.device
+            }
+
+    def detect_language_segments(self, text: str) -> List[Tuple[str, str]]:
+        """
+        ตรวจจับและแยกข้อความตามภาษา
+        
+        Args:
+            text: ข้อความที่ต้องการแยก
+            
+        Returns:
+            List[Tuple[str, str]]: รายการ (ข้อความ, ภาษา)
+        """
+        segments = []
+        
+        # รูปแบบการตรวจจับภาษา
+        patterns = {
+            'english': r'[a-zA-Z]+(?:\s+[a-zA-Z]+)*',
+            'lao': r'[\u0E80-\u0EFF]+(?:\s+[\u0E80-\u0EFF]+)*',
+            'thai': r'[\u0E00-\u0E7F]+(?:\s+[\u0E00-\u0E7F]+)*',
+            'chinese': r'[\u4E00-\u9FFF]+(?:\s+[\u4E00-\u9FFF]+)*',
+            'japanese': r'[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF]+(?:\s+[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF]+)*',
+            'numbers': r'\d+(?:\.\d+)?',
+            'punctuation': r'[^\w\s\u0E00-\u0E7F\u0E80-\u0EFF\u4E00-\u9FFF\u3040-\u309F\u30A0-\u30FF]'
+        }
+        
+        # รวมรูปแบบทั้งหมด
+        all_patterns = '|'.join(f'({pattern})' for pattern in patterns.values())
+        
+        # หา matches ทั้งหมด
+        matches = list(re.finditer(all_patterns, text, re.UNICODE))
+        
+        if not matches:
+            # ถ้าไม่เจอรูปแบบใดๆ ให้ถือว่าเป็นภาษาเริ่มต้น
+            return [(text, 'unknown')]
+        
+        # จัดเรียงตามตำแหน่ง
+        matches.sort(key=lambda x: x.start())
+        
+        current_pos = 0
+        for match in matches:
+            # เพิ่มข้อความที่ไม่ตรงกับรูปแบบใดๆ
+            if match.start() > current_pos:
+                unknown_text = text[current_pos:match.start()].strip()
+                if unknown_text:
+                    segments.append((unknown_text, 'unknown'))
+            
+            # ระบุภาษา
+            matched_text = match.group()
+            language = 'unknown'
+            
+            for i, (lang, pattern) in enumerate(patterns.items()):
+                if re.match(pattern, matched_text, re.UNICODE):
+                    language = lang
+                    break
+            
+            segments.append((matched_text, language))
+            current_pos = match.end()
+        
+        # เพิ่มข้อความที่เหลือ
+        if current_pos < len(text):
+            remaining_text = text[current_pos:].strip()
+            if remaining_text:
+                segments.append((remaining_text, 'unknown'))
+        
+        # รวมส่วนที่ติดกันและเป็นภาษาเดียวกัน
+        merged_segments = []
+        current_text = ""
+        current_lang = None
+        
+        for text_segment, lang in segments:
+            if current_lang is None:
+                current_lang = lang
+                current_text = text_segment
+            elif lang == current_lang:
+                current_text += " " + text_segment
+            else:
+                if current_text:
+                    merged_segments.append((current_text.strip(), current_lang))
+                current_text = text_segment
+                current_lang = lang
+        
+        if current_text:
+            merged_segments.append((current_text.strip(), current_lang))
+        
+        return merged_segments
+    
+    def get_voice_for_language(self, language: str, base_voice: str) -> str:
+        """
+        เลือกเสียงที่เหมาะสมสำหรับแต่ละภาษา
+        
+        Args:
+            language: ภาษาที่ต้องการ
+            base_voice: เสียงเริ่มต้น
+            
+        Returns:
+            str: เสียงที่เหมาะสม
+        """
+        # แมปปิ้งภาษาไปยังเสียง
+        language_voice_mapping = {
+            'english': 'en-US-AriaNeural',
+            'lao': 'lo-LA-KeomanyNeural',
+            'thai': 'th-TH-PremwadeeNeural',
+            'chinese': 'zh-CN-XiaoxiaoNeural',
+            'japanese': 'ja-JP-NanamiNeural'
+        }
+        
+        # ถ้าเป็นตัวเลขหรือเครื่องหมายวรรคตอน ให้ใช้เสียงเริ่มต้น
+        if language in ['numbers', 'punctuation', 'unknown']:
+            return base_voice
+        
+        return language_voice_mapping.get(language, base_voice)
 
 # เสียงที่รองรับ
 SUPPORTED_VOICES = {

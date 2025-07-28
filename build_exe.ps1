@@ -25,7 +25,7 @@ if (Test-Path "build") { Remove-Item -Path "build" -Recurse -Force }
 if (Test-Path "dist") { Remove-Item -Path "dist" -Recurse -Force }
 
 Write-Host "กำลังสร้าง .exe แบบ optimize..." -ForegroundColor Yellow
-pyinstaller --clean --onefile --optimize=2 victor_tts.spec
+pyinstaller --clean victor_tts.spec
 
 Write-Host ""
 Write-Host "========================================" -ForegroundColor Cyan

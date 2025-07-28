@@ -1,18 +1,19 @@
 version: '3.8'
 
 services:
-  # VICTOR-TTS UNIFIED API Server
-  victor-tts-api:
+  # VICTOR-TTS API Server (Test Mode)
+  victor-tts-test:
     build: .
-    container_name: victor-tts-api
+    container_name: victor-tts-test
     ports:
-      - "6969:6969"  # Main API for N8N
+      - "6969:6969"  # API
       - "7000:7000"  # Web Interface
     environment:
       - PYTHONPATH=/app
       - TZ=Asia/Bangkok
-      - VICTOR_TTS_MODE=docker
+      - VICTOR_TTS_MODE=test
       - VICTOR_TTS_N8N_INTEGRATION=true
+      - VICTOR_TTS_LOG_LEVEL=DEBUG
     volumes:
       - ./storage:/app/storage
       - ./models:/app/models
@@ -22,17 +23,17 @@ services:
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:6969/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
     networks:
-      - victor-network
+      - test-network
 
-  # N8N Workflow Automation (Simple)
-  n8n:
+  # N8N Test Instance
+  n8n-test:
     image: n8nio/n8n:latest
-    container_name: n8n
+    container_name: n8n-test
     ports:
       - "5678:5678"
     environment:
@@ -43,21 +44,21 @@ services:
       - N8N_BASIC_AUTH_ACTIVE=false
       - WEBHOOK_URL=http://localhost:5678/
       - GENERIC_TIMEZONE=Asia/Bangkok
-      - N8N_VICTOR_TTS_URL=http://victor-tts-api:6969
-      - N8N_VICTOR_TTS_WEB_URL=http://victor-tts-api:7000
+      - N8N_VICTOR_TTS_URL=http://victor-tts-test:6969
+      - N8N_VICTOR_TTS_WEB_URL=http://victor-tts-test:7000
     volumes:
-      - n8n_data:/home/node/.n8n
+      - n8n_test_data:/home/node/.n8n
       - ./n8n_workflows:/home/node/.n8n/workflows
     restart: unless-stopped
     depends_on:
-      victor-tts-api:
+      victor-tts-test:
         condition: service_healthy
     networks:
-      - victor-network
+      - test-network
 
 volumes:
-  n8n_data:
+  n8n_test_data:
 
 networks:
-  victor-network:
+  test-network:
     driver: bridge 

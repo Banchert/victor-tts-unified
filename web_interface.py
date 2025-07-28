@@ -90,434 +90,529 @@ class WebInterface:
         
         body {{
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 0;
+            background: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyMCIgaGVpZ2h0PSIxMDgwIiB2aWV3Qm94PSIwIDAgMTkyMCAxMDgwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8ZGVmcz4KPHJhZGlhbEdyYWRpZW50IGlkPSJteUdyYWRpZW50IiBjeD0iNTAlIiBjeT0iNTAlIiByPSI3MCUiPgo8c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojMDAwMDAwO3N0b3Atb3BhY2l0eTowLjgiLz4KPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojMDAwMDAwO3N0b3Atb3BhY2l0eTowLjQiLz4KPC9yYWRpYWxHcmFkaWVudD4KPC9kZWZzPgo8cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI215R3JhZGllbnQpIi8+Cjx0ZXh0IHg9Ijk2MCIgeT0iNTQwIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMjQiIGZpbGw9IiM0MEE3RjAiIHRleHQtYW5jaG9yPSJtaWRkbGUiPk5hZ2EgRHJhZ29ucyBCYWNrZ3JvdW5kPC90ZXh0Pgo8L3N2Zz4K') center center/cover no-repeat fixed, linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
             min-height: 100vh;
-            padding: 20px;
+            color: #333;
+            position: relative;
+        }}
+        
+        body::before {{
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyMCIgaGVpZ2h0PSIxMDgwIiB2aWV3Qm94PSIwIDAgMTkyMCAxMDgwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8ZGVmcz4KPHJhZGlhbEdyYWRpZW50IGlkPSJteUdyYWRpZW50IiBjeD0iNTAlIiBjeT0iNTAlIiByPSI3MCUiPgo8c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojMDAwMDAwO3N0b3Atb3BhY2l0eTowLjMiLz4KPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojMDAwMDAwO3N0b3Atb3BhY2l0eTowLjEiLz4KPC9yYWRpYWxHcmFkaWVudD4KPC9kZWZzPgo8cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI215R3JhZGllbnQpIi8+Cjx0ZXh0IHg9Ijk2MCIgeT0iNTQwIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMjQiIGZpbGw9IiM0MEE3RjAiIHRleHQtYW5jaG9yPSJtaWRkbGUiPk5hZ2EgRHJhZ29ucyBCYWNrZ3JvdW5kPC90ZXh0Pgo8L3N2Zz4K') center center/cover no-repeat;
+            opacity: 0.3;
+            z-index: -1;
         }}
         
         .container {{
-            max-width: 1000px;
+            max-width: 1400px;
             margin: 0 auto;
+            padding: 20px;
             background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            overflow: hidden;
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            margin-top: 20px;
+            margin-bottom: 20px;
+            min-height: calc(100vh - 40px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }}
         
         .header {{
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
             color: white;
-            padding: 30px;
+            padding: 20px;
+            border-radius: 10px;
             text-align: center;
+            margin-bottom: 25px;
+            border: 2px solid #4A90E2;
+            box-shadow: 0 5px 15px rgba(74, 144, 226, 0.3);
+            position: relative;
+            overflow: hidden;
+        }}
+        
+        .header::before {{
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent 30%, rgba(74, 144, 226, 0.1) 50%, transparent 70%);
+            animation: shimmer 3s infinite;
+        }}
+        
+        @keyframes shimmer {{
+            0% {{ transform: translateX(-100%); }}
+            100% {{ transform: translateX(100%); }}
         }}
         
         .header h1 {{
-            font-size: 2.5em;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            margin: 0;
+            font-size: 2.2em;
+            font-weight: 300;
         }}
         
         .header p {{
-            font-size: 1.2em;
+            margin: 10px 0 0 0;
             opacity: 0.9;
-        }}
-        
-        .content {{
-            padding: 30px;
+            font-size: 1.1em;
         }}
         
         .status-bar {{
             display: flex;
-            justify-content: space-around;
-            margin-bottom: 30px;
-            padding: 20px;
-            background: #f8f9fa;
-            border-radius: 15px;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(248, 249, 250, 0.9);
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(74, 144, 226, 0.3);
+            backdrop-filter: blur(5px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }}
         
         .status-item {{
-            text-align: center;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
         }}
         
-        .status-icon {{
-            font-size: 2em;
-            margin-bottom: 10px;
+        .status-item.success {{
+            color: #28a745;
         }}
         
-        .status-text {{
-            font-weight: bold;
-            color: #333;
+        .status-item.info {{
+            color: #17a2b8;
+        }}
+        
+        .main-content {{
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 25px;
         }}
         
         .section {{
-            margin-bottom: 30px;
-            padding: 25px;
-            border: 2px solid #e9ecef;
-            border-radius: 15px;
-            background: #fafbfc;
+            background: rgba(248, 249, 250, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid rgba(74, 144, 226, 0.3);
+            backdrop-filter: blur(5px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }}
         
         .section h3 {{
-            color: #495057;
-            margin-bottom: 20px;
+            margin: 0 0 15px 0;
+            color: #1a1a2e;
             font-size: 1.3em;
-            border-bottom: 2px solid #dee2e6;
-            padding-bottom: 10px;
+            border-bottom: 2px solid #4A90E2;
+            padding-bottom: 8px;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
         }}
         
         .form-group {{
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }}
         
         .form-group label {{
             display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
+            margin-bottom: 5px;
+            font-weight: 500;
             color: #495057;
+            font-size: 0.95em;
         }}
         
-        textarea {{
+        .form-row {{
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }}
+        
+        .form-row-3 {{
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }}
+        
+        input[type="text"], input[type="number"], select, textarea {{
             width: 100%;
-            padding: 15px;
-            border: 2px solid #dee2e6;
-            border-radius: 10px;
-            font-size: 16px;
-            resize: vertical;
-            min-height: 120px;
-            font-family: inherit;
-        }}
-        
-        textarea:focus {{
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }}
-        
-        select, input[type="range"] {{
-            width: 100%;
-            padding: 12px;
+            padding: 10px;
             border: 2px solid #dee2e6;
             border-radius: 8px;
-            font-size: 16px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+            box-sizing: border-box;
         }}
         
-        select:focus {{
+        input[type="text"]:focus, input[type="number"]:focus, select:focus, textarea:focus {{
             outline: none;
-            border-color: #667eea;
+            border-color: #4A90E2;
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
+            background: rgba(255, 255, 255, 0.95);
+        }}
+        
+        .button {{
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: white;
+            padding: 12px 25px;
+            border: 2px solid #4A90E2;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }}
+        
+        .button::before {{
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(74, 144, 226, 0.3), transparent);
+            transition: left 0.5s;
+        }}
+        
+        .button:hover::before {{
+            left: 100%;
+        }}
+        
+        .button:hover {{
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(74, 144, 226, 0.4);
+            border-color: #5BA0F2;
+        }}
+        
+        .button:active {{
+            transform: translateY(0);
+        }}
+        
+        .button-secondary {{
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            border-color: #95a5a6;
+        }}
+        
+        .button-secondary:hover {{
+            box-shadow: 0 5px 15px rgba(149, 165, 166, 0.4);
+            border-color: #bdc3c7;
+        }}
+        
+        .checkbox-group {{
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 15px;
+        }}
+        
+        .checkbox-group input[type="checkbox"] {{
+            width: auto;
+            margin: 0;
         }}
         
         .slider-container {{
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 10px;
         }}
         
-        .slider {{
+        .slider-container input[type="range"] {{
             flex: 1;
         }}
         
-        .slider-value {{
-            min-width: 80px;
+        .slider-container span {{
+            min-width: 50px;
             text-align: center;
-            font-weight: bold;
-            color: #667eea;
+            font-weight: 500;
+            color: #495057;
         }}
         
-        .checkbox-container {{
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 15px;
-        }}
-        
-        .checkbox-container input[type="checkbox"] {{
-            width: 20px;
-            height: 20px;
-        }}
-        
-        .button {{
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 15px 30px;
-            border: none;
+        .upload-area {{
+            border: 2px dashed #dee2e6;
             border-radius: 10px;
-            font-size: 18px;
-            font-weight: 600;
+            padding: 30px;
+            text-align: center;
             cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s;
+            background: #f8f9fa;
         }}
         
-        .button:hover {{
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        .upload-area:hover {{
+            border-color: #667eea;
+            background: #e3f2fd;
         }}
         
-        .button:disabled {{
-            background: #6c757d;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }}
-        
-        .result-section {{
-            background: #e7f3ff;
-            border-color: #b8daff;
-        }}
-        
-        .alert {{
-            padding: 15px;
-            margin: 15px 0;
-            border-radius: 8px;
-            font-weight: 500;
-        }}
-        
-        .alert-success {{
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }}
-        
-        .alert-error {{
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }}
-        
-        .alert-info {{
-            background: #d1ecf1;
-            color: #0c5460;
-            border: 1px solid #bee5eb;
-        }}
-        
-        .progress-bar {{
-            width: 100%;
-            height: 10px;
-            background: #e9ecef;
-            border-radius: 5px;
-            overflow: hidden;
-            margin: 15px 0;
-        }}
-        
-        .progress-fill {{
-            height: 100%;
-            background: linear-gradient(90deg, #667eea, #764ba2);
-            border-radius: 5px;
-            transition: width 0.3s ease;
-            width: 0%;
-        }}
-        
-        .audio-player {{
-            width: 100%;
-            margin: 20px 0;
-            border-radius: 10px;
-        }}
-        
-        .stats {{
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin: 20px 0;
-        }}
-        
-        .stat-item {{
-            background: white;
-            padding: 15px;
-            border-radius: 10px;
-            text-align: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }}
-        
-        .stat-value {{
-            font-size: 1.5em;
-            font-weight: bold;
-            color: #667eea;
-        }}
-        
-        .stat-label {{
+        .upload-icon {{
+            font-size: 3em;
+            margin-bottom: 10px;
             color: #6c757d;
-            font-size: 0.9em;
         }}
         
-        @media (max-width: 768px) {{
-            .container {{
-                margin: 10px;
-                border-radius: 15px;
-            }}
-            
-            .content {{
-                padding: 20px;
-            }}
-            
-            .header h1 {{
-                font-size: 2em;
-            }}
-            
-            .status-bar {{
-                flex-direction: column;
-                gap: 15px;
-            }}
-            
-            .stats {{
-                grid-template-columns: 1fr;
-            }}
-        }}
-        
-        .notification {{
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 15px 20px;
-            border-radius: 8px;
-            color: white;
-            font-weight: 500;
-            z-index: 1000;
-            max-width: 400px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            animation: slideIn 0.3s ease;
-        }}
-        
-        .notification.success {{
-            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-        }}
-        
-        .notification.error {{
-            background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%);
-        }}
-        
-        .notification.warning {{
-            background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
-            color: #212529;
-        }}
-        
-        .notification.info {{
-            background: linear-gradient(135deg, #17a2b8 0%, #6f42c1 100%);
-        }}
-        
-        .alert {{
-            padding: 15px;
-            margin: 10px 0;
-            border-radius: 8px;
-            font-weight: 500;
-        }}
-        
-        .alert-success {{
-            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-            color: white;
-        }}
-        
-        .alert-error {{
-            background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%);
-            color: white;
-        }}
-        
-        .alert-info {{
-            background: linear-gradient(135deg, #17a2b8 0%, #6f42c1 100%);
-            color: white;
-        }}
-        
-        .alert-warning {{
-            background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
-            color: #212529;
-        }}
-        
-        .audio-player {{
-            width: 100%;
-            margin: 15px 0;
-            border-radius: 10px;
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-        }}
-        
-        .result-section {{
-            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
-            border: 2px solid #28a745;
-            border-radius: 15px;
-            padding: 20px;
-            margin-top: 20px;
-        }}
-        
-        .stats {{
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-top: 15px;
-        }}
-        
-        .stat-item {{
-            background: white;
-            padding: 15px;
-            border-radius: 10px;
-            text-align: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }}
-        
-        .stat-value {{
-            font-size: 1.2em;
-            font-weight: bold;
-            color: #28a745;
+        .upload-text {{
+            font-size: 1.1em;
+            color: #495057;
             margin-bottom: 5px;
         }}
         
-        .stat-label {{
+        .upload-hint {{
             font-size: 0.9em;
             color: #6c757d;
         }}
         
-        .download-btn {{
-            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
-            color: white;
+        .file-input {{
+            display: none;
+        }}
+        
+        .upload-progress {{
+            width: 100%;
+            height: 6px;
+            background: #e9ecef;
+            border-radius: 3px;
+            margin-top: 10px;
+            overflow: hidden;
+            display: none;
+        }}
+        
+        .upload-progress-fill {{
+            height: 100%;
+            background: linear-gradient(90deg, #28a745, #20c997);
+            width: 0%;
+            transition: width 0.3s;
+        }}
+        
+        .btn-small {{
+            padding: 6px 12px;
+            font-size: 12px;
+            border-radius: 6px;
             border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
             cursor: pointer;
-            font-size: 14px;
             font-weight: 500;
-            margin: 10px 5px;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: all 0.3s;
         }}
         
-        .download-btn:hover {{
-            background: linear-gradient(135deg, #0056b3 0%, #004085 100%);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        .btn-success {{
+            background: #28a745;
+            color: white;
         }}
         
-        .download-btn:active {{
-            transform: translateY(0);
+        .btn-danger {{
+            background: #dc3545;
+            color: white;
         }}
         
-        #ttsAudioSection, #rvcAudioSection, #combinedAudioSection {{
-            background: white;
-            border-radius: 10px;
+        .btn-primary {{
+            background: #007bff;
+            color: white;
+        }}
+        
+        .btn-small:hover {{
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }}
+        
+        .model-table {{
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 0.9em;
+        }}
+        
+        .model-table th {{
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: white;
+            padding: 10px;
+            text-align: left;
+            border-radius: 8px 8px 0 0;
+            font-size: 0.9em;
+            border: 1px solid #4A90E2;
+        }}
+        
+        .model-table td {{
+            padding: 8px 10px;
+            border-bottom: 1px solid #dee2e6;
+            background: #f8f9fa;
+            font-size: 0.85em;
+        }}
+        
+        .model-table tr:nth-child(even) {{
+            background: #f8f9fa;
+        }}
+        
+        .model-table tr:nth-child(odd) {{
+            background: #ffffff;
+        }}
+        
+        .model-table tr:hover {{
+            background: #e3f2fd !important;
+        }}
+        
+        #modelSearchInput:focus {{
+            outline: none;
+            border-color: #4A90E2;
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
+        }}
+        
+        .model-item {{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             padding: 15px;
-            margin: 10px 0;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            background: #f8f9fa;
         }}
         
-        #ttsAudioSection h4, #rvcAudioSection h4, #combinedAudioSection h4 {{
+        .model-info {{
+            flex: 1;
+        }}
+        
+        .model-name {{
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 3px;
+        }}
+        
+        .model-details {{
+            font-size: 0.85em;
+            color: #6c757d;
+        }}
+        
+        .model-actions {{
+            display: flex;
+            gap: 5px;
+        }}
+        
+        .compact-section {{
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #e9ecef;
+            margin-bottom: 15px;
+        }}
+        
+        .compact-section h4 {{
             margin: 0 0 10px 0;
-            color: #333;
-            font-size: 16px;
+            color: #495057;
+            font-size: 1.1em;
+            border-bottom: 1px solid #667eea;
+            padding-bottom: 5px;
         }}
         
-        @keyframes slideIn {{
-            from {{
-                transform: translateX(100%);
-                opacity: 0;
-            }}
-            to {{
-                transform: translateX(0);
-                opacity: 1;
-            }}
+        .compact-form-group {{
+            margin-bottom: 10px;
+        }}
+        
+        .compact-form-group label {{
+            display: block;
+            margin-bottom: 3px;
+            font-weight: 500;
+            color: #495057;
+            font-size: 0.9em;
+        }}
+        
+        .compact-input {{
+            width: 100%;
+            padding: 8px;
+            border: 2px solid #dee2e6;
+            border-radius: 6px;
+            font-size: 13px;
+            transition: border-color 0.3s;
+            box-sizing: border-box;
+        }}
+        
+        .compact-input:focus {{
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
+        }}
+        
+        .compact-button {{
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.3s;
+            width: 100%;
+        }}
+        
+        .compact-button:hover {{
+            transform: translateY(-1px);
+            box-shadow: 0 3px 10px rgba(102, 126, 234, 0.3);
+        }}
+        
+        .compact-form-row {{
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 10px;
+        }}
+        
+        .compact-form-row-3 {{
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 10px;
+        }}
+        
+        .compact-checkbox-group {{
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+        }}
+        
+        .compact-slider-container {{
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }}
+        
+        .compact-slider-container input[type="range"] {{
+            flex: 1;
+        }}
+        
+        .compact-slider-container span {{
+            min-width: 40px;
+            text-align: center;
+            font-weight: 500;
+            color: #495057;
+            font-size: 0.9em;
+        }}
+        
+        .footer {{
+            text-align: center;
+            padding: 15px;
+            color: #6c757d;
+            font-size: 0.9em;
+            border-top: 1px solid #e9ecef;
+            margin-top: 20px;
         }}
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>🎙️ VICTOR-TTS Interface</h1>
-            <p>ระบบแปลงข้อความเป็นเสียงพร้อมการแปลงเสียง</p>
+            <h1>🐉 VICTOR-TTS Naga Interface</h1>
+            <p>ระบบสร้างเสียงและแปลงเสียงด้วย AI - พลังแห่ง Naga Dragons</p>
         </div>
         
         <div class="content">
@@ -536,6 +631,8 @@ class WebInterface:
                     <div class="status-text">โมเดล: {status.get("rvc_models_count", 0)} ตัว</div>
                 </div>
             </div>
+            
+
             
             <!-- System Control Panel -->
             <div class="section">
@@ -580,6 +677,29 @@ class WebInterface:
                 </div>
             </div>
             
+            <!-- Device Selection -->
+            <div class="section">
+                <h3>⚙️ การเลือกอุปกรณ์ประมวลผล</h3>
+                <div class="form-group">
+                    <label for="deviceSelect">เลือกอุปกรณ์:</label>
+                    <select id="deviceSelect" onchange="changeDevice()">
+                        <option value="cpu">🖥️ CPU Only (เสถียรที่สุด)</option>
+                        <option value="auto">⚡ AUTO (เลือก GPU ที่ดีที่สุด)</option>
+                    </select>
+                    <div id="deviceStatus" style="margin-top: 5px; font-size: 0.9em; color: #6c757d;">
+                        <span id="currentDevice">กำลังโหลด...</span>
+                    </div>
+                </div>
+                <div class="form-group" style="margin-top: 10px; padding: 10px; background: #e8f5e8; border-radius: 8px; border-left: 4px solid #28a745;">
+                    <small style="color: #155724;">
+                        <strong>💡 คำแนะนำ:</strong> 
+                        • <strong>CPU Only:</strong> เสถียรที่สุด เหมาะสำหรับการใช้งานทั่วไป<br>
+                        • <strong>AUTO:</strong> ระบบจะเลือก GPU ที่ดีที่สุดอัตโนมัติ (เร็วขึ้น 3-5 เท่า)<br>
+                        • การเปลี่ยนอุปกรณ์จะรีสตาร์ทระบบอัตโนมัติ
+                    </small>
+                </div>
+            </div>
+            
             <!-- TTS Settings -->
             <div class="section">
                 <h3>🎵 การตั้งค่า Text-to-Speech</h3>
@@ -595,6 +715,16 @@ class WebInterface:
                         <input type="range" id="speedSlider" class="slider" min="0.5" max="2.0" step="0.1" value="1.0">
                         <div class="slider-value" id="speedValue">1.0x</div>
                     </div>
+                </div>
+                <div class="checkbox-container">
+                    <input type="checkbox" id="enableMultiLanguage" checked>
+                    <label for="enableMultiLanguage">🌐 เปิดใช้งานการประมวลผลหลายภาษา (แนะนำสำหรับข้อความผสมภาษา)</label>
+                </div>
+                <div class="form-group" style="margin-top: 10px; padding: 10px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #007bff;">
+                    <small style="color: #6c757d;">
+                        <strong>💡 คำแนะนำ:</strong> เปิดใช้งานเพื่อให้ระบบตรวจจับและแยกการประมวลผลข้อความตามภาษา 
+                        เช่น ข้อความภาษาลาวที่มีคำภาษาอังกฤษ จะถูกอ่านด้วยเสียงที่เหมาะสมสำหรับแต่ละภาษา
+                    </small>
                 </div>
             </div>
             
@@ -638,16 +768,23 @@ class WebInterface:
                 
                 <!-- TTS Audio Player -->
                 <div id="ttsAudioSection" style="display: none;">
-                    <h4>🎵 เสียง TTS (ต้นฉบับ)</h4>
+                    <h4>🎵 เสียงต้นฉบับ (TTS)</h4>
+                    <p style="color: #666; font-size: 0.9em; margin-bottom: 10px;">เสียงที่สร้างจากข้อความโดยตรง</p>
                     <audio id="ttsAudioPlayer" class="audio-player" controls></audio>
-                    <button id="downloadTTSBtn" class="download-btn" onclick="downloadAudio('tts')">📥 ดาวน์โหลด TTS</button>
+                    <button id="downloadTTSBtn" class="download-btn" onclick="downloadAudio('tts')">📥 ดาวน์โหลดเสียงต้นฉบับ</button>
                 </div>
                 
                 <!-- RVC Audio Player -->
                 <div id="rvcAudioSection" style="display: none;">
-                    <h4>🎭 เสียง RVC (แปลงแล้ว)</h4>
+                    <h4>🎭 เสียงที่แปลงแล้ว (RVC)</h4>
+                    <p style="color: #666; font-size: 0.9em; margin-bottom: 10px;">เสียงที่แปลงด้วยโมเดล RVC ที่เลือก</p>
+                    <div id="rvcStatus" style="margin-bottom: 10px; padding: 8px; border-radius: 6px; background: #f8f9fa; border-left: 3px solid #007bff;">
+                        <small style="color: #495057;">
+                            <strong>สถานะ:</strong> <span id="rvcStatusText">พร้อมใช้งาน</span>
+                        </small>
+                    </div>
                     <audio id="rvcAudioPlayer" class="audio-player" controls></audio>
-                    <button id="downloadRVCBtn" class="download-btn" onclick="downloadAudio('rvc')">📥 ดาวน์โหลด RVC</button>
+                    <button id="downloadRVCBtn" class="download-btn" onclick="downloadAudio('rvc')">📥 ดาวน์โหลดเสียงที่แปลงแล้ว</button>
                 </div>
                 
                 <!-- Combined Audio Player (for backward compatibility) -->
@@ -658,6 +795,52 @@ class WebInterface:
                 </div>
                 
                 <div class="stats" id="statsContainer"></div>
+            </div>
+            
+            <!-- Model Management Section -->
+            <div class="section">
+                <h3>📁 จัดการโมเดลเสียง (Model Management)</h3>
+                <div class="form-group">
+                    <label>อัปโหลดโมเดลเสียงใหม่:</label>
+                    <div class="upload-area" id="uploadArea" onclick="document.getElementById('modelFileInput').click()">
+                        <div class="upload-icon">📁</div>
+                        <div class="upload-text">คลิกเพื่อเลือกไฟล์ หรือ ลากวางไฟล์ที่นี่</div>
+                        <div class="upload-hint">รองรับไฟล์ .pth, .pt, .ckpt (ขนาดสูงสุด 500MB)</div>
+                        <input type="file" id="modelFileInput" class="file-input" accept=".pth,.pt,.ckpt" onchange="handleFileSelect(event)">
+                    </div>
+                    <div class="upload-progress" id="uploadProgress">
+                        <div class="upload-progress-fill" id="uploadProgressFill"></div>
+                    </div>
+                </div>
+                
+                <!-- Model List Toggle -->
+                <div class="form-group" style="margin-top: 20px;">
+                    <button class="button" id="toggleModelListBtn" style="background: linear-gradient(135deg, #17a2b8 0%, #6f42c1 100%); width: auto; padding: 10px 20px; font-size: 14px;">
+                        📋 แสดงรายการโมเดล ({len(models)} ตัว)
+                    </button>
+                </div>
+                
+                <!-- Model List (Hidden by default) -->
+                <div class="model-list" id="modelList" style="display: none;">
+                    <h4>📋 โมเดลที่มีอยู่:</h4>
+                    
+                    <!-- Search Box -->
+                    <div class="form-group" style="margin-bottom: 15px;">
+                        <input type="text" id="modelSearchInput" placeholder="🔍 ค้นหาโมเดล..." 
+                               style="width: 100%; padding: 10px; border: 2px solid #dee2e6; border-radius: 8px; font-size: 14px;">
+                    </div>
+                    
+                    <!-- Model Stats -->
+                    <div style="margin-bottom: 15px; padding: 10px; background: #e7f3ff; border-radius: 8px; border-left: 4px solid #007bff;">
+                        <small style="color: #495057;">
+                            <strong>📊 สถิติ:</strong> พบโมเดลทั้งหมด <span id="modelCount">{len(models)}</span> ตัว
+                        </small>
+                    </div>
+                    
+                    <div id="modelItems">
+                        {self._generate_model_list_html(models)}
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -687,6 +870,251 @@ class WebInterface:
             document.getElementById('modelSelect').disabled = !enabled;
             document.getElementById('transposeSlider').disabled = !enabled;
         }});
+        
+        // Toggle model list
+        document.getElementById('toggleModelListBtn').addEventListener('click', function() {{
+            let modelList = document.getElementById('modelList');
+            let button = document.getElementById('toggleModelListBtn');
+            
+            if (modelList.style.display === 'none') {{
+                modelList.style.display = 'block';
+                button.innerHTML = '📋 ซ่อนรายการโมเดล';
+                button.style.background = 'linear-gradient(135deg, #dc3545 0%, #fd7e14 100%)';
+            }} else {{
+                modelList.style.display = 'none';
+                button.innerHTML = '📋 แสดงรายการโมเดล';
+                button.style.background = 'linear-gradient(135deg, #17a2b8 0%, #6f42c1 100%)';
+            }}
+        }});
+        
+        // Model search functionality
+        document.getElementById('modelSearchInput').addEventListener('input', function() {{
+            const searchTerm = this.value.toLowerCase();
+            const tableRows = document.querySelectorAll('#modelItems tbody tr');
+            let visibleCount = 0;
+            
+            tableRows.forEach(row => {{
+                const modelName = row.cells[1].textContent.toLowerCase();
+                if (modelName.includes(searchTerm)) {{
+                    row.style.display = '';
+                    visibleCount++;
+                }} else {{
+                    row.style.display = 'none';
+                }}
+            }});
+            
+            // Update model count
+            document.getElementById('modelCount').textContent = visibleCount;
+        }});
+        
+        // File upload handling
+        function handleFileSelect(event) {{
+            const file = event.target.files[0];
+            if (file) {{
+                uploadModel(file);
+            }}
+        }}
+        
+        // Drag and drop functionality
+        const uploadArea = document.getElementById('uploadArea');
+        
+        uploadArea.addEventListener('dragover', function(e) {{
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        }});
+        
+        uploadArea.addEventListener('dragleave', function(e) {{
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+        }});
+        
+        uploadArea.addEventListener('drop', function(e) {{
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {{
+                uploadModel(files[0]);
+            }}
+        }});
+        
+        // Upload model function
+        function uploadModel(file) {{
+            if (!file) return;
+            
+            // Check file type
+            const allowedTypes = ['.pth', '.pt', '.ckpt'];
+            const fileExtension = file.name.toLowerCase().substring(file.name.lastIndexOf('.'));
+            if (!allowedTypes.includes(fileExtension)) {{
+                showNotification('❌ ไฟล์ไม่ถูกต้อง กรุณาเลือกไฟล์ .pth, .pt, หรือ .ckpt', 'error');
+                return;
+            }}
+            
+            // Check file size (500MB limit)
+            if (file.size > 500 * 1024 * 1024) {{
+                showNotification('❌ ไฟล์ใหญ่เกินไป ขนาดสูงสุด 500MB', 'error');
+                return;
+            }}
+            
+            const formData = new FormData();
+            formData.append('model', file);
+            
+            // Show progress bar
+            const progressBar = document.getElementById('uploadProgress');
+            const progressFill = document.getElementById('uploadProgressFill');
+            progressBar.style.display = 'block';
+            
+            fetch('/upload_model', {{
+                method: 'POST',
+                body: formData
+            }})
+            .then(response => response.json())
+            .then(data => {{
+                progressBar.style.display = 'none';
+                if (data.success) {{
+                    showNotification('✅ อัปโหลดโมเดลสำเร็จ: ' + file.name, 'success');
+                    refreshModelList();
+                }} else {{
+                    showNotification('❌ อัปโหลดล้มเหลว: ' + data.error, 'error');
+                }}
+            }})
+            .catch(error => {{
+                progressBar.style.display = 'none';
+                showNotification('❌ เกิดข้อผิดพลาดในการอัปโหลด: ' + error.message, 'error');
+            }});
+            
+            // Simulate progress (since we can't track actual upload progress with basic fetch)
+            let progress = 0;
+            const progressInterval = setInterval(() => {{
+                progress += Math.random() * 10;
+                if (progress > 90) progress = 90;
+                progressFill.style.width = progress + '%';
+            }}, 200);
+            
+            // Clear interval when upload completes
+            setTimeout(() => {{
+                clearInterval(progressInterval);
+                progressFill.style.width = '100%';
+            }}, 3000);
+        }}
+        
+        // Refresh model list
+        function refreshModelList() {{
+            fetch('/models')
+            .then(response => response.json())
+            .then(data => {{
+                if (data.success) {{
+                    updateModelList(data.data);
+                    updateModelSelect(data.data);
+                }}
+            }})
+            .catch(error => {{
+                console.error('Error refreshing model list:', error);
+            }});
+        }}
+        
+        // Update model list display
+        function updateModelList(models) {{
+            const modelItems = document.getElementById('modelItems');
+            if (models.length === 0) {{
+                modelItems.innerHTML = '<p style="color: #6c757d; text-align: center; padding: 20px;">ไม่มีโมเดลที่อัปโหลด</p>';
+                return;
+            }}
+            
+            let html = `
+                <table class="model-table">
+                    <thead>
+                        <tr>
+                            <th>ลำดับ</th>
+                            <th>ชื่อโมเดล</th>
+                            <th>ประเภท</th>
+                            <th>สถานะ</th>
+                            <th>การจัดการ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            models.forEach((model, index) => {{
+                html += `
+                    <tr>
+                        <td>${{index + 1}}</td>
+                        <td><strong>${{model.name}}</strong></td>
+                        <td>${{model.type || 'RVC Model'}}</td>
+                        <td>${{model.size || 'ไม่ทราบ'}}</td>
+                        <td>
+                            <button class="btn-small btn-success" onclick="testModel('${{model.name}}')" style="margin-right: 5px;">🧪 ทดสอบ</button>
+                            <button class="btn-small btn-danger" onclick="deleteModel('${{model.name}}')">🗑️ ลบ</button>
+                        </td>
+                    </tr>
+                `;
+            }});
+            
+            html += `
+                    </tbody>
+                </table>
+            `;
+            modelItems.innerHTML = html;
+        }}
+        
+        // Update model select dropdown
+        function updateModelSelect(models) {{
+            const modelSelect = document.getElementById('modelSelect');
+            let options = '';
+            models.forEach(model => {{
+                options += `<option value="${{model.name}}">${{model.name}}</option>`;
+            }});
+            modelSelect.innerHTML = options || '<option value="">ไม่มีโมเดลพร้อมใช้งาน</option>';
+        }}
+        
+        // Test model
+        function testModel(modelName) {{
+            showNotification('🧪 กำลังทดสอบโมเดล: ' + modelName, 'info');
+            fetch('/test_model', {{
+                method: 'POST',
+                headers: {{
+                    'Content-Type': 'application/json'
+                }},
+                body: JSON.stringify({{model: modelName}})
+            }})
+            .then(response => response.json())
+            .then(data => {{
+                if (data.success) {{
+                    showNotification('✅ ทดสอบโมเดลสำเร็จ: ' + modelName, 'success');
+                }} else {{
+                    showNotification('❌ ทดสอบโมเดลล้มเหลว: ' + data.error, 'error');
+                }}
+            }})
+            .catch(error => {{
+                showNotification('❌ เกิดข้อผิดพลาดในการทดสอบ: ' + error.message, 'error');
+            }});
+        }}
+        
+        // Delete model
+        function deleteModel(modelName) {{
+            if (!confirm('คุณแน่ใจหรือไม่ที่จะลบโมเดล "' + modelName + '"?')) {{
+                return;
+            }}
+            
+            fetch('/delete_model', {{
+                method: 'POST',
+                headers: {{
+                    'Content-Type': 'application/json'
+                }},
+                body: JSON.stringify({{model: modelName}})
+            }})
+            .then(response => response.json())
+            .then(data => {{
+                if (data.success) {{
+                    showNotification('✅ ลบโมเดลสำเร็จ: ' + modelName, 'success');
+                    refreshModelList();
+                }} else {{
+                    showNotification('❌ ลบโมเดลล้มเหลว: ' + data.error, 'error');
+                }}
+            }})
+            .catch(error => {{
+                showNotification('❌ เกิดข้อผิดพลาดในการลบ: ' + error.message, 'error');
+            }});
+        }}
         
         // Progress bar animation
         function animateProgress(duration) {{
@@ -752,17 +1180,34 @@ class WebInterface:
             // ซ่อนส่วนอื่น
             document.getElementById('combinedAudioSection').style.display = 'none';
             
-            // แสดงส่วน TTS
+            // แสดงส่วน TTS เสมอ
             let ttsSection = document.getElementById('ttsAudioSection');
             let ttsPlayer = document.getElementById('ttsAudioPlayer');
             ttsSection.style.display = 'block';
             ttsPlayer.src = 'data:audio/wav;base64,' + ttsAudioData;
             
-            // แสดงส่วน RVC
+            // แสดงส่วน RVC เสมอ (ไม่ว่าจะสำเร็จหรือล้มเหลว)
             let rvcSection = document.getElementById('rvcAudioSection');
+            let rvcStatusText = document.getElementById('rvcStatusText');
+            let rvcStatus = document.getElementById('rvcStatus');
             let rvcPlayer = document.getElementById('rvcAudioPlayer');
+            
             rvcSection.style.display = 'block';
-            rvcPlayer.src = 'data:audio/wav;base64,' + rvcAudioData;
+            
+            if (rvcAudioData) {{
+                // RVC สำเร็จ
+                rvcPlayer.src = 'data:audio/wav;base64,' + rvcAudioData;
+                rvcStatusText.textContent = '✅ แปลงเสียงสำเร็จ - ฟังเสียงที่แปลงแล้วด้านล่าง';
+                rvcStatus.style.borderLeftColor = '#28a745';
+                rvcStatus.style.background = '#d4edda';
+                rvcPlayer.style.display = 'block';
+            }} else {{
+                // RVC ล้มเหลว
+                rvcPlayer.style.display = 'none';
+                rvcStatusText.textContent = '❌ แปลงเสียงล้มเหลว - ฟังเฉพาะเสียงต้นฉบับด้านบน';
+                rvcStatus.style.borderLeftColor = '#dc3545';
+                rvcStatus.style.background = '#f8d7da';
+            }}
             
             // เก็บข้อมูลสำหรับดาวน์โหลด
             window.ttsAudioData = ttsAudioData;
@@ -783,6 +1228,33 @@ class WebInterface:
             
             // เก็บข้อมูลสำหรับดาวน์โหลด
             window.combinedAudioData = audioData;
+        }}
+        
+        // Show notification
+        function showNotification(message, type = 'info') {{
+            const notification = document.createElement('div');
+            notification.className = `notification ${{type}}`;
+            notification.textContent = message;
+            notification.style.position = 'fixed';
+            notification.style.top = '20px';
+            notification.style.right = '20px';
+            notification.style.padding = '15px 20px';
+            notification.style.borderRadius = '8px';
+            notification.style.color = 'white';
+            notification.style.fontWeight = '500';
+            notification.style.zIndex = '1000';
+            notification.style.maxWidth = '400px';
+            notification.style.boxShadow = '0 4px 15px rgba(0,0,0,0.2)';
+            notification.style.animation = 'slideIn 0.3s ease';
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {{
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => {{
+                    document.body.removeChild(notification);
+                }}, 300);
+            }}, 3000);
         }}
         
         // ฟังก์ชันดาวน์โหลดไฟล์เสียง
@@ -835,6 +1307,111 @@ class WebInterface:
             }}
         }}
         
+        // ฟังก์ชันโหลดข้อมูลอุปกรณ์
+        async function loadDeviceInfo() {{
+            try {{
+                let response = await fetch('/device_info');
+                let result = await response.json();
+                
+                if (result.success) {{
+                    let deviceInfo = result.data;
+                    let deviceSelect = document.getElementById('deviceSelect');
+                    let currentDevice = document.getElementById('currentDevice');
+                    
+                    // อัปเดตตัวเลือกอุปกรณ์
+                    deviceSelect.innerHTML = '';
+                    
+                    deviceInfo.device_options.forEach(option => {{
+                        let optionElement = document.createElement('option');
+                        optionElement.value = option.value;
+                        optionElement.textContent = option.label;
+                        deviceSelect.appendChild(optionElement);
+                    }});
+                    
+                    // ตั้งค่าตัวเลือกปัจจุบัน
+                    deviceSelect.value = deviceInfo.current_device;
+                    
+                    // แสดงสถานะปัจจุบัน
+                    let deviceLabel = deviceInfo.current_device;
+                    if (deviceInfo.current_device === 'cpu') {{
+                        deviceLabel = '🖥️ CPU Only';
+                    }} else if (deviceInfo.current_device.startsWith('cuda:')) {{
+                        let gpuId = deviceInfo.current_device.split(':')[1];
+                        let gpuInfo = deviceInfo.gpu_info.find(g => g.id == gpuId);
+                        if (gpuInfo) {{
+                            deviceLabel = '🚀 GPU ' + gpuId + ': ' + gpuInfo.name + ' (' + gpuInfo.memory.toFixed(1) + 'GB)';
+                        }} else {{
+                            deviceLabel = '🚀 GPU ' + gpuId;
+                        }}
+                    }}
+                    
+                    currentDevice.textContent = 'อุปกรณ์ปัจจุบัน: ' + deviceLabel;
+                    
+                    // แสดงข้อมูล GPU
+                    if (deviceInfo.gpu_available) {{
+                        let gpuInfo = deviceInfo.gpu_info.map(g => 
+                            'GPU ' + g.id + ': ' + g.name + ' (' + g.memory.toFixed(1) + 'GB)'
+                        ).join(', ');
+                        currentDevice.innerHTML += '<br><small>GPU ที่พบ: ' + gpuInfo + '</small>';
+                    }} else {{
+                        currentDevice.innerHTML += '<br><small>ไม่พบ GPU - ใช้ CPU เท่านั้น</small>';
+                    }}
+                    
+                }} else {{
+                    document.getElementById('currentDevice').textContent = 'ไม่สามารถโหลดข้อมูลอุปกรณ์ได้';
+                }}
+            }} catch (error) {{
+                console.error('Error loading device info:', error);
+                document.getElementById('currentDevice').textContent = 'เกิดข้อผิดพลาดในการโหลดข้อมูล';
+            }}
+        }}
+        
+        // ฟังก์ชันเปลี่ยนอุปกรณ์
+        async function changeDevice() {{
+            let deviceSelect = document.getElementById('deviceSelect');
+            let selectedDevice = deviceSelect.value;
+            let currentDevice = document.getElementById('currentDevice');
+            
+            // แสดงสถานะกำลังเปลี่ยน
+            currentDevice.textContent = '🔄 กำลังเปลี่ยนอุปกรณ์...';
+            deviceSelect.disabled = true;
+            
+            try {{
+                let response = await fetch('/change_device', {{
+                    method: 'POST',
+                    headers: {{'Content-Type': 'application/json'}},
+                    body: JSON.stringify({{device: selectedDevice}})
+                }});
+                
+                let result = await response.json();
+                
+                if (result.success) {{
+                    showNotification('✅ เปลี่ยนอุปกรณ์เป็น ' + result.device + ' สำเร็จ', 'success');
+                    
+                    // รีโหลดข้อมูลอุปกรณ์
+                    await loadDeviceInfo();
+                    
+                    // รีโหลดโมเดล RVC
+                    await loadModels();
+                    
+                }} else {{
+                    showNotification('❌ เปลี่ยนอุปกรณ์ล้มเหลว: ' + (result.error || 'ไม่ทราบสาเหตุ'), 'error');
+                    
+                    // รีโหลดข้อมูลอุปกรณ์เพื่อแสดงสถานะปัจจุบัน
+                    await loadDeviceInfo();
+                }}
+                
+            }} catch (error) {{
+                console.error('Error changing device:', error);
+                showNotification('❌ เกิดข้อผิดพลาดในการเปลี่ยนอุปกรณ์: ' + error.message, 'error');
+                
+                // รีโหลดข้อมูลอุปกรณ์เพื่อแสดงสถานะปัจจุบัน
+                await loadDeviceInfo();
+            }} finally {{
+                deviceSelect.disabled = false;
+            }}
+        }}
+        
         // ฟังก์ชันทดสอบระบบ
         async function testSystem() {{
             let button = document.getElementById('generateBtn');
@@ -875,6 +1452,7 @@ class WebInterface:
             let rvcModel = document.getElementById('modelSelect').value;
             let ttsSpeed = parseFloat(document.getElementById('speedSlider').value);
             let rvcTranspose = parseInt(document.getElementById('transposeSlider').value);
+            let enableMultiLanguage = document.getElementById('enableMultiLanguage').checked;
             
             if (!text.trim()) {{
                 showNotification('❌ กรุณาใส่ข้อความ', 'error');
@@ -901,7 +1479,8 @@ class WebInterface:
                         enable_rvc: enableRVC,
                         rvc_model: rvcModel.trim() || null,
                         tts_speed: ttsSpeed,
-                        rvc_transpose: rvcTranspose
+                        rvc_transpose: rvcTranspose,
+                        enable_multi_language: enableMultiLanguage
                     }})
                 }});
                 
@@ -918,27 +1497,43 @@ class WebInterface:
                         let stats = result.stats || {{}};
                         let steps = result.processing_steps || [];
                         
+                        // แสดงข้อมูลการตรวจจับภาษา
+                        if (stats.detected_languages && stats.detected_languages.length > 0) {{
+                            let languageInfo = `🌐 ตรวจพบภาษา: ${{stats.detected_languages.join(', ')}} (จำนวนส่วน: ${{stats.language_segments}})`; 
+                            showNotification(languageInfo, 'info');
+                        }}
+                        
                         // เก็บข้อมูลเสียงสำหรับดาวน์โหลด
                         window.ttsAudioData = result.tts_audio_data;
                         window.rvcAudioData = result.rvc_audio_data;
                         window.finalAudioData = result.final_audio_data;
                         window.currentProcessingSteps = steps;
                         
-                        // แสดงไฟล์เสียงตามประเภท
-                        if (result.rvc_audio_data) {{
-                            // มีทั้ง TTS และ RVC - แสดงทั้งสองไฟล์
-                            showTTSAndRVCAudio(result.tts_audio_data, result.rvc_audio_data, stats);
-                            showNotification('✅ สร้างเสียงสำเร็จ (TTS + RVC)', 'success');
-                        }} else {{
-                            // มีแค่ TTS - แสดงไฟล์เดียว
-                            showCombinedAudio(result.tts_audio_data, stats);
-                            let statusText = '✅ สร้างเสียงสำเร็จ (TTS เท่านั้น)';
-                            if (steps.includes('rvc_failed')) {{
-                                statusText += ' - RVC ล้มเหลว';
-                            }} else if (steps.includes('rvc_no_model')) {{
-                                statusText += ' - ไม่ได้เลือกโมเดล RVC';
+                        // แสดงไฟล์เสียงตามประเภท - แสดงทั้งต้นฉบับและ RVC เสมอ
+                        if (result.tts_audio_data) {{
+                            // แสดงเสียงต้นฉบับเสมอ
+                            if (result.rvc_audio_data) {{
+                                // มีทั้ง TTS และ RVC - แสดงทั้งสองไฟล์
+                                showTTSAndRVCAudio(result.tts_audio_data, result.rvc_audio_data, stats);
+                                showNotification('✅ สร้างเสียงสำเร็จ (TTS + RVC)', 'success');
+                            }} else {{
+                                // มีแค่ TTS - แสดงต้นฉบับและแจ้ง RVC ล้มเหลว
+                                showTTSAndRVCAudio(result.tts_audio_data, null, stats);
+                                let statusText = '✅ สร้างเสียงสำเร็จ (TTS เท่านั้น)';
+                                if (steps.includes('rvc_failed')) {{
+                                    statusText += ' - RVC ล้มเหลว: ' + (result.rvc_error || 'Unknown error');
+                                    showNotification('⚠️ RVC ล้มเหลว แต่ TTS สำเร็จ', 'warning');
+                                }} else if (steps.includes('rvc_no_model')) {{
+                                    statusText += ' - ไม่ได้เลือกโมเดล RVC';
+                                }} else if (steps.includes('rvc_unavailable')) {{
+                                    statusText += ' - ระบบ RVC ไม่พร้อมใช้งาน';
+                                }} else if (steps.includes('rvc_model_not_found')) {{
+                                    statusText += ' - ไม่พบโมเดล RVC ที่เลือก';
+                                }}
+                                showNotification(statusText, 'success');
                             }}
-                            showNotification(statusText, 'success');
+                        }} else {{
+                            showNotification('❌ ไม่สามารถสร้างเสียงได้', 'error');
                         }}
                         
                         // แสดงรายละเอียด
@@ -1259,6 +1854,9 @@ class WebInterface:
             // Load settings
             loadSettings();
             
+            // Load device info
+            loadDeviceInfo();
+            
             // Show welcome message
             setTimeout(() => {{
                 showNotification('ยินดีต้อนรับสู่ระบบ VICTOR-TTS Interface! พร้อมใช้งานแล้ว 🎉', 'success');
@@ -1377,6 +1975,45 @@ class WebInterface:
         
         return html_content
     
+    def _generate_model_list_html(self, models):
+        """สร้าง HTML สำหรับแสดงรายการโมเดล"""
+        if not models:
+            return '<p style="color: #6c757d; text-align: center; padding: 20px;">ไม่มีโมเดลที่อัปโหลด</p>'
+        
+        html = """
+        <table class="model-table">
+            <thead>
+                <tr>
+                    <th>ลำดับ</th>
+                    <th>ชื่อโมเดล</th>
+                    <th>ประเภท</th>
+                    <th>สถานะ</th>
+                    <th>การจัดการ</th>
+                </tr>
+            </thead>
+            <tbody>
+        """
+        
+        for i, model in enumerate(models, 1):
+            html += f"""
+                <tr>
+                    <td>{i}</td>
+                    <td><strong>{model}</strong></td>
+                    <td>RVC Model</td>
+                    <td><span style="color: #28a745;">✅ พร้อมใช้งาน</span></td>
+                    <td>
+                        <button class="btn-small btn-success" onclick="testModel('{model}')" style="margin-right: 5px;">🧪 ทดสอบ</button>
+                        <button class="btn-small btn-danger" onclick="deleteModel('{model}')">🗑️ ลบ</button>
+                    </td>
+                </tr>
+            """
+        
+        html += """
+            </tbody>
+        </table>
+        """
+        return html
+    
     def create_simple_server(self):
         """สร้าง HTTP server แบบง่าย"""
         import http.server
@@ -1411,16 +2048,87 @@ class WebInterface:
                     self.send_response(200)
                     self.send_header('Content-type', 'application/json')
                     self.end_headers()
-                    if self.server.web_interface.core:
-                        try:
-                            models = self.server.web_interface.core.get_available_rvc_models()
-                            models_data = [{"name": model} for model in models]
-                            response = {"success": True, "data": models_data}
-                        except Exception as e:
-                            response = {"success": False, "error": str(e)}
-                    else:
-                        response = {"success": False, "error": "Core not available"}
+                    try:
+                        from pathlib import Path
+                        import os
+                        from datetime import datetime
+                        
+                        # ดึงโมเดลจาก core system
+                        core_models = []
+                        if self.server.web_interface.core:
+                            try:
+                                core_models = self.server.web_interface.core.get_available_rvc_models()
+                            except:
+                                pass
+                        
+                        # ดึงโมเดลจากโฟลเดอร์ voice_models
+                        models_dir = Path("voice_models")
+                        uploaded_models = []
+                        
+                        if models_dir.exists():
+                            for model_file in models_dir.glob("*.pth"):
+                                stat = model_file.stat()
+                                uploaded_models.append({
+                                    "name": model_file.name,
+                                    "size": f"{stat.st_size / (1024*1024):.1f} MB",
+                                    "updated": datetime.fromtimestamp(stat.st_mtime).strftime("%Y-%m-%d %H:%M"),
+                                    "type": "uploaded"
+                                })
+                            
+                            for model_file in models_dir.glob("*.pt"):
+                                stat = model_file.stat()
+                                uploaded_models.append({
+                                    "name": model_file.name,
+                                    "size": f"{stat.st_size / (1024*1024):.1f} MB",
+                                    "updated": datetime.fromtimestamp(stat.st_mtime).strftime("%Y-%m-%d %H:%M"),
+                                    "type": "uploaded"
+                                })
+                            
+                            for model_file in models_dir.glob("*.ckpt"):
+                                stat = model_file.stat()
+                                uploaded_models.append({
+                                    "name": model_file.name,
+                                    "size": f"{stat.st_size / (1024*1024):.1f} MB",
+                                    "updated": datetime.fromtimestamp(stat.st_mtime).strftime("%Y-%m-%d %H:%M"),
+                                    "type": "uploaded"
+                                })
+                        
+                        # รวมโมเดลทั้งหมด
+                        all_models = []
+                        
+                        # เพิ่มโมเดลจาก core system
+                        for model in core_models:
+                            all_models.append({
+                                "name": model,
+                                "size": "ไม่ทราบ",
+                                "updated": "ไม่ทราบ",
+                                "type": "core"
+                            })
+                        
+                        # เพิ่มโมเดลที่อัปโหลด
+                        all_models.extend(uploaded_models)
+                        
+                        response = {"success": True, "data": all_models}
+                        
+                    except Exception as e:
+                        response = {"success": False, "error": str(e)}
+                    
                     self.wfile.write(json.dumps(response).encode('utf-8'))
+                
+                elif self.path == '/device_info':
+                    self.send_response(200)
+                    self.send_header('Content-type', 'application/json')
+                    self.end_headers()
+                    try:
+                        if self.server.web_interface.core:
+                            device_info = self.server.web_interface.core.get_device_info()
+                            response = {"success": True, "data": device_info}
+                        else:
+                            response = {"success": False, "error": "Core system not available"}
+                    except Exception as e:
+                        response = {"success": False, "error": str(e)}
+                    
+                    self.wfile.write(json.dumps(response, ensure_ascii=False).encode('utf-8'))
                 
                 else:
                     self.send_response(404)
@@ -1502,6 +2210,167 @@ class WebInterface:
                         error_response = {"success": False, "error": str(e)}
                         self.wfile.write(json.dumps(error_response).encode('utf-8'))
                 
+                elif self.path == '/device_info':
+                    try:
+                        if self.server.web_interface.core:
+                            device_info = self.server.web_interface.core.get_device_info()
+                            result = {"success": True, "data": device_info}
+                        else:
+                            result = {"success": False, "error": "Core system not available"}
+                        
+                        self.send_response(200)
+                        self.send_header('Content-type', 'application/json')
+                        self.end_headers()
+                        self.wfile.write(json.dumps(result, ensure_ascii=False).encode('utf-8'))
+                        
+                    except Exception as e:
+                        self.send_response(500)
+                        self.send_header('Content-type', 'application/json')
+                        self.end_headers()
+                        error_response = {"success": False, "error": str(e)}
+                        self.wfile.write(json.dumps(error_response, ensure_ascii=False).encode('utf-8'))
+                
+                elif self.path == '/change_device':
+                    try:
+                        content_length = int(self.headers['Content-Length'])
+                        post_data = self.rfile.read(content_length)
+                        request_data = json.loads(post_data.decode('utf-8'))
+                        
+                        if self.server.web_interface.core:
+                            device_choice = request_data.get('device', 'cpu')
+                            result = self.server.web_interface.core.change_device_auto(device_choice)
+                        else:
+                            result = {"success": False, "error": "Core system not available"}
+                        
+                        self.send_response(200)
+                        self.send_header('Content-type', 'application/json')
+                        self.end_headers()
+                        self.wfile.write(json.dumps(result, ensure_ascii=False).encode('utf-8'))
+                        
+                    except Exception as e:
+                        self.send_response(500)
+                        self.send_header('Content-type', 'application/json')
+                        self.end_headers()
+                        error_response = {"success": False, "error": str(e)}
+                        self.wfile.write(json.dumps(error_response, ensure_ascii=False).encode('utf-8'))
+                
+                elif self.path == '/upload_model':
+                    try:
+                        import cgi
+                        import tempfile
+                        import shutil
+                        from pathlib import Path
+                        
+                        # รับไฟล์ที่อัปโหลด
+                        form = cgi.FieldStorage(
+                            fp=self.rfile,
+                            headers=self.headers,
+                            environ={'REQUEST_METHOD': 'POST'}
+                        )
+                        
+                        if 'model' not in form:
+                            result = {"success": False, "error": "ไม่พบไฟล์โมเดล"}
+                        else:
+                            fileitem = form['model']
+                            if fileitem.filename:
+                                # ตรวจสอบนามสกุลไฟล์
+                                allowed_extensions = ['.pth', '.pt', '.ckpt']
+                                file_ext = Path(fileitem.filename).suffix.lower()
+                                if file_ext not in allowed_extensions:
+                                    result = {"success": False, "error": f"ไฟล์ไม่ถูกต้อง รองรับเฉพาะ {', '.join(allowed_extensions)}"}
+                                else:
+                                    # สร้างโฟลเดอร์สำหรับโมเดล
+                                    models_dir = Path("voice_models")
+                                    models_dir.mkdir(exist_ok=True)
+                                    
+                                    # บันทึกไฟล์
+                                    model_path = models_dir / fileitem.filename
+                                    with open(model_path, 'wb') as f:
+                                        shutil.copyfileobj(fileitem.file, f)
+                                    
+                                    result = {"success": True, "message": f"อัปโหลดโมเดลสำเร็จ: {fileitem.filename}"}
+                            else:
+                                result = {"success": False, "error": "ไฟล์ว่างเปล่า"}
+                        
+                        self.send_response(200)
+                        self.send_header('Content-type', 'application/json')
+                        self.end_headers()
+                        self.wfile.write(json.dumps(result).encode('utf-8'))
+                        
+                    except Exception as e:
+                        self.send_response(500)
+                        self.send_header('Content-type', 'application/json')
+                        self.end_headers()
+                        error_response = {"success": False, "error": str(e)}
+                        self.wfile.write(json.dumps(error_response).encode('utf-8'))
+                
+                elif self.path == '/delete_model':
+                    try:
+                        content_length = int(self.headers['Content-Length'])
+                        post_data = self.rfile.read(content_length)
+                        request_data = json.loads(post_data.decode('utf-8'))
+                        
+                        model_name = request_data.get('model')
+                        if not model_name:
+                            result = {"success": False, "error": "ไม่ระบุชื่อโมเดล"}
+                        else:
+                            # ลบไฟล์โมเดล
+                            models_dir = Path("voice_models")
+                            model_path = models_dir / model_name
+                            
+                            if model_path.exists():
+                                model_path.unlink()
+                                result = {"success": True, "message": f"ลบโมเดลสำเร็จ: {model_name}"}
+                            else:
+                                result = {"success": False, "error": f"ไม่พบโมเดล: {model_name}"}
+                        
+                        self.send_response(200)
+                        self.send_header('Content-type', 'application/json')
+                        self.end_headers()
+                        self.wfile.write(json.dumps(result).encode('utf-8'))
+                        
+                    except Exception as e:
+                        self.send_response(500)
+                        self.send_header('Content-type', 'application/json')
+                        self.end_headers()
+                        error_response = {"success": False, "error": str(e)}
+                        self.wfile.write(json.dumps(error_response).encode('utf-8'))
+                
+                elif self.path == '/test_model':
+                    try:
+                        content_length = int(self.headers['Content-Length'])
+                        post_data = self.rfile.read(content_length)
+                        request_data = json.loads(post_data.decode('utf-8'))
+                        
+                        model_name = request_data.get('model')
+                        if not model_name:
+                            result = {"success": False, "error": "ไม่ระบุชื่อโมเดล"}
+                        else:
+                            # ทดสอบโมเดล
+                            models_dir = Path("voice_models")
+                            model_path = models_dir / model_name
+                            
+                            if model_path.exists():
+                                # ตรวจสอบว่าไฟล์ไม่เสียหาย
+                                if model_path.stat().st_size > 0:
+                                    result = {"success": True, "message": f"โมเดล {model_name} พร้อมใช้งาน"}
+                                else:
+                                    result = {"success": False, "error": f"ไฟล์โมเดลเสียหาย: {model_name}"}
+                            else:
+                                result = {"success": False, "error": f"ไม่พบโมเดล: {model_name}"}
+                        
+                        self.send_response(200)
+                        self.send_header('Content-type', 'application/json')
+                        self.end_headers()
+                        self.wfile.write(json.dumps(result).encode('utf-8'))
+                        
+                    except Exception as e:
+                        self.send_response(500)
+                        self.send_header('Content-type', 'application/json')
+                        self.end_headers()
+                        error_response = {"success": False, "error": str(e)}
+                        self.wfile.write(json.dumps(error_response).encode('utf-8'))
+                
                 else:
                     self.send_response(404)
                     self.end_headers()
@@ -1512,83 +2381,38 @@ class WebInterface:
                 try:
                     core = self.server.web_interface.core
                     
-                    # สร้าง TTS ก่อน
-                    tts_audio = await core.generate_tts(
+                    # ใช้ฟังก์ชัน process_unified เพื่อประมวลผลรวม
+                    result = await core.process_unified(
                         text=request_data.get('text', ''),
-                        voice=request_data.get('tts_voice', 'th-TH-PremwadeeNeural'),
-                        speed=request_data.get('tts_speed', 1.0),
-                        pitch="+0Hz"
+                        tts_voice=request_data.get('tts_voice', 'th-TH-PremwadeeNeural'),
+                        enable_rvc=request_data.get('enable_rvc', False),
+                        rvc_model=request_data.get('rvc_model'),
+                        tts_speed=request_data.get('tts_speed', 1.0),
+                        tts_pitch="+0Hz",
+                        rvc_transpose=request_data.get('rvc_transpose', 0),
+                        rvc_index_ratio=0.75,
+                        rvc_f0_method="rmvpe",
+                        enable_multi_language=request_data.get('enable_multi_language', True)
                     )
                     
-                    # แปลง TTS เป็น base64
-                    tts_base64 = base64.b64encode(tts_audio).decode('utf-8')
-                    
-                    # ตรวจสอบว่าต้องการ RVC หรือไม่
-                    enable_rvc = request_data.get('enable_rvc', False)
-                    rvc_model = request_data.get('rvc_model')
-                    
-                    if enable_rvc and rvc_model:
-                        # แปลงเสียงด้วย RVC
-                        try:
-                            rvc_audio = core.convert_voice(
-                                audio_data=tts_audio,
-                                model_name=rvc_model,
-                                transpose=request_data.get('rvc_transpose', 0),
-                                index_ratio=0.75,
-                                f0_method="rmvpe"
-                            )
-                            rvc_base64 = base64.b64encode(rvc_audio).decode('utf-8')
-                            
-                            return {
-                                "success": True,
-                                "tts_audio_data": tts_base64,
-                                "rvc_audio_data": rvc_base64,
-                                "final_audio_data": rvc_base64,  # ใช้ RVC เป็นไฟล์สุดท้าย
-                                "stats": {
-                                    "text_length": len(request_data.get('text', '')),
-                                    "tts_audio_size": len(tts_audio),
-                                    "rvc_audio_size": len(rvc_audio),
-                                    "final_audio_size": len(rvc_audio),
-                                    "voice_conversion_applied": True,
-                                    "device": core.device
-                                },
-                                "processing_steps": ["tts_generation", "voice_conversion"]
-                            }
-                        except Exception as rvc_error:
-                            # RVC ล้มเหลว ใช้ TTS เท่านั้น
-                            return {
-                                "success": True,
-                                "tts_audio_data": tts_base64,
-                                "rvc_audio_data": None,
-                                "final_audio_data": tts_base64,
-                                "stats": {
-                                    "text_length": len(request_data.get('text', '')),
-                                    "tts_audio_size": len(tts_audio),
-                                    "rvc_audio_size": 0,
-                                    "final_audio_size": len(tts_audio),
-                                    "voice_conversion_applied": False,
-                                    "device": core.device
-                                },
-                                "processing_steps": ["tts_generation", "rvc_failed"],
-                                "rvc_error": str(rvc_error)
-                            }
-                    else:
-                        # ใช้ TTS เท่านั้น
-                        return {
+                    if result["success"]:
+                        # แปลงข้อมูลเสียงเป็น base64
+                        response_data = {
                             "success": True,
-                            "tts_audio_data": tts_base64,
-                            "rvc_audio_data": None,
-                            "final_audio_data": tts_base64,
-                            "stats": {
-                                "text_length": len(request_data.get('text', '')),
-                                "tts_audio_size": len(tts_audio),
-                                "rvc_audio_size": 0,
-                                "final_audio_size": len(tts_audio),
-                                "voice_conversion_applied": False,
-                                "device": core.device
-                            },
-                            "processing_steps": ["tts_generation"]
+                            "tts_audio_data": base64.b64encode(result["tts_audio_data"]).decode('utf-8') if result["tts_audio_data"] else None,
+                            "rvc_audio_data": base64.b64encode(result["rvc_audio_data"]).decode('utf-8') if result["rvc_audio_data"] else None,
+                            "final_audio_data": base64.b64encode(result["final_audio_data"]).decode('utf-8') if result["final_audio_data"] else None,
+                            "stats": result["stats"],
+                            "processing_steps": result["processing_steps"]
                         }
+                        
+                        # เพิ่มข้อมูล error ถ้ามี
+                        if result.get("error"):
+                            response_data["rvc_error"] = result["error"]
+                        
+                        return response_data
+                    else:
+                        return {"success": False, "error": result.get("error", "Unknown error")}
                         
                 except Exception as e:
                     return {"success": False, "error": str(e)}
