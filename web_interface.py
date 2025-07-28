@@ -717,13 +717,13 @@ class WebInterface:
                     </div>
                 </div>
                 <div class="checkbox-container">
-                    <input type="checkbox" id="enableMultiLanguage" checked>
-                    <label for="enableMultiLanguage">🌐 เปิดใช้งานการประมวลผลหลายภาษา (แนะนำสำหรับข้อความผสมภาษา)</label>
+                    <input type="checkbox" id="enableMultiLanguage">
+                    <label for="enableMultiLanguage">🌐 เปิดใช้งานการประมวลผลหลายภาษา (เฉพาะภาษาลาว)</label>
                 </div>
                 <div class="form-group" style="margin-top: 10px; padding: 10px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #007bff;">
                     <small style="color: #6c757d;">
-                        <strong>💡 คำแนะนำ:</strong> เปิดใช้งานเพื่อให้ระบบตรวจจับและแยกการประมวลผลข้อความตามภาษา 
-                        เช่น ข้อความภาษาลาวที่มีคำภาษาอังกฤษ จะถูกอ่านด้วยเสียงที่เหมาะสมสำหรับแต่ละภาษา
+                        <strong>💡 คำแนะนำ:</strong> เปิดใช้งานเฉพาะเมื่อต้องการประมวลผลข้อความภาษาลาว 
+                        เพื่อให้อ่านออกเสียงได้ถูกต้อง สำหรับภาษาไทยและภาษาอื่นๆ ไม่จำเป็นต้องเปิดใช้งาน
                     </small>
                 </div>
                 <div class="form-group" style="margin-top: 10px; padding: 10px; background: #e8f5e8; border-radius: 8px; border-left: 4px solid #28a745;">
@@ -736,7 +736,7 @@ class WebInterface:
                 <div class="form-group" style="margin-top: 10px; padding: 10px; background: #fff3cd; border-radius: 8px; border-left: 4px solid #ffc107;">
                     <small style="color: #856404;">
                         <strong>🎯 ตัวอย่างการใช้งาน:</strong><br>
-                        "สวัสดีครับ Hello world ສະບາຍດີ 123" → จะถูกแยกเป็น 4 ส่วนและอ่านด้วยเสียงที่เหมาะสม
+                        "ສະບາຍດີ Hello world ຂອບໃຈ" → จะถูกแยกเป็น 3 ส่วนและอ่านด้วยเสียงที่เหมาะสมสำหรับภาษาลาว
                     </small>
                 </div>
             </div>
@@ -1458,6 +1458,30 @@ class WebInterface:
                 button.textContent = 'สร้างเสียง';
             }}
         }}
+        
+        // ฟังก์ชันจัดการการเปลี่ยนเสียง
+        function handleVoiceChange() {
+            let voiceSelect = document.getElementById('voiceSelect');
+            let selectedVoice = voiceSelect.value;
+            let enableMultiLanguage = document.getElementById('enableMultiLanguage');
+            
+            // เปิด multi-language อัตโนมัติเมื่อเลือกเสียงภาษาลาว
+            if (selectedVoice.includes('lo-LA-')) {
+                enableMultiLanguage.checked = true;
+                showNotification('🌐 เปิดใช้งาน Multi-Language Processing สำหรับภาษาลาว', 'info');
+            } else {
+                // ปิด multi-language สำหรับภาษาอื่นๆ
+                enableMultiLanguage.checked = false;
+            }
+        }
+        
+        // เพิ่ม event listener สำหรับ voice selection
+        document.addEventListener('DOMContentLoaded', function() {
+            let voiceSelect = document.getElementById('voiceSelect');
+            if (voiceSelect) {
+                voiceSelect.addEventListener('change', handleVoiceChange);
+            }
+        });
         
         // ฟังก์ชันแสดงผลการตรวจจับภาษา
         function showLanguageDetectionResults(segments) {{
@@ -2474,7 +2498,7 @@ class WebInterface:
                         rvc_transpose=request_data.get('rvc_transpose', 0),
                         rvc_index_ratio=0.75,
                         rvc_f0_method="rmvpe",
-                        enable_multi_language=request_data.get('enable_multi_language', True)
+                        enable_multi_language=request_data.get('enable_multi_language', False)
                     )
                     
                     if result["success"]:

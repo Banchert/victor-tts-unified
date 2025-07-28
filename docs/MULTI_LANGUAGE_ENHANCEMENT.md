@@ -242,12 +242,12 @@ Detection:
 ### **Enable/Disable Multi-Language**
 ```python
 # ใน Web Interface
-enable_multi_language = True  # เปิดใช้งาน (ค่าเริ่มต้น)
-enable_multi_language = False # ปิดใช้งาน
+enable_multi_language = True  # เปิดใช้งาน (เฉพาะภาษาลาว)
+enable_multi_language = False # ปิดใช้งาน (ค่าเริ่มต้น)
 
 # ใน API
 {
-    "enable_multi_language": true
+    "enable_multi_language": false  # ค่าเริ่มต้น
 }
 ```
 

@@ -239,7 +239,7 @@ class TTSRVCCore:
             return []
     
     async def generate_tts(self, text: str, voice: str, speed: float = 1.0, 
-                          pitch: str = "+0Hz", enable_multi_language: bool = True) -> bytes:
+                          pitch: str = "+0Hz", enable_multi_language: bool = False) -> bytes:
         """
         สร้างเสียงจากข้อความด้วย Edge TTS
         
@@ -661,7 +661,7 @@ class TTSRVCCore:
                             enable_rvc: bool = False, rvc_model: str = None,
                             tts_speed: float = 1.0, tts_pitch: str = "+0Hz",
                             rvc_transpose: int = 0, rvc_index_ratio: float = 0.75,
-                            rvc_f0_method: str = "rmvpe", enable_multi_language: bool = True) -> Dict[str, Any]:
+                            rvc_f0_method: str = "rmvpe", enable_multi_language: bool = False) -> Dict[str, Any]:
         """
         ประมวลผลรวม TTS + RVC ในคำสั่งเดียว
         

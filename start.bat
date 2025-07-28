@@ -57,14 +57,15 @@ echo [6] 🎤 ทดสอบ RVC MP3 Fix
 echo [7] 📋 ดูโมเดล RVC ที่มี
 echo [8] 🌍 ทดสอบหลายภาษา
 echo [9] 🌍 ทดสอบหลายภาษา (Enhanced)
+echo [10] 🇱🇦 ทดสอบภาษาลาว (Lao Language Fix)
 echo ========================================
 echo 🛠️  ตัวเลือกขั้นสูง:
-echo [10] 📦 ติดตั้ง Dependencies
-echo [11] 🏗️  สร้างไฟล์ EXE
-echo [12] 🔧 ตรวจสอบสถานะ RVC
-echo [13] 🚀 ปรับปรุงประสิทธิภาพ
-echo [14] 🔍 ตรวจสอบ GPU Support
-echo [15] 🐳 จัดการ Docker Services
+echo [11] 📦 ติดตั้ง Dependencies
+echo [12] 🏗️  สร้างไฟล์ EXE
+echo [13] 🔧 ตรวจสอบสถานะ RVC
+echo [14] 🚀 ปรับปรุงประสิทธิภาพ
+echo [15] 🔍 ตรวจสอบ GPU Support
+echo [16] 🐳 จัดการ Docker Services
 echo ========================================
 echo [0] ❌ ออกจากโปรแกรม
 echo ========================================
@@ -81,12 +82,13 @@ if "%choice%"=="6" goto test_rvc
 if "%choice%"=="7" goto models
 if "%choice%"=="8" goto test_lang
 if "%choice%"=="9" goto test_lang_enhanced
-if "%choice%"=="10" goto install
-if "%choice%"=="11" goto build_exe
-if "%choice%"=="12" goto test_status
-if "%choice%"=="13" goto optimize
-if "%choice%"=="14" goto test_gpu
-if "%choice%"=="15" goto docker_manage
+if "%choice%"=="10" goto test_lao_fix
+if "%choice%"=="11" goto install
+if "%choice%"=="12" goto build_exe
+if "%choice%"=="13" goto test_status
+if "%choice%"=="14" goto optimize
+if "%choice%"=="15" goto test_gpu
+if "%choice%"=="16" goto docker_manage
 if "%choice%"=="0" goto exit
 goto invalid
 
@@ -328,6 +330,20 @@ echo 🌍 ทดสอบระบบหลายภาษา (Enhanced)...
 echo ========================================
 if exist "tests/test_multi_language_enhanced.py" (
     %PYTHON_CMD% tests/test_multi_language_enhanced.py
+) else (
+    echo ⚠️  ไม่พบไฟล์ทดสอบ
+)
+echo ========================================
+echo.
+pause
+goto menu
+
+:test_lao_fix
+echo.
+echo 🇱🇦 ทดสอบภาษาลาว (Lao Language Fix)...
+echo ========================================
+if exist "tests/test_lao_language_fix.py" (
+    %PYTHON_CMD% tests/test_lao_language_fix.py
 ) else (
     echo ⚠️  ไม่พบไฟล์ทดสอบ
 )
