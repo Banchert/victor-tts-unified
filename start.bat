@@ -63,6 +63,7 @@ echo [10] 🏗️  สร้างไฟล์ EXE
 echo [11] 🔧 ตรวจสอบสถานะ RVC
 echo [12] 🚀 ปรับปรุงประสิทธิภาพ
 echo [13] 🔍 ตรวจสอบ GPU Support
+echo [14] 🐳 จัดการ Docker Services
 echo ========================================
 echo [0] ❌ ออกจากโปรแกรม
 echo ========================================
@@ -83,6 +84,7 @@ if "%choice%"=="10" goto build_exe
 if "%choice%"=="11" goto test_status
 if "%choice%"=="12" goto optimize
 if "%choice%"=="13" goto test_gpu
+if "%choice%"=="14" goto docker_manage
 if "%choice%"=="0" goto exit
 goto invalid
 
@@ -191,7 +193,11 @@ goto menu
 echo.
 echo 🎤 ทดสอบ RVC MP3 Conversion Fix...
 echo ========================================
-%PYTHON_CMD% tests/test_rvc_mp3_fix.py
+if exist "tests/test_rvc_mp3_fix.py" (
+    %PYTHON_CMD% tests/test_rvc_mp3_fix.py
+) else (
+    echo ⚠️  ไม่พบไฟล์ทดสอบ
+)
 echo ========================================
 echo.
 pause
@@ -215,7 +221,11 @@ goto menu
 echo.
 echo 🔧 ตรวจสอบสถานะ RVC...
 echo ========================================
-%PYTHON_CMD% tests/test_rvc_status.py
+if exist "tests/test_rvc_status.py" (
+    %PYTHON_CMD% tests/test_rvc_status.py
+) else (
+    echo ⚠️  ไม่พบไฟล์ทดสอบ
+)
 echo ========================================
 echo.
 pause
@@ -227,7 +237,12 @@ echo 🚀 ปรับปรุงประสิทธิภาพระบบ.
 echo ========================================
 echo 🔧 กำลังวิเคราะห์ระบบและปรับการตั้งค่า...
 echo.
-%PYTHON_CMD% performance_optimization.py
+if exist "performance_optimization.py" (
+    %PYTHON_CMD% performance_optimization.py
+) else (
+    echo ⚠️  ไม่พบไฟล์ performance_optimization.py
+    echo 💡 ไฟล์นี้อาจถูกลบไปแล้ว
+)
 echo ========================================
 echo.
 echo 💡 การปรับปรุงเสร็จสิ้น! ระบบจะทำงานเร็วขึ้น
@@ -291,8 +306,37 @@ if exist "scripts/build_exe.bat" (
     call scripts/build_exe.bat
 ) else (
     echo ⚠️  ไม่พบ build_exe.bat
+    echo 💡 ตรวจสอบว่าไฟล์อยู่ใน scripts/ หรือไม่
     echo 🔧 ใช้ PyInstaller โดยตรง...
-    %PYTHON_CMD% -m PyInstaller victor_tts.spec --noconfirm
+    if exist "victor_tts.spec" (
+        %PYTHON_CMD% -m PyInstaller victor_tts.spec --noconfirm
+    ) else (
+        echo ⚠️  ไม่พบ victor_tts.spec
+        echo 💡 ตรวจสอบไฟล์ spec ใน root directory
+    )
+)
+echo ========================================
+echo.
+pause
+goto menu
+
+:docker_manage
+echo.
+echo 🐳 จัดการ Docker Services...
+echo ========================================
+echo 🔧 กำลังเริ่มต้น Docker Management...
+echo.
+if exist "scripts/docker_management.py" (
+    %PYTHON_CMD% scripts/docker_management.py
+) else (
+    echo ⚠️  ไม่พบ docker_management.py
+    echo 💡 ตรวจสอบว่าไฟล์อยู่ใน scripts/ หรือไม่
+    echo.
+    echo 🔧 ใช้ Docker Compose โดยตรง...
+    echo 📋 ตัวเลือก:
+    echo   1. docker-compose -f docker/docker-compose.simple.yml up -d
+    echo   2. docker-compose -f docker/docker-compose.yml up -d
+    echo   3. docker-compose -f docker/docker-compose.test.yml up -d
 )
 echo ========================================
 echo.

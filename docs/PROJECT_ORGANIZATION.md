@@ -25,7 +25,7 @@ VICTOR-TTS/
 │   └── docker/nginx.conf            # Reverse proxy
 │
 ├── 📜 Scripts
-│   ├── scripts/start.bat            # Windows launcher
+│   ├── start.bat                    # Windows launcher (root)
 │   ├── scripts/docker_management.py # Docker management
 │   ├── scripts/build_exe.bat        # EXE builder
 │   ├── scripts/build_exe.ps1        # PowerShell EXE builder
@@ -186,8 +186,8 @@ VICTOR-TTS/
 
 ### **Starting the Application**
 ```bash
-# Use the updated start script
-scripts/start.bat
+# Use the main start script
+start.bat
 
 # Or run directly
 python web_interface.py

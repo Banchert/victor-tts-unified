@@ -48,7 +48,7 @@ cd victor-tts-unified
 pip install -r requirements.txt
 
 # Start the application
-scripts/start.bat
+start.bat
 ```
 
 ## 🌐 Access Points
@@ -77,7 +77,7 @@ VICTOR-TTS/
 │   ├── docker/docker-compose.test.yml   # Test deployment
 │   └── docker/nginx.conf            # Reverse proxy
 ├── 📜 Scripts
-│   ├── scripts/start.bat            # Windows launcher
+│   ├── start.bat                    # Windows launcher (root)
 │   ├── scripts/docker_management.py # Docker management
 │   └── scripts/*.ps1                # PowerShell scripts
 ├── 📊 Documentation
