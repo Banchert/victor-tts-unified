@@ -1,0 +1,99 @@
+# 🚫 Docker ignore file
+# ไฟล์ที่ไม่ต้องคัดลอกเข้า Docker image
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Docker files
+Dockerfile
+docker-compose*.yml
+.dockerignore
+
+# Large temporary files
+temp/
+temp_full_tts_files/
+output/
+*.wav
+*.mp3
+*.mp4
+
+# Test outputs
+storage/test_output/
+storage/temp/
+
+# Logs
+*.log
+logs/*.log
+
+# Environment files
+.env
+.env.local
+.env.production
+
+# Node modules (if any)
+node_modules/
+
+# Build artifacts
+build/
+dist/
+
+# Documentation (reduce image size)
+*.md
+docs/
+README*
+
+# Legacy files
+legacy/
+
+# Large model files (mount as volume instead)
+logs/*/
+models/*/
+
+# Backup files
+*.bak
+*.backup
+*.old
+
+# Jupyter notebooks
+*.ipynb
+.ipynb_checkpoints/
+
+# Coverage reports
+htmlcov/
+.coverage
+
+# pytest
+.pytest_cache/
+
+# Windows specific
+*.exe
+*.msi

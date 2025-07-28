@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VICTOR-TTS FULL UNLIMITED</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap');
+
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        header {
+            background-color: #4A90E2;
+            color: white;
+            padding: 20px 30px;
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2em;
+        }
+
+        header p {
+            margin: 5px 0 0;
+            opacity: 0.9;
+        }
+
+        main {
+            padding: 30px;
+        }
+
+        .card {
+            background: #fff;
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #e0e0e0;
+        }
+
+        h2 {
+            margin-top: 0;
+            color: #4A90E2;
+            border-bottom: 2px solid #4A90E2;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 1em;
+            font-family: 'Sarabun', sans-serif;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+            resize: vertical;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            font-size: 0.95em;
+        }
+
+        select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 1em;
+            background-color: white;
+            transition: border-color 0.3s;
+        }
+
+        select:focus {
+            border-color: #4A90E2;
+            outline: none;
+            box-shadow: 0 0 5px rgba(74, 144, 226, 0.3);
+        }
+
+        select:disabled {
+            background-color: #f5f5f5;
+            color: #888;
+            cursor: not-allowed;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: white;
+            background-color: #50C878;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        button:hover {
+            background-color: #45a049;
+            transform: translateY(-2px);
+        }
+        
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        #result-card {
+            text-align: center;
+        }
+
+        audio {
+            width: 100%;
+            margin-bottom: 15px;
+        }
+
+        #download-link {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #4A90E2;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: background-color 0.3s;
+        }
+
+        #download-link:hover {
+            background-color: #357ABD;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 0.9em;
+            color: #888;
+            background-color: #f9f9f9;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        @media (max-width: 600px) {
+            .grid, .grid-3 {
+                grid-template-columns: 1fr;
+            }
+            body {
+                padding: 10px;
+            }
+            main {
+                padding: 20px;
+            }
+            label {
+                font-size: 0.9em;
+            }
+            select {
+                padding: 10px;
+                font-size: 0.95em;
+            }
+        }
+
+        details {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        summary {
+            font-weight: bold;
+            cursor: pointer;
+            color: #4A90E2;
+        }
+        .effects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            padding-top: 15px;
+        }
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+        }
+        .checkbox-container input {
+            margin-right: 10px;
+        }
+
+    </style>
+</head>
+<body data-api-url="{{ api_url }}">
+    <div class="container">
+        <header>
+            <h1>🎙️ VICTOR-TTS FULL UNLIMITED</h1>
+            <p>Complete TTS + Voice Conversion Platform</p>
+        </header>
+        <main>
+            <div class="card">
+                <h2>สร้างเสียงพูด (Text-to-Speech + RVC)</h2>
+                <textarea id="text-input" placeholder="ใส่ข้อความที่นี่... (ไม่จำกัดความยาว)"></textarea>
+                
+                <div class="grid">
+                    <div>
+                        <label for="language-select">🌍 เลือกภาษา/ประเทศ:</label>
+                        <select id="language-select">
+                            <option value="">-- เลือกภาษา --</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="tts-voice-select">🎤 เลือกเสียง TTS:</label>
+                        <select id="tts-voice-select">
+                            <option value="">-- เลือกเสียงก่อน --</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="grid">
+                    <div>
+                        <label for="style-select">🎭 เลือกสไตล์การพูด:</label>
+                        <select id="style-select"></select>
+                    </div>
+                    <div>
+                        <label for="speed-select">⚡ ความเร็วการพูด:</label>
+                        <select id="speed-select">
+                            <option value="0.3">🐌 ช้ามากมาก (0.3x)</option>
+                            <option value="0.5">🐌 ช้ามาก (0.5x)</option>
+                            <option value="0.7">🚶 ช้า (0.7x)</option>
+                            <option value="0.8" selected>📖 ช้าเล็กน้อย (0.8x)</option>
+                            <option value="0.9">📖 ปกติช้า (0.9x)</option>
+                            <option value="1.0">🗣️ ปกติ (1.0x)</option>
+                            <option value="1.1">⚡ เร็วเล็กน้อย (1.1x)</option>
+                            <option value="1.3">🚀 เร็ว (1.3x)</option>
+                            <option value="1.5">⚡⚡ เร็วมาก (1.5x)</option>
+                        </select>
+                        <div style="margin-top: 10px;">
+                            <label for="speed-slider">🎚️ ปรับความเร็วแบบละเอียด:</label>
+                            <input type="range" id="speed-slider" min="0.3" max="1.5" step="0.1" value="0.8" style="width: 100%; margin: 5px 0;">
+                            <div id="speed-value" style="text-align: center; font-weight: bold; color: #4A90E2;">0.8x</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="grid">
+                    <div>
+                        <label for="rvc-model-select">เลือกโมเดล RVC (ถ้าต้องการ):</label>
+                        <select id="rvc-model-select">
+                            <option value="">-- ไม่ใช้ RVC --</option>
+                        </select>
+                    </div>
+                </div>
+
+                <details>
+                    <summary>🎭 เอฟเฟกต์ทำมะชาดพิเศษ</summary>
+                    <div class="effects-grid">
+                        <div class="checkbox-container">
+                            <input type="checkbox" id="demon-mode-check" name="demon_mode">
+                            <label for="demon-mode-check">👹 โหมดปีศาจ</label>
+                        </div>
+                        <div class="checkbox-container">
+                            <input type="checkbox" id="robot-mode-check" name="robot_mode">
+                            <label for="robot-mode-check">🤖 โหมดหุ่นยนต์</label>
+                        </div>
+                         <!-- Add more effects here if needed -->
+                    </div>
+                </details>
+
+                <button id="generate-btn">สร้างเสียง</button>
+            </div>
+
+            <div class="card" id="result-card" style="display: none;">
+                <h2>ผลลัพธ์</h2>
+                <audio id="audio-output" controls></audio>
+                <br>
+                <a id="download-link" href="#" download="output.wav">ดาวน์โหลดไฟล์เสียง</a>
+            </div>
+        </main>
+        <footer>
+            <p>Powered by FastAPI, RVC & Gradio. Crafted with ❤️.</p>
+        </footer>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const languageSelect = document.getElementById('language-select');
+            const ttsVoiceSelect = document.getElementById('tts-voice-select');
+            const styleSelect = document.getElementById('style-select');
+            const speedSelect = document.getElementById('speed-select');
+            const rvcModelSelect = document.getElementById('rvc-model-select');
+            const generateBtn = document.getElementById('generate-btn');
+            const textInput = document.getElementById('text-input');
+            const resultCard = document.getElementById('result-card');
+            const audioOutput = document.getElementById('audio-output');
+            const downloadLink = document.getElementById('download-link');
+            const demonModeCheck = document.getElementById('demon-mode-check');
+            const robotModeCheck = document.getElementById('robot-mode-check');
+            const speedSlider = document.getElementById('speed-slider');
+            const speedValue = document.getElementById('speed-value');
+            let lastAudioUrl = '';
+            let allVoices = {}; // Store all voices data
+
+            // Speed slider handler
+            speedSlider.addEventListener('input', function() {
+                const value = parseFloat(this.value);
+                speedValue.textContent = value.toFixed(1) + 'x';
+                
+                // Update dropdown to match slider
+                const dropdown = document.getElementById('speed-select');
+                const options = Array.from(dropdown.options);
+                const closestOption = options.reduce((prev, curr) => {
+                    return Math.abs(parseFloat(curr.value) - value) < Math.abs(parseFloat(prev.value) - value) ? curr : prev;
+                });
+                dropdown.value = closestOption.value;
+            });
+
+            // Speed dropdown handler
+            speedSelect.addEventListener('change', function() {
+                const value = parseFloat(this.value);
+                speedSlider.value = value;
+                speedValue.textContent = value.toFixed(1) + 'x';
+            });
+
+            // Language mapping with country flags and names
+            const languageMapping = {
+                'Thai': {
+                    name: '🇹🇭 ไทย (Thailand)',
+                    code: 'th-TH',
+                    flag: '🇹🇭',
+                    rvcModels: ['niwat_thai', 'YingyongYodbuangarm', 'VANXAI', 'ChalermpolMalakham', 'MonkanKaenkoon', 'DangHMD2010v2New', 'BoSunita', 'pang', 'knomjean', 'illslick', 'al_bundy', 'boy_peacemaker', 'Michael', 'STS73', 'Law_By_Mike_e160_s4800', 'MusicV1Carti_300_Epochs', 'theestallion', 'JNANG', 'JO']
+                },
+                'English': {
+                    name: '🇺🇸 อังกฤษ (English)',
+                    code: 'en-US',
+                    flag: '🇺🇸',
+                    rvcModels: ['aria_english']
+                },
+                'Chinese': {
+                    name: '🇨🇳 จีน (Chinese)',
+                    code: 'zh-CN',
+                    flag: '🇨🇳',
+                    rvcModels: []
+                },
+                'Japanese': {
+                    name: '🇯🇵 ญี่ปุ่น (Japanese)',
+                    code: 'ja-JP',
+                    flag: '🇯🇵',
+                    rvcModels: []
+                },
+                'Lao': {
+                    name: '🇱🇦 ลาว (Laos)',
+                    code: 'lo-LA',
+                    flag: '🇱🇦',
+                    rvcModels: ['keomany_lao']
+                }
+            };
+
+            // RVC Model categories
+            const rvcModelCategories = {
+                'Thai Male': ['niwat_thai', 'YingyongYodbuangarm', 'VANXAI', 'ChalermpolMalakham', 'MonkanKaenkoon', 'DangHMD2010v2New', 'knomjean', 'illslick', 'al_bundy', 'boy_peacemaker', 'Michael', 'STS73', 'Law_By_Mike_e160_s4800', 'JNANG', 'JO'],
+                'Thai Female': ['BoSunita', 'pang', 'theestallion'],
+                'English': ['aria_english'],
+                'Lao': ['keomany_lao'],
+                'Music': ['MusicV1Carti_300_Epochs']
+            };
+
+            let allRvcModels = []; // Store all RVC models
+
+            // Fetch available voices and models
+            async function fetchInitialData() {
+                try {
+                    // Fetch TTS voices
+                    const voicesResponse = await fetch('/voices');
+                    const voicesData = await voicesResponse.json();
+                    if (voicesData.success && voicesData.data.voices) {
+                        allVoices = voicesData.data.voices;
+                        
+                        // Group voices by language
+                        const voicesByLanguage = {};
+                        for (const [key, voice] of Object.entries(allVoices)) {
+                            const lang = voice.language;
+                            if (!voicesByLanguage[lang]) {
+                                voicesByLanguage[lang] = [];
+                            }
+                            voicesByLanguage[lang].push({key, ...voice});
+                        }
+                        
+                        // Populate language select
+                        for (const [language, mapping] of Object.entries(languageMapping)) {
+                            if (voicesByLanguage[language]) {
+                                const option = document.createElement('option');
+                                option.value = language;
+                                option.textContent = mapping.name;
+                                languageSelect.appendChild(option);
+                            }
+                        }
+                        
+                        // Set default language to Thai if available
+                        if (voicesByLanguage['Thai']) {
+                            languageSelect.value = 'Thai';
+                            updateVoiceOptions('Thai');
+                        }
+                    }
+                    
+                    // Fetch Speaking Styles
+                    const stylesResponse = await fetch('/styles');
+                    const stylesData = await stylesResponse.json();
+                    if (stylesData.success && stylesData.data.styles) {
+                        for (const [key, style] of Object.entries(stylesData.data.styles)) {
+                            const option = document.createElement('option');
+                            option.value = key;
+                            option.textContent = style.name;
+                            styleSelect.appendChild(option);
+                        }
+                    }
+                    
+                    // Fetch RVC models
+                    const modelsResponse = await fetch('/models');
+                    const modelsData = await modelsResponse.json();
+                    if (modelsData.success && modelsData.data.models) {
+                        allRvcModels = modelsData.data.models;
+                        updateRvcModelOptions('Thai'); // Default to Thai
+                    }
+                } catch (error) {
+                    console.error('Error fetching initial data:', error);
+                    alert('ไม่สามารถโหลดข้อมูลเสียงหรือโมเดลได้');
+                }
+            }
+
+            // Update voice options based on selected language
+            function updateVoiceOptions(selectedLanguage) {
+                // Clear current voice options
+                ttsVoiceSelect.innerHTML = '<option value="">-- เลือกเสียง --</option>';
+                
+                if (!selectedLanguage || !allVoices) return;
+                
+                // Filter voices by language
+                const filteredVoices = Object.entries(allVoices).filter(
+                    ([key, voice]) => voice.language === selectedLanguage
+                );
+                
+                // Add voices to select
+                let isFirst = true;
+                filteredVoices.forEach(([key, voice]) => {
+                    const option = document.createElement('option');
+                    option.value = key;
+                    
+                    // Add gender emoji
+                    const genderEmoji = voice.gender === 'Male' ? '👨' : '👩';
+                    const languageFlag = languageMapping[voice.language]?.flag || '🗣️';
+                    
+                    option.textContent = `${genderEmoji} ${voice.name}`;
+                    
+                    // Set first voice as default
+                    if (isFirst) {
+                        option.selected = true;
+                        isFirst = false;
+                    }
+                    
+                    ttsVoiceSelect.appendChild(option);
+                });
+                
+                // Update placeholder if no voices found
+                if (filteredVoices.length === 0) {
+                    ttsVoiceSelect.innerHTML = '<option value="">-- ไม่มีเสียงสำหรับภาษานี้ --</option>';
+                }
+                
+                // Update RVC models for selected language
+                updateRvcModelOptions(selectedLanguage);
+            }
+
+            // Update RVC model options based on selected language
+            function updateRvcModelOptions(selectedLanguage) {
+                // Clear current RVC model options
+                rvcModelSelect.innerHTML = '<option value="">-- ไม่ใช้ RVC --</option>';
+                
+                if (!selectedLanguage || !allRvcModels) return;
+                
+                const languageConfig = languageMapping[selectedLanguage];
+                if (!languageConfig || !languageConfig.rvcModels) return;
+                
+                // Get available models for this language
+                const availableModels = allRvcModels.filter(model => 
+                    languageConfig.rvcModels.includes(model.name)
+                );
+                
+                if (availableModels.length === 0) return;
+                
+                // Group models by category
+                const modelsByCategory = {};
+                availableModels.forEach(model => {
+                    let category = 'Other';
+                    
+                    // Determine category based on model name
+                    for (const [catName, catModels] of Object.entries(rvcModelCategories)) {
+                        if (catModels.includes(model.name)) {
+                            category = catName;
+                            break;
+                        }
+                    }
+                    
+                    if (!modelsByCategory[category]) {
+                        modelsByCategory[category] = [];
+                    }
+                    modelsByCategory[category].push(model);
+                });
+                
+                // Add models grouped by category
+                for (const [category, models] of Object.entries(modelsByCategory)) {
+                    // Add category header
+                    const categoryOption = document.createElement('option');
+                    categoryOption.value = '';
+                    categoryOption.textContent = `--- ${category} ---`;
+                    categoryOption.disabled = true;
+                    rvcModelSelect.appendChild(categoryOption);
+                    
+                    // Add models in this category
+                    models.forEach(model => {
+                        const option = document.createElement('option');
+                        option.value = model.name;
+                        
+                        // Add emoji based on category
+                        let emoji = '🎤';
+                        if (category.includes('Male')) emoji = '👨';
+                        else if (category.includes('Female')) emoji = '👩';
+                        else if (category.includes('Lao')) emoji = '🇱🇦';
+                        else if (category.includes('English')) emoji = '🇺🇸';
+                        else if (category.includes('Music')) emoji = '🎵';
+                        
+                        option.textContent = `${emoji} ${model.name}`;
+                        rvcModelSelect.appendChild(option);
+                    });
+                }
+            }
+
+            // Language selection handler
+            languageSelect.addEventListener('change', function() {
+                const selectedLanguage = this.value;
+                updateVoiceOptions(selectedLanguage);
+            });
+
+            // Generate audio with speed support
+            async function generateAudio() {
+                const text = textInput.value.trim();
+                if (!text) {
+                    alert('กรุณาใส่ข้อความ');
+                    return;
+                }
+                
+                const selectedVoice = ttsVoiceSelect.value;
+                if (!selectedVoice) {
+                    alert('กรุณาเลือกเสียง TTS');
+                    return;
+                }
+                
+                generateBtn.disabled = true;
+                generateBtn.textContent = '⏳ กำลังประมวลผล...';
+                resultCard.style.display = 'none';
+                
+                // Get selected speed
+                const selectedSpeed = parseFloat(speedSlider.value);
+                
+                // Collect Machad effects
+                const machadEffects = {
+                    demon_mode: demonModeCheck.checked,
+                    robot_mode: robotModeCheck.checked,
+                };
+                const rvcModelName = rvcModelSelect.value;
+                const payload = {
+                    text: text,
+                    tts_voice: selectedVoice,
+                    tts_speed: selectedSpeed,
+                    enable_rvc: !!rvcModelName,
+                    rvc_model: rvcModelName,
+                    rvc_transpose: 0,
+                    rvc_index_ratio: 0.7,
+                    rvc_f0_method: "rmvpe"
+                };
+                
+                // Show processing status
+                showProcessingStatus('กำลังสร้างเสียง TTS...');
+                
+                try {
+                    const response = await fetch('/full_tts', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(payload),
+                    });
+                    
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.detail || 'เกิดข้อผิดพลาดในการสร้างเสียง');
+                    }
+                    
+                    const result = await response.json();
+                    
+                    if (result.success && result.data.audio_base64) {
+                        const audioSrc = `data:audio/wav;base64,${result.data.audio_base64}`;
+                        audioOutput.src = audioSrc;
+                        downloadLink.href = audioSrc;
+                        lastAudioUrl = audioSrc;
+                        resultCard.style.display = 'block';
+                        
+                        // Show success message with details
+                        showSuccessMessage(result.data);
+                        
+                        // Show processing info
+                        console.log('Processing info:', result.data);
+                    } else {
+                        throw new Error(result.message || 'ไม่ได้รับข้อมูลเสียง');
+                    }
+                } catch (error) {
+                    console.error('Error generating audio:', error);
+                    showErrorMessage(`เกิดข้อผิดพลาด: ${error.message}`);
+                } finally {
+                    generateBtn.disabled = false;
+                    generateBtn.textContent = 'สร้างเสียง';
+                    hideProcessingStatus();
+                }
+            }
+
+            // Show processing status
+            function showProcessingStatus(message) {
+                const statusDiv = document.createElement('div');
+                statusDiv.id = 'processing-status';
+                statusDiv.innerHTML = `
+                    <div style="text-align: center; padding: 20px; background: #f0f8ff; border: 1px solid #4A90E2; border-radius: 8px; margin: 10px 0;">
+                        <div style="font-size: 18px; color: #4A90E2; margin-bottom: 10px;">${message}</div>
+                        <div style="display: inline-block; width: 20px; height: 20px; border: 3px solid #f3f3f3; border-top: 3px solid #4A90E2; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                    </div>
+                `;
+                
+                // Add CSS animation
+                const style = document.createElement('style');
+                style.textContent = `
+                    @keyframes spin {
+                        0% { transform: rotate(0deg); }
+                        100% { transform: rotate(360deg); }
+                    }
+                `;
+                document.head.appendChild(style);
+                
+                resultCard.parentNode.insertBefore(statusDiv, resultCard);
+            }
+
+            // Hide processing status
+            function hideProcessingStatus() {
+                const statusDiv = document.getElementById('processing-status');
+                if (statusDiv) {
+                    statusDiv.remove();
+                }
+            }
+
+            // Show success message
+            function showSuccessMessage(data) {
+                const selectedSpeed = parseFloat(speedSlider.value);
+                const speedText = `${selectedSpeed.toFixed(1)}x`;
+                
+                const successDiv = document.createElement('div');
+                successDiv.innerHTML = `
+                    <div style="text-align: center; padding: 15px; background: #d4edda; border: 1px solid #c3e6cb; border-radius: 8px; margin: 10px 0; color: #155724;">
+                        <div style="font-size: 16px; font-weight: bold; margin-bottom: 5px;">✅ สร้างเสียงสำเร็จ!</div>
+                        <div style="font-size: 14px;">
+                            📝 ข้อความ: ${data.text_length} ตัวอักษร<br>
+                            🎵 ขนาดไฟล์: ${(data.audio_size / 1024).toFixed(1)} KB<br>
+                            ⚡ ความเร็ว: ${speedText}<br>
+                            ${data.voice_conversion_applied ? '🎭 ใช้ RVC: ใช่' : '🎭 ใช้ RVC: ไม่'}
+                        </div>
+                    </div>
+                `;
+                
+                resultCard.parentNode.insertBefore(successDiv, resultCard);
+                
+                // Auto-remove after 5 seconds
+                setTimeout(() => {
+                    if (successDiv.parentNode) {
+                        successDiv.remove();
+                    }
+                }, 5000);
+            }
+
+            // Show error message
+            function showErrorMessage(message) {
+                const errorDiv = document.createElement('div');
+                errorDiv.innerHTML = `
+                    <div style="text-align: center; padding: 15px; background: #f8d7da; border: 1px solid #f5c6cb; border-radius: 8px; margin: 10px 0; color: #721c24;">
+                        <div style="font-size: 16px; font-weight: bold; margin-bottom: 5px;">❌ เกิดข้อผิดพลาด</div>
+                        <div style="font-size: 14px;">${message}</div>
+                    </div>
+                `;
+                
+                resultCard.parentNode.insertBefore(errorDiv, resultCard);
+                
+                // Auto-remove after 5 seconds
+                setTimeout(() => {
+                    if (errorDiv.parentNode) {
+                        errorDiv.remove();
+                    }
+                }, 5000);
+            }
+            generateBtn.addEventListener('click', generateAudio);
+            downloadLink.addEventListener('click', function(e) {
+                if (!lastAudioUrl) {
+                    e.preventDefault();
+                    alert('ไม่มีไฟล์เสียงที่สร้างล่าสุด');
+                }
+            });
+            
+            // Initialize the app
+            fetchInitialData();
+        });
+    </script>
+</body>
+</html>
