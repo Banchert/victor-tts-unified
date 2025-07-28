@@ -1,0 +1,71 @@
+{
+  "summary": {
+    "total_tests": 12,
+    "passed_tests": 12,
+    "failed_tests": 0,
+    "success_rate": 100.0,
+    "test_duration": 11.165967464447021
+  },
+  "results": {
+    "RVC API Import": {
+      "passed": true,
+      "details": "Successfully imported RVCConverter",
+      "timestamp": 1753709861.163961
+    },
+    "RVC Converter Creation": {
+      "passed": true,
+      "details": "Successfully created",
+      "timestamp": 1753709861.381155
+    },
+    "System Info": {
+      "passed": true,
+      "details": "Device: cpu",
+      "timestamp": 1753709861.3839247
+    },
+    "Available Models": {
+      "passed": true,
+      "details": "Found 16 models",
+      "timestamp": 1753709861.3866794
+    },
+    "Model Info": {
+      "passed": true,
+      "details": "Model al_bundy: 1 .pth files",
+      "timestamp": 1753709861.389106
+    },
+    "Model Validation": {
+      "passed": true,
+      "details": "Model al_bundy validation",
+      "timestamp": 1753709861.3899298
+    },
+    "Core Instance": {
+      "passed": true,
+      "details": "Successfully created",
+      "timestamp": 1753709861.643487
+    },
+    "System Status": {
+      "passed": true,
+      "details": "TTS: True, RVC: True",
+      "timestamp": 1753709861.6446812
+    },
+    "RVC Models in Core": {
+      "passed": true,
+      "details": "Found 16 models",
+      "timestamp": 1753709861.647071
+    },
+    "TTS Generation": {
+      "passed": true,
+      "details": "Generated 17424 bytes",
+      "timestamp": 1753709863.9344375
+    },
+    "RVC Conversion": {
+      "passed": true,
+      "details": "Converted using al_bundy",
+      "timestamp": 1753709867.866347
+    },
+    "Audio Processing": {
+      "passed": true,
+      "details": "Created and loaded 44100 samples",
+      "timestamp": 1753709867.8719327
+    }
+  }
+}

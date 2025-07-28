@@ -129,11 +129,13 @@ class TTSRVCCore:
         # เริ่มต้น RVC
         try:
             from rvc_api import RVCConverter
-            self.rvc_instance = RVCConverter(device=self.device)
+            self.rvc_instance = RVCConverter(device=self.device, models_dir=self.models_dir)
             self.rvc_available = True
             logger.info(f"✅ RVC system loaded on {self.device}")
-        except ImportError:
-            logger.warning("⚠️ RVC system not available")
+        except ImportError as e:
+            logger.warning(f"⚠️ RVC system not available: {e}")
+        except Exception as e:
+            logger.warning(f"⚠️ RVC system initialization failed: {e}")
     
     def get_system_status(self) -> Dict[str, Any]:
         """ดึงสถานะระบบ"""
