@@ -24,7 +24,7 @@ setup(
     description="Complete Text-to-Speech with Voice Conversion Platform",
     long_description=read_readme(),
     long_description_content_type="text/markdown",
-    url="https://github.com/yourusername/victor-tts-unified",
+    url="https://github.com/Banchert/victor-tts-unified",
     packages=find_packages(),
     classifiers=[
         "Development Status :: 4 - Beta",
@@ -51,8 +51,8 @@ setup(
     },
     keywords="tts, voice-conversion, rvc, edge-tts, fastapi, gradio",
     project_urls={
-        "Bug Reports": "https://github.com/yourusername/victor-tts-unified/issues",
-        "Source": "https://github.com/yourusername/victor-tts-unified",
-        "Documentation": "https://github.com/yourusername/victor-tts-unified#readme",
+        "Bug Reports": "https://github.com/Banchert/victor-tts-unified/issues",
+        "Source": "https://github.com/Banchert/victor-tts-unified",
+        "Documentation": "https://github.com/Banchert/victor-tts-unified#readme",
     },
 ) 

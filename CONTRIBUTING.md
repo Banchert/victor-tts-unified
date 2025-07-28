@@ -13,7 +13,7 @@
 
 1. **Fork และ Clone Repository**
 ```bash
-git clone https://github.com/yourusername/victor-tts-unified.git
+git clone https://github.com/Banchert/victor-tts-unified.git
 cd victor-tts-unified
 ```
 
@@ -213,9 +213,9 @@ def example_function(param1: str, param2: int) -> bool:
 
 ## 📞 Getting Help
 
-- **Issues**: [GitHub Issues](https://github.com/yourusername/victor-tts-unified/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/yourusername/victor-tts-unified/discussions)
-- **Email**: your-email@example.com
+- **Issues**: [GitHub Issues](https://github.com/Banchert/victor-tts-unified/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/Banchert/victor-tts-unified/discussions)
+- **Email**: banchert@example.com
 
 ## 🙏 Recognition
 

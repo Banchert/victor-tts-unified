@@ -24,7 +24,7 @@
 
 ### 1. Clone Repository
 ```bash
-git clone https://github.com/yourusername/victor-tts-unified.git
+git clone https://github.com/Banchert/victor-tts-unified.git
 cd victor-tts-unified
 ```
 
@@ -236,9 +236,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Support
 
-- 🐛 **Issues**: [GitHub Issues](https://github.com/yourusername/victor-tts-unified/issues)
-- 💬 **Discussions**: [GitHub Discussions](https://github.com/yourusername/victor-tts-unified/discussions)
-- 📧 **Email**: your-email@example.com
+- 🐛 **Issues**: [GitHub Issues](https://github.com/Banchert/victor-tts-unified/issues)
+- 💬 **Discussions**: [GitHub Discussions](https://github.com/Banchert/victor-tts-unified/discussions)
+- 📧 **Email**: banchert@example.com
 
 ---
 
