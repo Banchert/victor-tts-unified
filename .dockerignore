@@ -1,12 +1,33 @@
-# 🚫 Docker ignore file
-# ไฟล์ที่ไม่ต้องคัดลอกเข้า Docker image
+# Git
+.git
+.gitignore
+.gitattributes
 
-# Python cache
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
+# Python
+__pycache__
+*.pyc
+*.pyo
+*.pyd
 .Python
+env
+pip-log.txt
+pip-delete-this-directory.txt
+.tox
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.log
+.git
+.mypy_cache
+.pytest_cache
+.hypothesis
+
+# Virtual environments
+.env
+.venv
 env/
 venv/
 ENV/
@@ -20,7 +41,7 @@ venv.bak/
 *.swo
 *~
 
-# OS generated files
+# OS
 .DS_Store
 .DS_Store?
 ._*
@@ -29,71 +50,47 @@ venv.bak/
 ehthumbs.db
 Thumbs.db
 
-# Git
-.git/
-.gitignore
+# Project specific
+storage/output/
+storage/temp/
+*.wav
+*.mp3
+*.flac
+*.ogg
+*.m4a
+*.aac
+*.pth
+*.pt
+*.onnx
+*.bin
+*.safetensors
+*.index
 
-# Docker files
-Dockerfile
+# Large files
+ffmpeg.exe
+ffprobe.exe
+voice_models/
+voice_samples/
+
+# Test files
+test_*.py
+*_test.py
+tests/
+
+# Documentation
+*.md
+!README.md
+
+# Docker
+Dockerfile*
 docker-compose*.yml
 .dockerignore
 
-# Large temporary files
-temp/
-temp_full_tts_files/
-output/
-*.wav
-*.mp3
-*.mp4
-
-# Test outputs
-storage/test_output/
-storage/temp/
+# Scripts
+*.bat
+*.ps1
+*.sh
 
 # Logs
+logs/
 *.log
-logs/*.log
-
-# Environment files
-.env
-.env.local
-.env.production
-
-# Node modules (if any)
-node_modules/
-
-# Build artifacts
-build/
-dist/
-
-# Documentation (reduce image size)
-*.md
-docs/
-README*
-
-# Legacy files
-legacy/
-
-# Large model files (mount as volume instead)
-logs/*/
-models/*/
-
-# Backup files
-*.bak
-*.backup
-*.old
-
-# Jupyter notebooks
-*.ipynb
-.ipynb_checkpoints/
-
-# Coverage reports
-htmlcov/
-.coverage
-
-# pytest
-.pytest_cache/
-
-# Windows specific
-*.exe
-*.msi

@@ -1,0 +1,80 @@
+version: '3.8'
+
+services:
+  # VICTOR-TTS UNIFIED API Server
+  victor-tts-api:
+    build: .
+    container_name: victor-tts-api
+    ports:
+      - "6969:6969"
+      - "7000:7000"
+    environment:
+      - PYTHONPATH=/app
+      - CUDA_VISIBLE_DEVICES=0  # Use GPU 0 if available
+    volumes:
+      - ./storage:/app/storage
+      - ./models:/app/models
+      - ./logs:/app/logs
+      - ./config:/app/config
+      - ./voice_models:/app/voice_models
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:6969/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - victor-network
+
+  # N8N Workflow Automation
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: n8n
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_HOST=0.0.0.0
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - N8N_USER_MANAGEMENT_DISABLED=true
+      - N8N_BASIC_AUTH_ACTIVE=false
+      - WEBHOOK_URL=http://localhost:5678/
+      - GENERIC_TIMEZONE=Asia/Bangkok
+    volumes:
+      - n8n_data:/home/node/.n8n
+    restart: unless-stopped
+    depends_on:
+      - victor-tts-api
+    networks:
+      - victor-network
+
+  # PostgreSQL for N8N (optional)
+  postgres:
+    image: postgres:15
+    container_name: n8n-postgres
+    environment:
+      - POSTGRES_DB=n8n
+      - POSTGRES_USER=n8n
+      - POSTGRES_PASSWORD=n8n_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - victor-network
+
+  # Redis for N8N (optional)
+  redis:
+    image: redis:7-alpine
+    container_name: n8n-redis
+    restart: unless-stopped
+    networks:
+      - victor-network
+
+volumes:
+  n8n_data:
+  postgres_data:
+
+networks:
+  victor-network:
+    driver: bridge 
