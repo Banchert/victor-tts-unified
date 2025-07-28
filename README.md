@@ -18,7 +18,7 @@
 - 🔄 **N8N Integration** - Workflow automation
 - 🖥️ **GPU Acceleration** - รองรับ CUDA สำหรับความเร็วสูง
 - 🎨 **Modern UI** - Naga Dragons Theme
-- 🌐 **Multi-language Support** - รองรับหลายภาษา
+- 🌐 **Multi-language Support** - รองรับหลายภาษา (อัตโนมัติ)
 - ⚡ **Performance Optimized** - ปรับแต่งตามระบบ
 
 ## 🚀 Quick Start
@@ -100,7 +100,9 @@ VICTOR-TTS/
 
 ### **Text-to-Speech (TTS)**
 - **Microsoft Edge TTS** - เสียงพูดคุณภาพสูง
-- **Multi-language Support** - รองรับหลายภาษา
+- **Multi-language Support** - รองรับหลายภาษา (อัตโนมัติ)
+- **Language Detection** - ตรวจจับและแยกข้อความตามภาษา
+- **Voice Mapping** - เลือกเสียงที่เหมาะสมสำหรับแต่ละภาษา
 - **Speed Control** - ปรับความเร็วการพูด
 
 ### **Voice Conversion (RVC)**
@@ -213,6 +215,54 @@ performance_config = {
 }
 ```
 
+## 🌍 Multi-Language Features
+
+### **Supported Languages**
+- 🇹🇭 **Thai** - ภาษาไทย
+- 🇱🇦 **Lao** - ภาษาลาว  
+- 🇺🇸 **English** - ภาษาอังกฤษ
+- 🇯🇵 **Japanese** - ภาษาญี่ปุ่น
+- 🇨🇳 **Chinese** - ภาษาจีน
+- 🔢 **Numbers** - ตัวเลข
+
+### **Automatic Language Detection**
+```python
+# ตัวอย่างการตรวจจับภาษา
+text = "สวัสดีครับ Hello world ສະບາຍດີ こんにちは 你好 123"
+
+# ผลลัพธ์:
+# • "สวัสดีครับ" → thai (Voice: Premwadee)
+# • "Hello world" → english (Voice: Aria)
+# • "ສະບາຍດີ" → lao (Voice: Keomany)
+# • "こんにちは" → japanese (Voice: Nanami)
+# • "你好" → chinese (Voice: Xiaoxiao)
+# • "123" → numbers (Voice: Premwadee)
+```
+
+### **Voice Mapping**
+| ภาษา | Female Voice | Male Voice |
+|------|--------------|------------|
+| 🇹🇭 ไทย | `th-TH-PremwadeeNeural` | `th-TH-NiranNeural` |
+| 🇱🇦 ลาว | `lo-LA-KeomanyNeural` | `lo-LA-ChanthavongNeural` |
+| 🇺🇸 อังกฤษ | `en-US-AriaNeural` | `en-US-GuyNeural` |
+| 🇯🇵 ญี่ปุ่น | `ja-JP-NanamiNeural` | - |
+| 🇨🇳 จีน | `zh-CN-XiaoxiaoNeural` | - |
+
+### **Usage**
+```bash
+# เปิดใช้งาน Multi-Language (ค่าเริ่มต้น)
+{
+    "text": "สวัสดีครับ Hello world ສະບາຍດີ",
+    "enable_multi_language": true
+}
+
+# ปิดใช้งาน Multi-Language
+{
+    "text": "สวัสดีครับ Hello world ສະບາຍດີ",
+    "enable_multi_language": false
+}
+```
+
 ## 🎨 User Interface
 
 ### **Naga Dragons Theme**
@@ -234,6 +284,7 @@ performance_config = {
 - [🖥️ GPU & EXE Guide](docs/GPU_EXE_GUIDE.md)
 - [🎨 UI Theme Guide](docs/NAGA_THEME_UPDATE.md)
 - [📁 Model Management Guide](docs/MODEL_MANAGEMENT_REPOSITION.md)
+- [🌍 Multi-Language Enhancement](docs/MULTI_LANGUAGE_ENHANCEMENT.md)
 
 ### **API Documentation**
 - [FastAPI Docs](http://localhost:6969/docs)
@@ -267,6 +318,12 @@ python -m pytest tests/
 # Test specific components
 python tests/test_rvc_quick.py
 python tests/test_tts_language.py
+python tests/test_multi_language_enhanced.py
+
+# หรือใช้ start.bat
+start.bat
+# เลือก [8] 🌍 ทดสอบหลายภาษา
+# เลือก [9] 🌍 ทดสอบหลายภาษา (Enhanced)
 ```
 
 ## 🤝 Contributing

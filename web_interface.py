@@ -726,6 +726,19 @@ class WebInterface:
                         เช่น ข้อความภาษาลาวที่มีคำภาษาอังกฤษ จะถูกอ่านด้วยเสียงที่เหมาะสมสำหรับแต่ละภาษา
                     </small>
                 </div>
+                <div class="form-group" style="margin-top: 10px; padding: 10px; background: #e8f5e8; border-radius: 8px; border-left: 4px solid #28a745;">
+                    <small style="color: #155724;">
+                        <strong>🌍 ภาษาที่รองรับ:</strong><br>
+                        🇹🇭 ไทย (Thai) | 🇱🇦 ลาว (Lao) | 🇺🇸 อังกฤษ (English)<br>
+                        🇯🇵 ญี่ปุ่น (Japanese) | 🇨🇳 จีน (Chinese) | 🔢 ตัวเลข (Numbers)
+                    </small>
+                </div>
+                <div class="form-group" style="margin-top: 10px; padding: 10px; background: #fff3cd; border-radius: 8px; border-left: 4px solid #ffc107;">
+                    <small style="color: #856404;">
+                        <strong>🎯 ตัวอย่างการใช้งาน:</strong><br>
+                        "สวัสดีครับ Hello world ສະບາຍດີ 123" → จะถูกแยกเป็น 4 ส่วนและอ่านด้วยเสียงที่เหมาะสม
+                    </small>
+                </div>
             </div>
             
             <!-- RVC Settings -->
@@ -765,6 +778,12 @@ class WebInterface:
             <div class="section result-section" id="resultSection" style="display: none;">
                 <h3>🎧 ผลลัพธ์</h3>
                 <div id="statusMessage"></div>
+                
+                <!-- Language Detection Results -->
+                <div id="languageDetectionSection" style="display: none; margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #17a2b8;">
+                    <h4 style="margin-top: 0; color: #17a2b8;">🌍 การตรวจจับภาษา</h4>
+                    <div id="languageDetectionResults"></div>
+                </div>
                 
                 <!-- TTS Audio Player -->
                 <div id="ttsAudioSection" style="display: none;">
@@ -1440,6 +1459,66 @@ class WebInterface:
             }}
         }}
         
+        // ฟังก์ชันแสดงผลการตรวจจับภาษา
+        function showLanguageDetectionResults(segments) {{
+            let container = document.getElementById('languageDetectionSection');
+            let resultsDiv = document.getElementById('languageDetectionResults');
+            
+            if (!segments || segments.length === 0) {{
+                container.style.display = 'none';
+                return;
+            }}
+            
+            let html = '<div style="margin-bottom: 10px;">';
+            html += '<strong>📝 รายละเอียดการแยกข้อความ:</strong></div>';
+            
+            segments.forEach((segment, index) => {{
+                let languageLabel = getLanguageLabel(segment.language);
+                let voiceLabel = getVoiceLabel(segment.voice);
+                
+                html += `<div style="margin-bottom: 8px; padding: 8px; background: white; border-radius: 6px; border-left: 3px solid #17a2b8;">`;
+                html += `<div style="font-weight: bold; color: #17a2b8;">ส่วนที่ ${{index + 1}}: ${{languageLabel}}</div>`;
+                html += `<div style="margin-top: 4px; color: #495057;">"${{segment.text}}"</div>`;
+                html += `<div style="margin-top: 2px; font-size: 0.85em; color: #6c757d;">🎤 เสียง: ${{voiceLabel}}</div>`;
+                html += `</div>`;
+            }});
+            
+            resultsDiv.innerHTML = html;
+            container.style.display = 'block';
+        }}
+        
+        // ฟังก์ชันแปลงรหัสภาษาเป็นชื่อภาษา
+        function getLanguageLabel(language) {{
+            const languageMap = {{
+                'thai': '🇹🇭 ไทย',
+                'lao': '🇱🇦 ลาว', 
+                'english': '🇺🇸 อังกฤษ',
+                'japanese': '🇯🇵 ญี่ปุ่น',
+                'chinese': '🇨🇳 จีน',
+                'numbers': '🔢 ตัวเลข',
+                'punctuation': '📝 เครื่องหมาย',
+                'unknown': '❓ ไม่ทราบ'
+            }};
+            return languageMap[language] || language;
+        }}
+        
+        // ฟังก์ชันแปลงรหัสเสียงเป็นชื่อเสียง
+        function getVoiceLabel(voice) {{
+            const voiceMap = {{
+                'th-TH-PremwadeeNeural': 'Premwadee (ไทย)',
+                'th-TH-NiranNeural': 'Niran (ไทย)',
+                'th-TH-NiwatNeural': 'Niwat (ไทย)',
+                'lo-LA-KeomanyNeural': 'Keomany (ลาว)',
+                'lo-LA-ChanthavongNeural': 'Chanthavong (ลาว)',
+                'en-US-AriaNeural': 'Aria (อังกฤษ)',
+                'en-US-GuyNeural': 'Guy (อังกฤษ)',
+                'en-US-JennyNeural': 'Jenny (อังกฤษ)',
+                'ja-JP-NanamiNeural': 'Nanami (ญี่ปุ่น)',
+                'zh-CN-XiaoxiaoNeural': 'Xiaoxiao (จีน)'
+            }};
+            return voiceMap[voice] || voice;
+        }}
+        
         // ฟังก์ชันสร้างเสียง
         async function generateAudio() {{
             let button = document.getElementById('generateBtn');
@@ -1501,6 +1580,9 @@ class WebInterface:
                         if (stats.detected_languages && stats.detected_languages.length > 0) {{
                             let languageInfo = `🌐 ตรวจพบภาษา: ${{stats.detected_languages.join(', ')}} (จำนวนส่วน: ${{stats.language_segments}})`; 
                             showNotification(languageInfo, 'info');
+                            
+                            // แสดงรายละเอียดการตรวจจับภาษา
+                            showLanguageDetectionResults(stats.language_segments_detail || []);
                         }}
                         
                         // เก็บข้อมูลเสียงสำหรับดาวน์โหลด

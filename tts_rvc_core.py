@@ -703,7 +703,20 @@ class TTSRVCCore:
                 language_segments = self.detect_language_segments(text)
                 result["stats"]["language_segments"] = len(language_segments)
                 result["stats"]["detected_languages"] = list(set(lang for _, lang in language_segments))
+                
+                # เพิ่มรายละเอียดการตรวจจับภาษา
+                language_segments_detail = []
+                for segment_text, language in language_segments:
+                    voice = self.get_voice_for_language(language, tts_voice)
+                    language_segments_detail.append({
+                        "text": segment_text,
+                        "language": language,
+                        "voice": voice
+                    })
+                result["stats"]["language_segments_detail"] = language_segments_detail
+                
                 logger.info(f"Detected languages: {result['stats']['detected_languages']}")
+                logger.info(f"Language segments: {len(language_segments)} segments")
             
             final_audio = tts_audio
             rvc_audio = None
