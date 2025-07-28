@@ -20,7 +20,7 @@ sys.path.insert(0, str(project_root))
 
 # Import core system
 try:
-    from tts_rvc_core import TTSRVCCore, get_supported_voices
+    from tts_rvc_core import TTSRVCCore, get_supported_voices, create_core_instance
     CORE_AVAILABLE = True
 except ImportError:
     CORE_AVAILABLE = False
@@ -35,8 +35,12 @@ class WebInterface:
         self.is_running = False
         
         if CORE_AVAILABLE:
-            self.core = TTSRVCCore()
-            print("✅ TTS-RVC Core loaded in Web Interface")
+            try:
+                self.core = create_core_instance()
+                print("✅ TTS-RVC Core loaded in Web Interface")
+            except Exception as e:
+                print(f"⚠️ Failed to load TTS-RVC Core: {e}")
+                self.core = None
     
     def _find_available_port(self, start_port: int) -> int:
         """หาพอร์ตที่ว่างเริ่มต้นจาก start_port"""
