@@ -27,28 +27,28 @@
 
 ```bash
 # Clone repository
-git clone https://github.com/Banchert/victor-tts-unified.git
-cd victor-tts-unified
+git clone https://github.com/your-username/victor-tts.git
+cd victor-tts
 
 # Start with Docker (Simple)
-docker-compose -f docker/docker-compose.simple.yml up -d
+docker-compose -f docker-compose.simple.yml up -d
 
 # Or use Python management script
-python scripts/docker_management.py
+python docker_management.py
 ```
 
 ### Option 2: Local Installation
 
 ```bash
 # Clone repository
-git clone https://github.com/Banchert/victor-tts-unified.git
-cd victor-tts-unified
+git clone https://github.com/your-username/victor-tts.git
+cd victor-tts
 
 # Install dependencies
 pip install -r requirements.txt
 
 # Start the application
-scripts/start.bat
+python start.bat
 ```
 
 ## 🌐 Access Points
@@ -64,34 +64,27 @@ scripts/start.bat
 
 ```
 VICTOR-TTS/
+├── 🐳 Docker Files
+│   ├── Dockerfile                    # Main container
+│   ├── docker-compose.yml           # Full deployment
+│   ├── docker-compose.simple.yml    # Simple deployment
+│   ├── docker-compose.test.yml      # Test deployment
+│   └── nginx.conf                   # Reverse proxy
 ├── 🔧 Core Application
 │   ├── main_api_server.py           # FastAPI server
 │   ├── web_interface.py             # Web UI
 │   ├── tts_rvc_core.py              # Core logic
 │   ├── rvc_api.py                   # RVC wrapper
-│   └── victor_tts_launcher.py       # Launcher
-├── 🐳 Docker Files
-│   ├── docker/Dockerfile            # Main container
-│   ├── docker/docker-compose.yml    # Full deployment
-│   ├── docker/docker-compose.simple.yml # Simple deployment
-│   ├── docker/docker-compose.test.yml   # Test deployment
-│   └── docker/nginx.conf            # Reverse proxy
-├── 📜 Scripts
-│   ├── scripts/start.bat            # Windows launcher
-│   ├── scripts/docker_management.py # Docker management
-│   └── scripts/*.ps1                # PowerShell scripts
-├── 📊 Documentation
-│   ├── docs/README.md               # Main documentation
-│   ├── docs/DOCKER_N8N_GUIDE.md     # Docker & N8N guide
-│   ├── docs/GPU_EXE_GUIDE.md        # GPU & EXE guide
-│   └── docs/*.md                    # Other guides
-├── 🧪 Tests
-│   ├── tests/test_*.py              # Test files
-│   └── tests/                       # Test utilities
+│   └── start.bat                    # Launcher
 ├── 🎭 RVC System
 │   ├── rvc/                         # RVC models
 │   ├── models/                      # Voice models
 │   └── voice_models/                # Additional models
+├── 📊 Documentation
+│   ├── DOCKER_N8N_GUIDE.md         # Docker & N8N guide
+│   ├── GPU_EXE_GUIDE.md            # GPU & EXE guide
+│   ├── NAGA_THEME_UPDATE.md        # UI theme guide
+│   └── MODEL_MANAGEMENT_REPOSITION.md # UI layout guide
 └── 🔄 N8N Integration
     └── n8n_workflows/               # Workflow templates
 ```
@@ -147,17 +140,17 @@ curl -X POST http://localhost:6969/unified \
 
 ### **Simple Deployment**
 ```bash
-docker-compose -f docker/docker-compose.simple.yml up -d
+docker-compose -f docker-compose.simple.yml up -d
 ```
 
 ### **Full Deployment**
 ```bash
-docker-compose -f docker/docker-compose.yml up -d
+docker-compose -f docker-compose.yml up -d
 ```
 
 ### **Test Deployment**
 ```bash
-docker-compose -f docker/docker-compose.test.yml up -d
+docker-compose -f docker-compose.test.yml up -d
 ```
 
 ## 🔄 N8N Integration
@@ -230,10 +223,10 @@ performance_config = {
 ## 📚 Documentation
 
 ### **Guides**
-- [🐳 Docker & N8N Guide](docs/DOCKER_N8N_GUIDE.md)
-- [🖥️ GPU & EXE Guide](docs/GPU_EXE_GUIDE.md)
-- [🎨 UI Theme Guide](docs/NAGA_THEME_UPDATE.md)
-- [📁 Model Management Guide](docs/MODEL_MANAGEMENT_REPOSITION.md)
+- [🐳 Docker & N8N Guide](DOCKER_N8N_GUIDE.md)
+- [🖥️ GPU & EXE Guide](GPU_EXE_GUIDE.md)
+- [🎨 UI Theme Guide](NAGA_THEME_UPDATE.md)
+- [📁 Model Management Guide](MODEL_MANAGEMENT_REPOSITION.md)
 
 ### **API Documentation**
 - [FastAPI Docs](http://localhost:6969/docs)
@@ -244,8 +237,8 @@ performance_config = {
 ### **Setup Development Environment**
 ```bash
 # Clone repository
-git clone https://github.com/Banchert/victor-tts-unified.git
-cd victor-tts-unified
+git clone https://github.com/your-username/victor-tts.git
+cd victor-tts
 
 # Create virtual environment
 python -m venv venv
@@ -265,8 +258,8 @@ python web_interface.py
 python -m pytest tests/
 
 # Test specific components
-python tests/test_rvc_quick.py
-python tests/test_tts_language.py
+python test_rvc_quick.py
+python test_tts_language.py
 ```
 
 ## 🤝 Contributing
@@ -299,16 +292,16 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 📞 Support
 
 ### **Getting Help**
-- 📖 [Documentation](docs/DOCKER_N8N_GUIDE.md)
-- 🐛 [Issues](https://github.com/Banchert/victor-tts-unified/issues)
-- 💬 [Discussions](https://github.com/Banchert/victor-tts-unified/discussions)
+- 📖 [Documentation](DOCKER_N8N_GUIDE.md)
+- 🐛 [Issues](https://github.com/your-username/victor-tts/issues)
+- 💬 [Discussions](https://github.com/your-username/victor-tts/discussions)
 
 ### **Community**
-- 🌐 [GitHub Repository](https://github.com/Banchert/victor-tts-unified)
+- 🌐 [GitHub Repository](https://github.com/your-username/victor-tts)
 - 📧 [Email Support](mailto:support@victor-tts.com)
 
 ---
 
 **Made with ❤️ by VICTOR-TTS Team**
 
-*Empowering voice technology with AI* 
+*Empowering voice technology with AI*

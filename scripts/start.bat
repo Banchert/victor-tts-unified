@@ -177,8 +177,8 @@ goto menu
 echo.
 echo 🧪 ทดสอบระบบทั้งหมด...
 echo ========================================
-if exist "test_rvc_detailed.py" (
-    %PYTHON_CMD% test_rvc_detailed.py
+if exist "tests/test_rvc_detailed.py" (
+    %PYTHON_CMD% tests/test_rvc_detailed.py
 ) else (
     echo ⚠️  ไม่พบไฟล์ทดสอบ
 )
@@ -191,7 +191,7 @@ goto menu
 echo.
 echo 🎤 ทดสอบ RVC MP3 Conversion Fix...
 echo ========================================
-%PYTHON_CMD% test_rvc_mp3_fix.py
+%PYTHON_CMD% tests/test_rvc_mp3_fix.py
 echo ========================================
 echo.
 pause
@@ -201,8 +201,8 @@ goto menu
 echo.
 echo 🌍 ทดสอบระบบหลายภาษา...
 echo ========================================
-if exist "test_multi_language.py" (
-    %PYTHON_CMD% test_multi_language.py
+if exist "tests/test_multi_language.py" (
+    %PYTHON_CMD% tests/test_multi_language.py
 ) else (
     echo ⚠️  ไม่พบไฟล์ทดสอบ
 )
@@ -215,7 +215,7 @@ goto menu
 echo.
 echo 🔧 ตรวจสอบสถานะ RVC...
 echo ========================================
-%PYTHON_CMD% test_rvc_status.py
+%PYTHON_CMD% tests/test_rvc_status.py
 echo ========================================
 echo.
 pause
@@ -287,8 +287,8 @@ goto menu
 echo.
 echo 🏗️  สร้างไฟล์ EXE...
 echo ========================================
-if exist "build_exe.bat" (
-    call build_exe.bat
+if exist "scripts/build_exe.bat" (
+    call scripts/build_exe.bat
 ) else (
     echo ⚠️  ไม่พบ build_exe.bat
     echo 🔧 ใช้ PyInstaller โดยตรง...
