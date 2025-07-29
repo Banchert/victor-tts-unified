@@ -17,9 +17,10 @@
 - 🐳 **Docker Support** - ติดตั้งง่ายด้วย Docker
 - 🔄 **N8N Integration** - Workflow automation
 - 🖥️ **GPU Acceleration** - รองรับ CUDA สำหรับความเร็วสูง
-- 🎨 **Modern UI** - Naga Dragons Theme
+- 🎨 **Modern UI** - Enhanced Web Interface
 - 🌐 **Multi-language Support** - รองรับหลายภาษา (อัตโนมัติ)
 - ⚡ **Performance Optimized** - ปรับแต่งตามระบบ
+- 🎭 **Special Effects** - เอฟเฟกต์พิเศษ (ปีศาจ, หุ่นยนต์)
 
 ## 🚀 Quick Start
 
@@ -57,7 +58,7 @@ start.bat
 |---------|-----|-------------|
 | **N8N** | http://localhost:5678 | Workflow Automation |
 | **VICTOR-TTS API** | http://localhost:6969 | REST API |
-| **VICTOR-TTS Web** | http://localhost:7000 | Web Interface |
+| **VICTOR-TTS Web** | http://localhost:7000 | Enhanced Web Interface |
 | **Health Check** | http://localhost:6969/health | System Status |
 
 ## 📁 Project Structure
@@ -66,7 +67,8 @@ start.bat
 VICTOR-TTS/
 ├── 🔧 Core Application
 │   ├── main_api_server.py           # FastAPI server
-│   ├── web_interface.py             # Web UI
+│   ├── web_interface_complete.py    # Enhanced Web UI (Main)
+│   ├── web_interface_improved.py    # Improved Web UI
 │   ├── tts_rvc_core.py              # Core logic
 │   ├── rvc_api.py                   # RVC wrapper
 │   └── victor_tts_launcher.py       # Launcher
@@ -77,13 +79,16 @@ VICTOR-TTS/
 │   ├── docker/docker-compose.test.yml   # Test deployment
 │   └── docker/nginx.conf            # Reverse proxy
 ├── 📜 Scripts
-│   ├── start.bat                    # Windows launcher (root)
+│   ├── start.bat                    # Main launcher
+│   ├── start_complete.bat           # Complete interface launcher
+│   ├── start_improved.bat           # Improved interface launcher
 │   ├── scripts/docker_management.py # Docker management
 │   └── scripts/*.ps1                # PowerShell scripts
 ├── 📊 Documentation
 │   ├── docs/README.md               # Main documentation
 │   ├── docs/DOCKER_N8N_GUIDE.md     # Docker & N8N guide
 │   ├── docs/GPU_EXE_GUIDE.md        # GPU & EXE guide
+│   ├── WEB_INTERFACE_GUIDE.md       # Web Interface Guide
 │   └── docs/*.md                    # Other guides
 ├── 🧪 Tests
 │   ├── tests/test_*.py              # Test files
@@ -325,47 +330,3 @@ start.bat
 # เลือก [8] 🌍 ทดสอบหลายภาษา
 # เลือก [9] 🌍 ทดสอบหลายภาษา (Enhanced)
 ```
-
-## 🤝 Contributing
-
-### **How to Contribute**
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
-
-### **Development Guidelines**
-- Follow PEP 8 style guide
-- Add type hints
-- Write docstrings
-- Update documentation
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- **Microsoft Edge TTS** - สำหรับ TTS engine
-- **RVC Project** - สำหรับ voice conversion
-- **N8N Team** - สำหรับ workflow automation
-- **FastAPI** - สำหรับ web framework
-- **PyTorch** - สำหรับ AI framework
-
-## 📞 Support
-
-### **Getting Help**
-- 📖 [Documentation](docs/DOCKER_N8N_GUIDE.md)
-- 🐛 [Issues](https://github.com/Banchert/victor-tts-unified/issues)
-- 💬 [Discussions](https://github.com/Banchert/victor-tts-unified/discussions)
-
-### **Community**
-- 🌐 [GitHub Repository](https://github.com/Banchert/victor-tts-unified)
-- 📧 [Email Support](mailto:support@victor-tts.com)
-
----
-
-**Made with ❤️ by VICTOR-TTS Team**
-
-*Empowering voice technology with AI* 

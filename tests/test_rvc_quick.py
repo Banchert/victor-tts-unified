@@ -10,7 +10,9 @@ import os
 from pathlib import Path
 
 # เพิ่ม path ของโปรเจค
-sys.path.append(str(Path(__file__).parent))
+current_dir = Path(__file__).parent
+parent_dir = current_dir.parent
+sys.path.insert(0, str(parent_dir))
 
 from tts_rvc_core import TTSRVCCore
 

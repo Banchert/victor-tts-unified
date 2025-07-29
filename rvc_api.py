@@ -10,6 +10,7 @@ import torch
 import numpy as np
 from pathlib import Path
 from typing import List, Optional, Dict, Any
+from model_utils import normalize_model_name
 
 # Add RVC to path
 rvc_path = Path(__file__).parent / "rvc"
@@ -167,6 +168,14 @@ class RVCConverter:
         try:
             # ตรวจสอบโมเดล
             available_models = self.get_available_models()
+            
+            # แปลง model_name ให้เป็น string อย่างปลอดภัย (แก้ไข unhashable error)
+            model_name = normalize_model_name(model_name)
+            if model_name is None:
+                raise ValueError("ไม่สามารถแปลงพารามิเตอร์ model_name ได้")
+            
+            logger.info(f"Using model name: {model_name}")
+                    
             if model_name not in available_models:
                 raise ValueError(f"Model {model_name} not found. Available: {available_models}")
             

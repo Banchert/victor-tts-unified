@@ -1,19 +1,17 @@
 @echo off
-REM 🚀 VICTOR-TTS MAIN START
-REM เวอร์ชันหลัก - ใช้ web interface ใหม่
+REM 🚀 VICTOR-TTS IMPROVED START
+REM เวอร์ชันที่ปรับปรุงแล้ว - ผลลัพธ์อยู่ใกล้ปุ่ม
 
-title VICTOR-TTS MAIN
+title VICTOR-TTS IMPROVED
 
 echo.
 echo ========================================
-echo 🎙️  VICTOR-TTS MAIN SYSTEM  🎙️
+echo 🎙️  VICTOR-TTS IMPROVED SYSTEM  🎙️
 echo ========================================
-echo ✅ Complete TTS + RVC System
-echo ✅ New Enhanced UI Design
+echo ✅ Enhanced UI Design
 echo ✅ Better Result Positioning
-echo ✅ All Features Included
-echo ✅ Speed Control & Effects
-echo ✅ Multi-language Support
+echo ✅ Smooth Animations
+echo ✅ Modern Gradient Design
 echo ========================================
 echo.
 
@@ -30,10 +28,10 @@ echo 📌 Python Info:
 %PYTHON_CMD% --version
 
 echo.
-echo 🚀 Starting Main Web Interface...
+echo 🚀 Starting Improved Web Interface...
 echo 🔗 URL: http://localhost:7000
 echo.
 
-%PYTHON_CMD% web_interface_complete.py
+%PYTHON_CMD% web_interface_improved.py
 
 pause 

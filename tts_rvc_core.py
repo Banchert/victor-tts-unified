@@ -10,6 +10,7 @@ import re
 from pathlib import Path
 import logging
 from typing import Optional, Dict, Any, List, Union, Tuple
+from model_utils import safe_model_processing, normalize_model_name
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
@@ -733,7 +734,18 @@ class TTSRVCCore:
                 else:
                     # ตรวจสอบว่าโมเดลมีอยู่จริงหรือไม่
                     available_models = self.get_available_rvc_models()
-                    if rvc_model not in available_models:
+                    
+                    # แปลง rvc_model ให้เป็น string อย่างปลอดภัย (แก้ไข unhashable error)
+                    rvc_model, model_error = safe_model_processing(
+                        rvc_model, 
+                        available_models,
+                        available_models[0] if available_models else None
+                    )
+                    
+                    if model_error:
+                        logger.warning(f"Model processing warning: {model_error}")
+                    
+                    if rvc_model and rvc_model in available_models:
                         logger.warning(f"RVC model '{rvc_model}' not found. Available models: {available_models}")
                         result["processing_steps"].append("rvc_model_not_found")
                         result["error"] = f"RVC model '{rvc_model}' not found"
@@ -1052,7 +1064,7 @@ class TTSRVCCore:
 
     def detect_language_segments(self, text: str) -> List[Tuple[str, str]]:
         """
-        ตรวจจับและแยกข้อความตามภาษา
+        ตรวจจับและแยกข้อความตามภาษาแบบปรับปรุง
         
         Args:
             text: ข้อความที่ต้องการแยก
@@ -1060,79 +1072,131 @@ class TTSRVCCore:
         Returns:
             List[Tuple[str, str]]: รายการ (ข้อความ, ภาษา)
         """
+        if not text.strip():
+            return []
+        
         segments = []
         
-        # รูปแบบการตรวจจับภาษา
+        # รูปแบบการตรวจจับภาษาแบบปรับปรุง
         patterns = {
-            'english': r'[a-zA-Z]+(?:\s+[a-zA-Z]+)*',
-            'lao': r'[\u0E80-\u0EFF]+(?:\s+[\u0E80-\u0EFF]+)*',
-            'thai': r'[\u0E00-\u0E7F]+(?:\s+[\u0E00-\u0E7F]+)*',
-            'chinese': r'[\u4E00-\u9FFF]+(?:\s+[\u4E00-\u9FFF]+)*',
-            'japanese': r'[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF]+(?:\s+[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF]+)*',
-            'numbers': r'\d+(?:\.\d+)?',
-            'punctuation': r'[^\w\s\u0E00-\u0E7F\u0E80-\u0EFF\u4E00-\u9FFF\u3040-\u309F\u30A0-\u30FF]'
+            'english': r'[a-zA-Z]+(?:\\s+[a-zA-Z]+)*',
+            'lao': r'[\u0E80-\u0EFF]+(?:\\s+[\u0E80-\u0EFF]+)*',
+            'thai': r'[\u0E00-\u0E7F]+(?:\\s+[\u0E00-\u0E7F]+)*',
+            'chinese': r'[\u4E00-\u9FFF]+(?:\\s+[\u4E00-\u9FFF]+)*',
+            'japanese': r'[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF]+(?:\\s+[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF]+)*',
+            'numbers': r'\\d+(?:\\.\\d+)?',
+            'punctuation': r'[^\\w\\s\u0E00-\u0E7F\u0E80-\u0EFF\u4E00-\u9FFF\u3040-\u309F\u30A0-\u30FF]'
         }
         
-        # รวมรูปแบบทั้งหมด
-        all_patterns = '|'.join(f'({pattern})' for pattern in patterns.values())
+        # ตรวจสอบว่ามีตัวอักษรลาวในข้อความหรือไม่
+        has_lao = bool(re.search(r'[\u0E80-\u0EFF]', text))
+        has_english = bool(re.search(r'[a-zA-Z]', text))
         
-        # หา matches ทั้งหมด
-        matches = list(re.finditer(all_patterns, text, re.UNICODE))
-        
-        if not matches:
-            # ถ้าไม่เจอรูปแบบใดๆ ให้ถือว่าเป็นภาษาเริ่มต้น
-            return [(text, 'unknown')]
-        
-        # จัดเรียงตามตำแหน่ง
-        matches.sort(key=lambda x: x.start())
-        
-        current_pos = 0
-        for match in matches:
-            # เพิ่มข้อความที่ไม่ตรงกับรูปแบบใดๆ
-            if match.start() > current_pos:
-                unknown_text = text[current_pos:match.start()].strip()
-                if unknown_text:
-                    segments.append((unknown_text, 'unknown'))
+        # ถ้ามีทั้งลาวและอังกฤษ ให้ใช้ multi-language detection
+        if has_lao and has_english:
+            # สร้าง regex pattern รวมแบบปรับปรุง
+            all_patterns = []
+            for lang_code, pattern in patterns.items():
+                all_patterns.append(f'(?P<{lang_code}>{pattern})')
             
-            # ระบุภาษา
-            matched_text = match.group()
-            language = 'unknown'
+            combined_pattern = '|'.join(all_patterns)
             
-            for i, (lang, pattern) in enumerate(patterns.items()):
-                if re.match(pattern, matched_text, re.UNICODE):
-                    language = lang
-                    break
+            # หา matches ทั้งหมด
+            matches = list(re.finditer(combined_pattern, text, re.UNICODE))
             
-            segments.append((matched_text, language))
-            current_pos = match.end()
-        
-        # เพิ่มข้อความที่เหลือ
-        if current_pos < len(text):
-            remaining_text = text[current_pos:].strip()
-            if remaining_text:
-                segments.append((remaining_text, 'unknown'))
-        
-        # รวมส่วนที่ติดกันและเป็นภาษาเดียวกัน
-        merged_segments = []
-        current_text = ""
-        current_lang = None
-        
-        for text_segment, lang in segments:
-            if current_lang is None:
-                current_lang = lang
-                current_text = text_segment
-            elif lang == current_lang:
-                current_text += " " + text_segment
+            if not matches:
+                # ถ้าไม่เจอรูปแบบใดๆ ให้ถือว่าเป็นภาษาลาว
+                return [(text, 'lao')]
+            
+            # จัดเรียงตามตำแหน่ง
+            matches.sort(key=lambda x: x.start())
+            
+            # แยกข้อความเป็นส่วนๆ
+            current_pos = 0
+            
+            for match in matches:
+                # เพิ่มข้อความที่ไม่ตรงกับรูปแบบใดๆ (ช่องว่าง, ฯลฯ)
+                if match.start() > current_pos:
+                    gap_text = text[current_pos:match.start()]
+                    if gap_text.strip():
+                        # กำหนดภาษาตามข้อความรอบข้าง
+                        surrounding_lang = self._determine_surrounding_language(matches, current_pos)
+                        segments.append((gap_text, surrounding_lang))
+                
+                # เพิ่มข้อความที่ตรงกับรูปแบบ
+                for lang_code in patterns.keys():
+                    if match.group(lang_code):
+                        segments.append((match.group(lang_code), lang_code))
+                        break
+                
+                current_pos = match.end()
+            
+            # เพิ่มข้อความที่เหลือ
+            if current_pos < len(text):
+                remaining_text = text[current_pos:]
+                if remaining_text.strip():
+                    surrounding_lang = self._determine_surrounding_language(matches, current_pos)
+                    segments.append((remaining_text, surrounding_lang))
+            
+            # รวมส่วนที่ติดกันและมีภาษาเดียวกัน
+            merged_segments = self._merge_adjacent_segments(segments)
+            
+            return merged_segments
+        else:
+            # ถ้ามีภาษาเดียว ให้ใช้ภาษาเดียว
+            if has_lao:
+                return [(text, 'lao')]
+            elif has_english:
+                return [(text, 'english')]
             else:
-                if current_text:
-                    merged_segments.append((current_text.strip(), current_lang))
-                current_text = text_segment
+                return [(text, 'unknown')]
+        
+
+    
+    def _determine_surrounding_language(self, matches: List, position: int) -> str:
+        """กำหนดภาษาตามข้อความรอบข้าง"""
+        # หา match ที่ใกล้ที่สุด
+        closest_match = None
+        min_distance = float('inf')
+        
+        for match in matches:
+            distance = min(abs(match.start() - position), abs(match.end() - position))
+            if distance < min_distance:
+                min_distance = distance
+                closest_match = match
+        
+        if closest_match:
+            # กำหนดภาษาตาม match ที่ใกล้ที่สุด
+            for lang_code in ['lao', 'thai', 'english', 'chinese', 'japanese', 'numbers', 'punctuation']:
+                if closest_match.group(lang_code):
+                    return lang_code
+        
+        return 'lao'  # ค่าเริ่มต้น
+    
+    def _merge_adjacent_segments(self, segments: List[Tuple[str, str]]) -> List[Tuple[str, str]]:
+        """รวมส่วนที่ติดกันและมีภาษาเดียวกัน"""
+        if not segments:
+            return []
+        
+        merged = []
+        current_text = segments[0][0]
+        current_lang = segments[0][1]
+        
+        for text, lang in segments[1:]:
+            # รวมถ้าภาษาเดียวกัน
+            if lang == current_lang:
+                current_text += text
+            else:
+                # บันทึกส่วนปัจจุบัน
+                merged.append((current_text, current_lang))
+                # เริ่มส่วนใหม่
+                current_text = text
                 current_lang = lang
         
-        if current_text:
-            merged_segments.append((current_text.strip(), current_lang))
+        # บันทึกส่วนสุดท้าย
+        merged.append((current_text, current_lang))
         
-        return merged_segments
+        return merged
     
     def get_voice_for_language(self, language: str, base_voice: str) -> str:
         """
@@ -1154,9 +1218,13 @@ class TTSRVCCore:
             'japanese': 'ja-JP-NanamiNeural'
         }
         
-        # ถ้าเป็นตัวเลขหรือเครื่องหมายวรรคตอน ให้ใช้เสียงเริ่มต้น
-        if language in ['numbers', 'punctuation', 'unknown']:
+        # ถ้าเป็นตัวเลขหรือเครื่องหมายวรรคตอน ให้ใช้เสียงของข้อความรอบข้าง
+        if language in ['numbers', 'punctuation']:
             return base_voice
+        
+        # ถ้าเป็น unknown ให้ใช้เสียงลาวเป็นค่าเริ่มต้น
+        if language == 'unknown':
+            return 'lo-LA-KeomanyNeural'
         
         return language_voice_mapping.get(language, base_voice)
 

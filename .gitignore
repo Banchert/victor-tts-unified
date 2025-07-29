@@ -352,4 +352,30 @@ tests/test_data/*.pth
 !docker/nginx.conf
 
 # Keep N8N workflows
-!n8n_workflows/*.json 
+!n8n_workflows/*.json
+
+# Removed/Old Files (Don't track these)
+# ================================================
+web_interface.py
+web_interface_backup.py
+web_interface_fast.py
+start_fast.bat
+test_and_run.bat
+test_core_import.py
+TTS_FIX_SUMMARY.md
+run_fixed_api.bat
+simple_tts_api_fixed.py
+tts_rvc_core_fixed.py
+quick_tts_test.py
+fix_tts.bat
+tts_problem_solver.py
+test_tts_only.py
+README_UPDATED.md
+run_n8n_api.bat
+run_api_server.bat
+run_simple_test.bat
+quick_fix.py
+simple_test.py
+run_new_interface.bat
+run_improved_interface.bat
+run_old_interface.bat 
