@@ -118,6 +118,11 @@ cython_debug/
 *.npy
 *.npz
 
+# Large Model Files (GitHub size limit)
+rvc/models/predictors/fcpe.pt
+rvc/models/predictors/rmvpe.pt
+*.pt
+
 # Temporary Files
 temp/
 tmp/
