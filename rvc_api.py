@@ -63,10 +63,13 @@ class RVCConverter:
             pth_files = list(model_dir.glob("*.pth"))
             index_files = list(model_dir.glob("*.index"))
             
+            # Filter out training files (D_*.pth, G_*.pth) - keep only model files
+            model_pth_files = [f for f in pth_files if not (f.name.startswith('D_') or f.name.startswith('G_'))]
+            
             # Check if model has required files
-            if pth_files:
+            if model_pth_files:
                 if index_files:
-                    logger.info(f"Valid model found: {model_name} (pth: {len(pth_files)}, index: {len(index_files)})")
+                    logger.info(f"Valid model found: {model_name} (pth: {len(model_pth_files)}, index: {len(index_files)})")
                     models.append(model_name)
                 else:
                     logger.warning(f"Model {model_name} missing .index files")
@@ -98,12 +101,15 @@ class RVCConverter:
             pth_files = list(model_dir.glob("*.pth"))
             index_files = list(model_dir.glob("*.index"))
             
-            if not pth_files:
-                logger.error(f"No .pth files found for model: {model_name}")
+            # Filter out training files (D_*.pth, G_*.pth) - keep only model files
+            model_pth_files = [f for f in pth_files if not (f.name.startswith('D_') or f.name.startswith('G_'))]
+            
+            if not model_pth_files:
+                logger.error(f"No model .pth files found for model: {model_name}")
                 return False
             
-            # Use the first .pth file found
-            model_path = str(pth_files[0])
+            # Use the first model .pth file found
+            model_path = str(model_pth_files[0])
             index_path = str(index_files[0]) if index_files else None
             
             logger.info(f"Loading model: {model_path}")
