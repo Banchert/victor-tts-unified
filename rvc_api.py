@@ -37,6 +37,8 @@ class RVCConverter:
         self.models_dir = Path(models_dir)
         self.voice_converter = None
         self.current_model = None
+        self.current_model_path = None
+        self.current_index_path = None
         self.device = device if device else ("cuda:0" if torch.cuda.is_available() else "cpu")
         self.performance_config = performance_config or {}
         
@@ -120,20 +122,12 @@ class RVCConverter:
             if self.voice_converter is None:
                 self.voice_converter = VoiceConverter()
             
-            # Load the model
-            success = self.voice_converter.load_model(
-                model_path=model_path,
-                index_path=index_path,
-                device=self.device
-            )
-            
-            if success:
-                self.current_model = model_name
-                logger.info(f"Successfully loaded model: {model_name}")
-                return True
-            else:
-                logger.error(f"Failed to load model: {model_name}")
-                return False
+            # Store model paths for later use
+            self.current_model_path = model_path
+            self.current_index_path = index_path
+            self.current_model = model_name
+            logger.info(f"Successfully prepared model: {model_name}")
+            return True
                 
         except Exception as e:
             logger.error(f"Error loading model {model_name}: {e}")
@@ -184,21 +178,23 @@ class RVCConverter:
                 logger.error("Voice converter not initialized")
                 return False
             
-            # Perform voice conversion
-            success = self.voice_converter.convert_audio(
-                input_path=input_path,
-                output_path=output_path,
+            # Perform voice conversion using stored model paths
+            self.voice_converter.convert_audio(
+                audio_input_path=input_path,
+                audio_output_path=output_path,
+                model_path=self.current_model_path,
+                index_path=self.current_index_path,
                 pitch=pitch,
+                f0_method=f0_method,
                 index_rate=index_rate,
                 volume_envelope=volume_envelope,
                 protect=protect,
                 hop_length=hop_length,
-                f0_method=f0_method,
                 clean_audio=clean_audio,
                 clean_strength=clean_strength
             )
             
-            if success and os.path.exists(output_path):
+            if os.path.exists(output_path):
                 logger.info(f"Voice conversion completed: {input_path} -> {output_path}")
                 return True
             else:
