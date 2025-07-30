@@ -1232,6 +1232,120 @@ class TTSRVCCore:
         
         return language_voice_mapping.get(language, base_voice)
 
+    def apply_audio_effects(self, audio_data: bytes, effects: Dict[str, Any]) -> bytes:
+        """
+        ใช้เอฟเฟกต์พิเศษกับเสียง
+        
+        Args:
+            audio_data: ข้อมูลเสียงที่ต้องการใส่เอฟเฟกต์
+            effects: dictionary ของเอฟเฟกต์ที่ต้องการ
+            
+        Returns:
+            bytes: ข้อมูลเสียงที่ใส่เอฟเฟกต์แล้ว
+        """
+        try:
+            # ถ้าไม่มีเอฟเฟกต์ใดเปิดอยู่ ให้ส่งคืนเดิม
+            if not any(effects.get(key, False) for key in ['demon_mode', 'robot_mode', 'echo_mode', 'reverb_mode']):
+                return audio_data
+            
+            # แปลงจาก bytes เป็น numpy array
+            import io
+            import soundfile as sf
+            from pedalboard import (
+                Pedalboard, Chorus, Distortion, Reverb, PitchShift, 
+                Limiter, Gain, Bitcrush, Clipping, Compressor, Delay
+            )
+            
+            # อ่านเสียงจาก bytes
+            audio_io = io.BytesIO(audio_data)
+            audio_array, sample_rate = sf.read(audio_io)
+            
+            # สร้าง pedalboard
+            board = Pedalboard()
+            
+            # Demon Mode: Pitch down + Distortion + Dark reverb
+            if effects.get('demon_mode', False):
+                logger.info("Applying demon mode effect")
+                # ลดเสียงลง 8 semitones
+                pitch_shift = PitchShift(semitones=-8)
+                board.append(pitch_shift)
+                
+                # เพิ่ม distortion
+                distortion = Distortion(drive_db=35)
+                board.append(distortion)
+                
+                # เพิ่ม dark reverb
+                reverb = Reverb(
+                    room_size=0.9,
+                    damping=0.8,
+                    wet_level=0.4,
+                    dry_level=0.7,
+                    width=0.5
+                )
+                board.append(reverb)
+            
+            # Robot Mode: Bitcrush + Chorus + High pitch
+            if effects.get('robot_mode', False):
+                logger.info("Applying robot mode effect")
+                # เพิ่มเสียงขึ้น 2 semitones
+                pitch_shift = PitchShift(semitones=2)
+                board.append(pitch_shift)
+                
+                # เพิ่ม bitcrush สำหรับเสียงดิจิตอล
+                bitcrush = Bitcrush(bit_depth=6)
+                board.append(bitcrush)
+                
+                # เพิ่ม chorus สำหรับเสียงแปลกๆ
+                chorus = Chorus(
+                    rate_hz=2.0,
+                    depth=0.5,
+                    centre_delay_ms=10,
+                    feedback=0.3,
+                    mix=0.6
+                )
+                board.append(chorus)
+            
+            # Echo Mode: Delay effect
+            if effects.get('echo_mode', False):
+                logger.info("Applying echo mode effect")
+                delay = Delay(
+                    delay_seconds=0.3,
+                    feedback=0.5,
+                    mix=0.4
+                )
+                board.append(delay)
+            
+            # Reverb Mode: Natural reverb
+            if effects.get('reverb_mode', False):
+                logger.info("Applying reverb mode effect")
+                reverb = Reverb(
+                    room_size=0.7,
+                    damping=0.3,
+                    wet_level=0.5,
+                    dry_level=0.8,
+                    width=1.0
+                )
+                board.append(reverb)
+            
+            # ใช้เอฟเฟกต์กับเสียง
+            if len(board) > 0:
+                processed_audio = board(audio_array, sample_rate)
+                
+                # แปลงกลับเป็น bytes
+                output_io = io.BytesIO()
+                sf.write(output_io, processed_audio, sample_rate, format='WAV')
+                processed_data = output_io.getvalue()
+                
+                logger.info(f"Applied {len(board)} audio effects, size: {len(audio_data)} -> {len(processed_data)} bytes")
+                return processed_data
+            else:
+                return audio_data
+                
+        except Exception as e:
+            logger.error(f"Error applying audio effects: {e}")
+            # ถ้าเกิดข้อผิดพลาด ให้ส่งคืนเสียงเดิม
+            return audio_data
+
 # เสียงที่รองรับ
 SUPPORTED_VOICES = {
     "th-TH-PremwadeeNeural": {"name": "Premwadee (Thai Female)", "gender": "Female", "language": "Thai"},

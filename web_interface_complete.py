@@ -1240,6 +1240,12 @@ class CompleteWebInterface:
                                         data.get('rvc_f0_method', 'rmvpe')
                                     )
                                 
+                                # เอฟเฟกต์พิเศษ (ถ้ามี)
+                                effects = data.get('effects', {})
+                                if any(effects.get(key, False) for key in ['demon_mode', 'robot_mode', 'echo_mode', 'reverb_mode']):
+                                    print(f"🎵 Applying effects: {[k for k, v in effects.items() if v]}")
+                                    audio_data = self.web_interface.core.apply_audio_effects(audio_data, effects)
+                                
                                 return {
                                     'success': True,
                                     'data': {
