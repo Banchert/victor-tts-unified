@@ -456,7 +456,7 @@ class CompleteWebInterface:
         <main>
             <!-- System Information -->
             <div class="system-info">
-                <h3>🔧 ข้อมูลระบบ</h3>
+                <h3>🔧 ข้อมูลระบบ <button onclick="refreshSystemStatus()" style="margin-left: 10px; padding: 5px 10px; background: #4A90E2; color: white; border: none; border-radius: 5px; cursor: pointer;">🔄 รีเฟรช</button></h3>
                 <ul>
                     <li>🎵 TTS System: {'✅ Available' if status.get('tts_available') else '❌ Not Available'}</li>
                     <li>🎭 RVC System: {'✅ Available' if status.get('rvc_available') else '❌ Not Available'}</li>
@@ -555,6 +555,10 @@ class CompleteWebInterface:
                             <input type="checkbox" id="reverb-mode-check" name="reverb_mode">
                             <label for="reverb-mode-check">🏛️ โหมดเสียงสะท้อน</label>
                         </div>
+                        <div class="checkbox-container" id="multilingual-container" style="display: none;">
+                            <input type="checkbox" id="multilingual-mode-check" name="multilingual_mode">
+                            <label for="multilingual-mode-check">🌍 โหมดพูดหลายภาษา (สำหรับภาษาลาว)</label>
+                        </div>
                     </div>
                 </details>
 
@@ -595,6 +599,8 @@ class CompleteWebInterface:
             const robotModeCheck = document.getElementById('robot-mode-check');
             const echoModeCheck = document.getElementById('echo-mode-check');
             const reverbModeCheck = document.getElementById('reverb-mode-check');
+            const multilingualModeCheck = document.getElementById('multilingual-mode-check');
+            const multilingualContainer = document.getElementById('multilingual-container');
             const speedSlider = document.getElementById('speed-slider');
             const speedValue = document.getElementById('speed-value');
             let lastAudioUrl = '';
@@ -633,25 +639,25 @@ class CompleteWebInterface:
                     name: '🇺🇸 อังกฤษ (English)',
                     code: 'en-US',
                     flag: '🇺🇸',
-                    rvcModels: ['aria_english']
+                    rvcModels: ['aria_english', 'al_bundy', 'boy_peacemaker', 'Michael', 'STS73', 'Law_By_Mike_e160_s4800', 'MusicV1Carti_300_Epochs', 'JO', 'illslick', 'knomjean', 'VANXAI', 'YingyongYodbuangarm', 'ChalermpolMalakham', 'MonkanKaenkoon', 'DangHMD2010v2New', 'BoSunita', 'pang', 'theestallion', 'JNANG']
                 }},
                 'Chinese': {{
                     name: '🇨🇳 จีน (Chinese)',
                     code: 'zh-CN',
                     flag: '🇨🇳',
-                    rvcModels: []
+                    rvcModels: ['al_bundy', 'boy_peacemaker', 'Michael', 'STS73', 'Law_By_Mike_e160_s4800', 'MusicV1Carti_300_Epochs', 'JO', 'illslick', 'knomjean', 'VANXAI', 'YingyongYodbuangarm', 'ChalermpolMalakham', 'MonkanKaenkoon', 'DangHMD2010v2New', 'BoSunita', 'pang', 'theestallion', 'JNANG']
                 }},
                 'Japanese': {{
                     name: '🇯🇵 ญี่ปุ่น (Japanese)',
                     code: 'ja-JP',
                     flag: '🇯🇵',
-                    rvcModels: []
+                    rvcModels: ['al_bundy', 'boy_peacemaker', 'Michael', 'STS73', 'Law_By_Mike_e160_s4800', 'MusicV1Carti_300_Epochs', 'JO', 'illslick', 'knomjean', 'VANXAI', 'YingyongYodbuangarm', 'ChalermpolMalakham', 'MonkanKaenkoon', 'DangHMD2010v2New', 'BoSunita', 'pang', 'theestallion', 'JNANG']
                 }},
                 'Lao': {{
                     name: '🇱🇦 ลาว (Laos)',
                     code: 'lo-LA',
                     flag: '🇱🇦',
-                    rvcModels: ['keomany_lao']
+                    rvcModels: ['keomany_lao', 'al_bundy', 'boy_peacemaker', 'Michael', 'STS73', 'Law_By_Mike_e160_s4800', 'MusicV1Carti_300_Epochs', 'JO', 'illslick', 'knomjean', 'VANXAI', 'YingyongYodbuangarm', 'ChalermpolMalakham', 'MonkanKaenkoon', 'DangHMD2010v2New', 'BoSunita', 'pang', 'theestallion', 'JNANG']
                 }}
             }};
 
@@ -661,6 +667,8 @@ class CompleteWebInterface:
                 'Thai Female': ['BoSunita', 'pang', 'theestallion'],
                 'English': ['aria_english'],
                 'Lao': ['keomany_lao'],
+                'International Male': ['al_bundy', 'boy_peacemaker', 'Michael', 'STS73', 'Law_By_Mike_e160_s4800', 'JO', 'illslick', 'knomjean', 'VANXAI'],
+                'International Female': ['YingyongYodbuangarm', 'ChalermpolMalakham', 'MonkanKaenkoon', 'DangHMD2010v2New', 'BoSunita', 'pang', 'theestallion', 'JNANG'],
                 'Music': ['MusicV1Carti_300_Epochs']
             }};
 
@@ -669,6 +677,13 @@ class CompleteWebInterface:
             // Fetch available voices and models
             async function fetchInitialData() {{
                 try {{
+                    // Fetch system status first
+                    const statusResponse = await fetch('/status');
+                    const statusData = await statusResponse.json();
+                    if (statusData.success && statusData.data) {{
+                        updateSystemStatus(statusData.data);
+                    }}
+                    
                     // Fetch TTS voices
                     const voicesResponse = await fetch('/voices');
                     const voicesData = await voicesResponse.json();
@@ -699,6 +714,7 @@ class CompleteWebInterface:
                         if (voicesByLanguage['Thai']) {{
                             languageSelect.value = 'Thai';
                             updateVoiceOptions('Thai');
+                            updateMultilingualMode('Thai');
                         }}
                     }}
                     
@@ -727,6 +743,36 @@ class CompleteWebInterface:
                 }}
             }}
 
+            // Update system status display
+            function updateSystemStatus(status) {{
+                const statusList = document.querySelector('.system-info ul');
+                if (statusList) {{
+                    statusList.innerHTML = `
+                        <li>🎵 TTS System: ${{status.tts_available ? '✅ Available' : '❌ Not Available'}}</li>
+                        <li>🎭 RVC System: ${{status.rvc_available ? '✅ Available' : '❌ Not Available'}}</li>
+                        <li>🖥️ Device: ${{status.device || 'Unknown'}}</li>
+                        <li>🎤 RVC Models: ${{status.rvc_models_count || 0}} models</li>
+                    `;
+                }}
+            }}
+
+            // Refresh system status manually
+            async function refreshSystemStatus() {{
+                try {{
+                    const statusResponse = await fetch('/status');
+                    const statusData = await statusResponse.json();
+                    if (statusData.success && statusData.data) {{
+                        updateSystemStatus(statusData.data);
+                        showStatus('✅ อัปเดตสถานะระบบแล้ว', 'success');
+                    }} else {{
+                        showStatus('❌ ไม่สามารถอัปเดตสถานะได้', 'error');
+                    }}
+                }} catch (error) {{
+                    console.error('Error refreshing status:', error);
+                    showStatus('❌ เกิดข้อผิดพลาดในการอัปเดตสถานะ', 'error');
+                }}
+            }}
+
             // Update voice options based on selected language
             function updateVoiceOptions(selectedLanguage) {{
                 // Clear current voice options
@@ -735,9 +781,23 @@ class CompleteWebInterface:
                 if (!selectedLanguage || !allVoices) return;
                 
                 // Filter voices by language
-                const filteredVoices = Object.entries(allVoices).filter(
+                let filteredVoices = Object.entries(allVoices).filter(
                     ([key, voice]) => voice.language === selectedLanguage
                 );
+                
+                // For Lao language, also include English voices for multilingual support
+                if (selectedLanguage === 'Lao') {{
+                    const englishVoices = Object.entries(allVoices).filter(
+                        ([key, voice]) => voice.language === 'English'
+                    );
+                    
+                    // Add Lao voices first, then English voices
+                    const allVoicesForLao = [...filteredVoices, ...englishVoices];
+                    filteredVoices = allVoicesForLao;
+                    
+                    console.log('🔍 Debug - Lao language selected, including English voices for multilingual support');
+                    console.log('🔍 Debug - Total voices available:', filteredVoices.length);
+                }}
                 
                 // Add voices to select
                 let isFirst = true;
@@ -745,14 +805,25 @@ class CompleteWebInterface:
                     const option = document.createElement('option');
                     option.value = key;
                     
-                    // Add gender emoji
+                    // Add gender emoji and language indicator
                     const genderEmoji = voice.gender === 'Male' ? '👨' : '👩';
                     const languageFlag = languageMapping[voice.language]?.flag || '🗣️';
                     
-                    option.textContent = `${{genderEmoji}} ${{voice.name}}`;
+                    // Add language indicator for mixed voices
+                    let voiceText = `${{genderEmoji}} ${{voice.name}}`;
+                    if (selectedLanguage === 'Lao' && voice.language === 'English') {{
+                        voiceText += ` (🇺🇸 English)`;
+                    }} else if (selectedLanguage === 'Lao' && voice.language === 'Lao') {{
+                        voiceText += ` (🇱🇦 Lao)`;
+                    }}
                     
-                    // Set first voice as default
-                    if (isFirst) {{
+                    option.textContent = voiceText;
+                    
+                    // Set first Lao voice as default for Lao language
+                    if (isFirst && selectedLanguage === 'Lao' && voice.language === 'Lao') {{
+                        option.selected = true;
+                        isFirst = false;
+                    }} else if (isFirst && selectedLanguage !== 'Lao') {{
                         option.selected = true;
                         isFirst = false;
                     }}
@@ -821,8 +892,10 @@ class CompleteWebInterface:
                         
                         // Add emoji based on category
                         let emoji = '🎤';
-                        if (category.includes('Male')) emoji = '👨';
-                        else if (category.includes('Female')) emoji = '👩';
+                        if (category.includes('Thai Male')) emoji = '👨🇹🇭';
+                        else if (category.includes('Thai Female')) emoji = '👩🇹🇭';
+                        else if (category.includes('International Male')) emoji = '👨🌍';
+                        else if (category.includes('International Female')) emoji = '👩🌍';
                         else if (category.includes('Lao')) emoji = '🇱🇦';
                         else if (category.includes('English')) emoji = '🇺🇸';
                         else if (category.includes('Music')) emoji = '🎵';
@@ -837,7 +910,22 @@ class CompleteWebInterface:
             languageSelect.addEventListener('change', function() {{
                 const selectedLanguage = this.value;
                 updateVoiceOptions(selectedLanguage);
+                updateMultilingualMode(selectedLanguage);
             }});
+
+            // Update multilingual mode visibility
+            function updateMultilingualMode(selectedLanguage) {{
+                console.log('🔍 Debug - updateMultilingualMode called with language:', selectedLanguage);
+                if (selectedLanguage === 'Lao') {{
+                    multilingualContainer.style.display = 'flex';
+                    multilingualModeCheck.checked = false; // Reset to unchecked
+                    console.log('🔍 Debug - Multilingual container shown for Lao');
+                }} else {{
+                    multilingualContainer.style.display = 'none';
+                    multilingualModeCheck.checked = false;
+                    console.log('🔍 Debug - Multilingual container hidden for:', selectedLanguage);
+                }}
+            }}
 
             // Generate audio with all features
             async function generateAudio() {{
@@ -852,6 +940,12 @@ class CompleteWebInterface:
                     showStatus('กรุณาเลือกเสียง TTS', 'error');
                     return;
                 }}
+                
+                // Debug logging for voice selection
+                const selectedLanguage = languageSelect.value;
+                console.log('🔍 Debug - Selected language:', selectedLanguage);
+                console.log('🔍 Debug - Selected voice:', selectedVoice);
+                console.log('🔍 Debug - Voice info:', allVoices[selectedVoice]);
                 
                 generateBtn.disabled = true;
                 generateBtn.innerHTML = '<span class="loading"></span>กำลังประมวลผล...';
@@ -869,7 +963,25 @@ class CompleteWebInterface:
                     robot_mode: robotModeCheck.checked,
                     echo_mode: echoModeCheck.checked,
                     reverb_mode: reverbModeCheck.checked,
+                    multilingual_mode: multilingualModeCheck.checked,
                 }};
+                
+                // Auto-enable multilingual mode for Lao language with mixed text
+                if (selectedLanguage === 'Lao' && !multilingualModeCheck.checked) {{
+                    // Check if text contains mixed languages
+                    const hasLao = /[\u0e80-\u0eff]/.test(text);
+                    const hasEnglish = /[a-zA-Z]/.test(text);
+                    
+                    if (hasLao && hasEnglish) {{
+                        console.log('🔍 Debug - Auto-enabling multilingual mode for mixed Lao-English text');
+                        effects.multilingual_mode = true;
+                        multilingualModeCheck.checked = true;
+                    }}
+                }}
+                
+                // Debug logging
+                console.log('🔍 Debug - Multilingual checkbox checked:', multilingualModeCheck.checked);
+                console.log('🔍 Debug - Effects object:', effects);
                 
                 const rvcModelName = rvcModelSelect.value;
                 const rvcTranspose = parseInt(rvcTransposeSelect.value);
@@ -1066,6 +1178,27 @@ class CompleteWebInterface:
                         'data': {'styles': styles}
                     }
                     self.wfile.write(json.dumps(response, ensure_ascii=False).encode('utf-8'))
+                elif self.path == '/status':
+                    self.send_response(200)
+                    self.send_header('Content-type', 'application/json')
+                    self.end_headers()
+                    
+                    if self.web_interface.core:
+                        status = self.web_interface.core.get_system_status()
+                    else:
+                        status = {
+                            "tts_available": False,
+                            "rvc_available": False,
+                            "device": "Unknown",
+                            "gpu_name": "Unknown",
+                            "rvc_models_count": 0
+                        }
+                    
+                    response = {
+                        'success': True,
+                        'data': status
+                    }
+                    self.wfile.write(json.dumps(response, ensure_ascii=False).encode('utf-8'))
                 else:
                     self.send_response(404)
                     self.end_headers()
@@ -1081,11 +1214,20 @@ class CompleteWebInterface:
                         # สร้างเสียง
                         async def generate():
                             try:
+                                # Check for multilingual mode for Lao
+                                multilingual_mode = data.get('effects', {}).get('multilingual_mode', False)
+                                
+                                # Debug logging
+                                print(f"🔍 Debug - Multilingual mode: {multilingual_mode}")
+                                print(f"🔍 Debug - Effects data: {data.get('effects', {})}")
+                                print(f"🔍 Debug - Text: {data['text'][:50]}...")
+                                
                                 # TTS
                                 audio_data = await self.web_interface.core.generate_tts(
                                     data['text'], 
                                     data['tts_voice'],
-                                    data.get('tts_speed', 1.0)
+                                    data.get('tts_speed', 1.0),
+                                    enable_multi_language=multilingual_mode
                                 )
                                 
                                 # RVC (ถ้ามี)

@@ -9,10 +9,10 @@ echo ========================================
 echo 🎙️  VICTOR-TTS COMPLETE SYSTEM  🎙️
 echo ========================================
 echo ✅ Complete TTS + RVC System
-echo ✅ All Features & Tools Included
+echo ✅ All Features and Tools Included
 echo ✅ Enhanced UI Design
 echo ✅ Better Result Positioning
-echo ✅ Speed Control & Effects
+echo ✅ Speed Control and Effects
 echo ✅ Multi-language Support
 echo ========================================
 echo.
