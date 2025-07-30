@@ -104,7 +104,9 @@ venv.bak/
 dmypy.json
 
 # RVC Specific ignores
-logs/
+logs/*
+!logs/README.md
+!logs/.gitkeep
 *.pth
 *.index
 *.wav
@@ -132,7 +134,9 @@ test_*.py
 rvc_old_backup/
 
 # Temporary files
-rvc_*.py
+rvc_backup*.py
+rvc_temp*.py
+rvc_test*.py
 temp_*.py
 *_temp.*
 
