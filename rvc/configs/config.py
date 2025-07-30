@@ -47,40 +47,11 @@ class Config:
         else:
             self.device = "cpu"
 
-        # Enhanced GPU memory configuration with better optimization
-        if self.gpu_mem is not None:
-            if self.gpu_mem <= 4:
-                # Configuration for 4GB GPU memory (Conservative)
-                x_pad, x_query, x_center, x_max = (1, 4, 25, 28)
-                print(f"GPU Memory: {self.gpu_mem}GB - Using conservative settings for 4GB GPU")
-            elif self.gpu_mem <= 6:
-                # Configuration for 6GB GPU memory (Balanced)
-                x_pad, x_query, x_center, x_max = (1, 5, 30, 32)
-                print(f"GPU Memory: {self.gpu_mem}GB - Using balanced settings for 6GB GPU")
-            elif self.gpu_mem <= 8:
-                # Configuration for 8GB GPU memory (Optimized)
-                x_pad, x_query, x_center, x_max = (1, 6, 38, 41)
-                print(f"GPU Memory: {self.gpu_mem}GB - Using optimized settings for 8GB GPU")
-            elif self.gpu_mem <= 12:
-                # Configuration for 12GB GPU memory (High Performance)
-                x_pad, x_query, x_center, x_max = (2, 8, 45, 48)
-                print(f"GPU Memory: {self.gpu_mem}GB - Using high performance settings for 12GB GPU")
-            elif self.gpu_mem <= 16:
-                # Configuration for 16GB GPU memory (Very High Performance)
-                x_pad, x_query, x_center, x_max = (2, 10, 50, 55)
-                print(f"GPU Memory: {self.gpu_mem}GB - Using very high performance settings for 16GB GPU")
-            elif self.gpu_mem <= 24:
-                # Configuration for 24GB GPU memory (Ultra Performance)
-                x_pad, x_query, x_center, x_max = (3, 12, 60, 65)
-                print(f"GPU Memory: {self.gpu_mem}GB - Using ultra performance settings for 24GB GPU")
-            else:
-                # Configuration for >24GB GPU memory (Maximum Performance)
-                x_pad, x_query, x_center, x_max = (4, 15, 70, 75)
-                print(f"GPU Memory: {self.gpu_mem}GB - Using maximum performance settings for high-end GPU")
-        else:
-            # Default configuration for unknown GPU memory
-            x_pad, x_query, x_center, x_max = (1, 6, 38, 41)
-            print("GPU Memory: Unknown - Using default settings")
+        # Configuration for 6GB GPU memory
+        x_pad, x_query, x_center, x_max = (1, 6, 38, 41)
+        if self.gpu_mem is not None and self.gpu_mem <= 4:
+            # Configuration for 5GB GPU memory
+            x_pad, x_query, x_center, x_max = (1, 5, 30, 32)
 
         return x_pad, x_query, x_center, x_max
 

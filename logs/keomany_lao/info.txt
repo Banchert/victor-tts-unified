@@ -1,3 +1,0 @@
-Voice Style: keomany_lao
-Created: 2025-07-26 17:44:45
-Reference: voice_samples/lo-LA-KeomanyNeural.mp3

@@ -1,11 +1,12 @@
-# VICTOR-TTS Project - Git Ignore File
-# ================================================
-
-# Python
+# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
+
+# C extensions
 *.so
+
+# Distribution / packaging
 .Python
 build/
 develop-eggs/
@@ -19,44 +20,61 @@ parts/
 sdist/
 var/
 wheels/
-share/python-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
 MANIFEST
 
-# Virtual Environments
-venv/
-env/
-ENV/
-env.bak/
-venv.bak/
-
 # PyInstaller
 *.manifest
 *.spec
-build_exe/
-dist_exe/
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# Translations
+*.mo
+*.pot
+
+# Django stuff:
+*.log
+local_settings.py
+db.sqlite3
+
+# Flask stuff:
+instance/
+.webassets-cache
+
+# Scrapy stuff:
+.scrapy
+
+# Sphinx documentation
+docs/_build/
+
+# PyBuilder
+target/
 
 # Jupyter Notebook
 .ipynb_checkpoints
 
-# IPython
-profile_default/
-ipython_config.py
-
 # pyenv
 .python-version
 
-# pipenv
-Pipfile.lock
-
-# PEP 582
-__pypackages__/
-
-# Celery
+# celery beat schedule file
 celerybeat-schedule
-celerybeat.pid
 
 # SageMath parsed files
 *.sage.py
@@ -85,302 +103,55 @@ venv.bak/
 .dmypy.json
 dmypy.json
 
-# Pyre type checker
-.pyre/
-
-# pytype static type analyzer
-.pytype/
-
-# Cython debug symbols
-cython_debug/
-
-# PyCharm
-.idea/
-
-# VS Code
-.vscode/
-
-# VICTOR-TTS Specific
-# ================================================
-
-# Audio Files
+# RVC Specific ignores
+logs/
+*.pth
+*.index
 *.wav
 *.mp3
 *.flac
 *.ogg
-*.m4a
-*.aac
-
-# Model Files (Large files)
-*.pth
-*.index
-*.f0
-*.npy
-*.npz
-
-# Large Model Files (GitHub size limit)
-rvc/models/predictors/fcpe.pt
-rvc/models/predictors/rmvpe.pt
-*.pt
-
-# Temporary Files
-temp/
-tmp/
-*.tmp
-*.temp
-
-# Log Files
-*.log
-logs/
-log/
-
-# Output Files
-output/
-results/
-generated/
-
-# Cache Files
-cache/
-.cache/
-
-# Test Output
-test_output/
-test_results/
-
-# Storage
 storage/temp/
-storage/output/
+test_output/
+temp/
+models/
+weights/
+checkpoints/
 
-# Configuration (Keep sensitive data out)
-config/local_config.toml
-config/secrets.toml
-config/private_config.json
+# Model files (too large for git)
+rvc/models/embedders/*/model.safetensors
+rvc/models/embedders/*/pytorch_model.bin
 
-# Docker
-.dockerignore
-docker-compose.override.yml
+# Test files
+test_*.py
+*_test.py
 
-# OS Specific
+# Backup files
+*_backup/
+*_old/
+rvc_old_backup/
+
+# Temporary files
+rvc_*.py
+temp_*.py
+*_temp.*
+
+# Documentation that's frequently updated
+*_SUMMARY.md
+*_FIX_*.md
+*_GUIDE.md
+README_*.md
+
+# OS files
 .DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
 Thumbs.db
 
-# Windows
-*.lnk
-*.exe
-*.msi
-*.dll
-*.pyd
-
-# Linux
-*.so
-*.a
-*.la
-*.lo
-
-# macOS
-*.dylib
-
-# Backup Files
-*.bak
-*.backup
-*.old
-*.orig
-
-# Compressed Files
-*.zip
-*.tar.gz
-*.rar
-*.7z
-
-# Database Files
-*.db
-*.sqlite
-*.sqlite3
-
-# Large Binary Files
-*.bin
-*.dat
-*.model
-
-# Documentation Build
-docs/_build/
-docs/build/
-
-# Node.js (if using any frontend tools)
-node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# Coverage reports
-htmlcov/
-.tox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*.cover
-*.py,cover
-.hypothesis/
-.pytest_cache/
-
-# Translations
-*.mo
-*.pot
-
-# Django stuff:
-*.log
-local_settings.py
-db.sqlite3
-db.sqlite3-journal
-
-# Flask stuff:
-instance/
-.webassets-cache
-
-# Scrapy stuff:
-.scrapy
-
-# Sphinx documentation
-docs/_build/
-
-# PyBuilder
-target/
-
-# pyenv
-.python-version
-
-# celery beat schedule file
-celerybeat-schedule
-
-# SageMath parsed files
-*.sage.py
-
-# Spyder project settings
-.spyderproject
-.spyproject
-
-# Rope project settings
-.ropeproject
-
-# mkdocs documentation
-/site
-
-# mypy
-.mypy_cache/
-.dmypy.json
-dmypy.json
-
-# Pyre type checker
-.pyre/
-
-# pytype static type analyzer
-.pytype/
-
-# Cython debug symbols
-cython_debug/
-
-# PyCharm
-.idea/
-
-# VS Code
+# IDE files
 .vscode/
+.idea/
+*.swp
+*.swo
 
-# VICTOR-TTS Project Specific
-# ================================================
-
-# Keep these directories but ignore their contents
-!models/
-!voice_models/
-!rvc/
-!assets/
-!templates/
-!config/
-!storage/
-!logs/
-!tests/
-!docs/
-!scripts/
-!docker/
-!n8n_workflows/
-
-# But ignore specific file types in these directories
-models/*.pth
-models/*.index
-models/*.f0
-voice_models/*.pth
-voice_models/*.index
-voice_models/*.f0
-rvc/models/*.pth
-rvc/models/*.index
-storage/temp/*
-storage/output/*
-logs/*.log
-test_output/*
-assets/audios/*
-templates/cache/*
-
-# Keep README files
-!*/README.md
-!*/readme.md
-
-# Keep configuration templates
-!config/*.example.toml
-!config/*.template.json
-
-# Keep test data (small files only)
-!tests/test_data/
-tests/test_data/*.wav
-tests/test_data/*.mp3
-tests/test_data/*.pth
-
-# Keep documentation
-!docs/*.md
-!docs/*.rst
-!docs/*.txt
-
-# Keep scripts
-!scripts/*.py
-!scripts/*.bat
-!scripts/*.ps1
-
-# Keep Docker files
-!docker/*.yml
-!docker/*.yaml
-!docker/Dockerfile
-!docker/nginx.conf
-
-# Keep N8N workflows
-!n8n_workflows/*.json
-
-# Removed/Old Files (Don't track these)
-# ================================================
-web_interface.py
-web_interface_backup.py
-web_interface_fast.py
-start_fast.bat
-test_and_run.bat
-test_core_import.py
-TTS_FIX_SUMMARY.md
-run_fixed_api.bat
-simple_tts_api_fixed.py
-tts_rvc_core_fixed.py
-quick_tts_test.py
-fix_tts.bat
-tts_problem_solver.py
-test_tts_only.py
-README_UPDATED.md
-run_n8n_api.bat
-run_api_server.bat
-run_simple_test.bat
-quick_fix.py
-simple_test.py
-run_new_interface.bat
-run_improved_interface.bat
-run_old_interface.bat 
+# Large model directories
+logs/*
+!logs/.gitkeep 

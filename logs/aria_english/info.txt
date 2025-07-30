@@ -1,3 +1,0 @@
-Voice Style: aria_english
-Created: 2025-07-26 17:44:45
-Reference: voice_samples/en-US-AriaNeural.mp3

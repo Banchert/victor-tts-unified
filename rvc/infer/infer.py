@@ -267,7 +267,7 @@ class VoiceConverter:
                 self.last_embedder_model = embedder_model
 
             file_index = (
-                str(index_path).strip()
+                index_path.strip()
                 .strip('"')
                 .strip("\n")
                 .strip('"')
@@ -331,7 +331,7 @@ class VoiceConverter:
                 )
 
             sf.write(audio_output_path, audio_opt, self.tgt_sr, format="WAV")
-            output_path_format = str(audio_output_path).replace(
+            output_path_format = audio_output_path.replace(
                 ".wav", f".{export_format.lower()}"
             )
             audio_output_path = self.convert_audio_format(
