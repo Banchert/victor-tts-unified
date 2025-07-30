@@ -196,10 +196,10 @@ class RVCConverter:
             
             if os.path.exists(output_path):
                 logger.info(f"Voice conversion completed: {input_path} -> {output_path}")
-                return True
+                return output_path  # Return path string instead of boolean
             else:
                 logger.error("Voice conversion failed - no output file generated")
-                return False
+                return None
                 
         except Exception as e:
             logger.error(f"Error in voice conversion: {e}")

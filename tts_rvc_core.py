@@ -625,6 +625,10 @@ class TTSRVCCore:
                 f0_method=f0_method
             )
             
+            # ตรวจสอบว่าการแปลงสำเร็จหรือไม่
+            if result_path is None:
+                raise Exception("RVC conversion failed - no output path returned")
+            
             # ตรวจสอบว่าไฟล์ผลลัพธ์ถูกสร้างขึ้นหรือไม่
             if not Path(result_path).exists():
                 raise Exception(f"RVC output file not found: {result_path}")
