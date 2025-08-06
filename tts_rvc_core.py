@@ -749,7 +749,7 @@ class TTSRVCCore:
                     if model_error:
                         logger.warning(f"Model processing warning: {model_error}")
                     
-                    if rvc_model and rvc_model in available_models:
+                    if rvc_model and rvc_model not in available_models:
                         logger.warning(f"RVC model '{rvc_model}' not found. Available models: {available_models}")
                         result["processing_steps"].append("rvc_model_not_found")
                         result["error"] = f"RVC model '{rvc_model}' not found"

@@ -1,0 +1,29 @@
+{
+  "performance": {
+    "batch_size": 1,
+    "max_memory_mb": 4096,
+    "cache_size": 2,
+    "gpu_memory_fraction": 0.8,
+    "use_half_precision": true,
+    "optimize_memory": true
+  },
+  "rvc": {
+    "default_preset": "fast",
+    "enable_model_cache": true,
+    "auto_cleanup": true,
+    "max_concurrent_conversions": 2,
+    "temp_cleanup_interval": 300
+  },
+  "tts": {
+    "default_voice": "en-US-AriaNeural",
+    "default_speed": 1.0,
+    "quality": "high",
+    "cache_audio": true
+  },
+  "advanced": {
+    "log_level": "INFO",
+    "profiling_enabled": false,
+    "metrics_collection": true,
+    "error_recovery": true
+  }
+}

@@ -42,7 +42,20 @@ class RVCConverter:
         self.device = device if device else ("cuda:0" if torch.cuda.is_available() else "cpu")
         self.performance_config = performance_config or {}
         
+        # Performance settings
+        self.batch_size = self.performance_config.get('batch_size', 1)
+        self.max_memory_usage = self.performance_config.get('max_memory_mb', 4096)
+        
+        # Model cache for faster switching
+        self.model_cache = {}
+        self.cache_size_limit = self.performance_config.get('cache_size', 2)
+        
         logger.info(f"RVC Converter initialized with device: {self.device}")
+        logger.info(f"Performance config: batch_size={self.batch_size}, cache_size={self.cache_size_limit}")
+        
+        # Create temp directory for processing
+        self.temp_dir = Path("storage/temp/rvc")
+        self.temp_dir.mkdir(parents=True, exist_ok=True)
         
     def get_available_models(self) -> List[str]:
         """
@@ -146,8 +159,10 @@ class RVCConverter:
         f0_method: str = "rmvpe",
         clean_audio: bool = True,
         clean_strength: float = 0.7,
+        split_audio: bool = False,
+        post_process: bool = False,
         **kwargs
-    ) -> bool:
+    ) -> Optional[str]:
         """
         Convert voice using RVC
         
@@ -163,22 +178,36 @@ class RVCConverter:
             f0_method: F0 extraction method (rmvpe, crepe, fcpe)
             clean_audio: Whether to clean audio
             clean_strength: Audio cleaning strength
+            split_audio: Whether to split long audio
+            post_process: Whether to apply post-processing effects
             
         Returns:
-            True if conversion successful, False otherwise
+            Output file path if successful, None otherwise
         """
         try:
+            # Validate inputs
+            if not os.path.exists(input_path):
+                logger.error(f"Input file not found: {input_path}")
+                return None
+                
+            # Ensure output directory exists
+            os.makedirs(os.path.dirname(output_path), exist_ok=True)
+            
             # Load model if not current
             if self.current_model != model_name:
                 if not self.load_model(model_name):
-                    return False
+                    logger.error(f"Failed to load model: {model_name}")
+                    return None
             
             # Ensure voice converter is initialized
             if self.voice_converter is None:
                 logger.error("Voice converter not initialized")
-                return False
+                return None
             
             # Perform voice conversion using stored model paths
+            logger.info(f"Converting voice: {input_path} -> {output_path}")
+            logger.info(f"Using model: {model_name} (pitch: {pitch}, index_rate: {index_rate})")
+            
             self.voice_converter.convert_audio(
                 audio_input_path=input_path,
                 audio_output_path=output_path,
@@ -191,19 +220,26 @@ class RVCConverter:
                 protect=protect,
                 hop_length=hop_length,
                 clean_audio=clean_audio,
-                clean_strength=clean_strength
+                clean_strength=clean_strength,
+                split_audio=split_audio,
+                post_process=post_process,
+                **kwargs
             )
             
+            # Verify output file was created
             if os.path.exists(output_path):
-                logger.info(f"Voice conversion completed: {input_path} -> {output_path}")
-                return output_path  # Return path string instead of boolean
+                file_size = os.path.getsize(output_path)
+                logger.info(f"Voice conversion completed: {output_path} ({file_size:,} bytes)")
+                return output_path
             else:
                 logger.error("Voice conversion failed - no output file generated")
                 return None
                 
         except Exception as e:
             logger.error(f"Error in voice conversion: {e}")
-            return False
+            import traceback
+            logger.error(traceback.format_exc())
+            return None
     
     def is_available(self) -> bool:
         """
@@ -237,24 +273,37 @@ class RVCConverter:
             pth_files = list(model_dir.glob("*.pth"))
             index_files = list(model_dir.glob("*.index"))
             
+            # Filter out training files (D_*.pth, G_*.pth) - keep only model files
+            model_pth_files = [f for f in pth_files if not (f.name.startswith('D_') or f.name.startswith('G_'))]
+            
             info = {
                 "name": model_name,
                 "path": str(model_dir),
-                "pth_files": len(pth_files),
+                "pth_files": len(model_pth_files),
                 "index_files": len(index_files),
-                "has_pth": len(pth_files) > 0,
+                "has_pth": len(model_pth_files) > 0,
                 "has_index": len(index_files) > 0,
-                "status": "ready" if len(pth_files) > 0 else "incomplete"
+                "status": "ready" if len(model_pth_files) > 0 else "incomplete",
+                "all_pth_files": len(pth_files),  # Include training files count
+                "model_files": [f.name for f in model_pth_files],
+                "index_files_list": [f.name for f in index_files]
             }
             
-            if pth_files:
+            if model_pth_files:
                 # Get file sizes
-                pth_size = sum(f.stat().st_size for f in pth_files)
+                pth_size = sum(f.stat().st_size for f in model_pth_files)
                 info["pth_size_mb"] = round(pth_size / (1024 * 1024), 2)
+                info["primary_model"] = model_pth_files[0].name
+            
+            if index_files:
+                index_size = sum(f.stat().st_size for f in index_files)
+                info["index_size_mb"] = round(index_size / (1024 * 1024), 2)
+                info["primary_index"] = index_files[0].name
             
             return info
             
         except Exception as e:
+            logger.error(f"Error getting model info for {model_name}: {e}")
             return {"error": str(e)}
     
     def cleanup(self):
@@ -264,9 +313,140 @@ class RVCConverter:
                 del self.voice_converter
                 self.voice_converter = None
             self.current_model = None
+            
+            # Clear model cache
+            for model_name in list(self.model_cache.keys()):
+                del self.model_cache[model_name]
+            self.model_cache.clear()
+            
+            # Clean up temp files
+            if hasattr(self, 'temp_dir') and self.temp_dir.exists():
+                import shutil
+                for temp_file in self.temp_dir.glob("*"):
+                    try:
+                        temp_file.unlink()
+                    except:
+                        pass
+            
+            # Free GPU memory
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
+                
             logger.info("RVC Converter cleaned up")
         except Exception as e:
             logger.error(f"Error during cleanup: {e}")
+    
+    def convert_voice_batch(self, input_files: List[str], output_dir: str, 
+                          model_name: str, **kwargs) -> List[str]:
+        """
+        Convert multiple audio files in batch for better efficiency
+        
+        Args:
+            input_files: List of input file paths
+            output_dir: Output directory
+            model_name: RVC model name
+            **kwargs: Additional parameters for conversion
+            
+        Returns:
+            List of output file paths
+        """
+        try:
+            # Load model once for batch
+            if self.current_model != model_name:
+                if not self.load_model(model_name):
+                    logger.error(f"Failed to load model: {model_name}")
+                    return []
+            
+            os.makedirs(output_dir, exist_ok=True)
+            results = []
+            
+            for i, input_file in enumerate(input_files):
+                if not os.path.exists(input_file):
+                    logger.warning(f"Input file not found: {input_file}")
+                    continue
+                
+                # Generate output filename
+                input_name = Path(input_file).stem
+                output_file = os.path.join(output_dir, f"{input_name}_rvc_{model_name}.wav")
+                
+                logger.info(f"Processing batch {i+1}/{len(input_files)}: {input_file}")
+                
+                result = self.convert_voice(
+                    input_path=input_file,
+                    output_path=output_file,
+                    model_name=model_name,
+                    **kwargs
+                )
+                
+                if result:
+                    results.append(result)
+                    logger.info(f"Batch conversion {i+1} completed: {result}")
+                else:
+                    logger.warning(f"Batch conversion {i+1} failed: {input_file}")
+            
+            logger.info(f"Batch conversion completed: {len(results)}/{len(input_files)} successful")
+            return results
+            
+        except Exception as e:
+            logger.error(f"Error in batch conversion: {e}")
+            return []
+    
+    def get_conversion_presets(self) -> Dict[str, Dict[str, Any]]:
+        """Get predefined conversion presets for different use cases"""
+        return {
+            "high_quality": {
+                "pitch": 0,
+                "index_rate": 0.85,
+                "volume_envelope": 0.15,
+                "protect": 0.4,
+                "hop_length": 256,
+                "f0_method": "rmvpe",
+                "clean_audio": True,
+                "clean_strength": 0.8,
+                "split_audio": True,
+                "post_process": True,
+                "description": "Best quality, slower processing"
+            },
+            "fast": {
+                "pitch": 0,
+                "index_rate": 0.65,
+                "volume_envelope": 0.3,
+                "protect": 0.25,
+                "hop_length": 512,
+                "f0_method": "rmvpe",
+                "clean_audio": False,
+                "clean_strength": 0.5,
+                "split_audio": False,
+                "post_process": False,
+                "description": "Fast processing, good quality"
+            },
+            "voice_clone": {
+                "pitch": 0,
+                "index_rate": 0.9,
+                "volume_envelope": 0.1,
+                "protect": 0.5,
+                "hop_length": 128,
+                "f0_method": "rmvpe",
+                "clean_audio": True,
+                "clean_strength": 0.9,
+                "split_audio": True,
+                "post_process": True,
+                "description": "Maximum similarity to target voice"
+            },
+            "singing": {
+                "pitch": 0,
+                "index_rate": 0.7,
+                "volume_envelope": 0.2,
+                "protect": 0.2,
+                "hop_length": 256,
+                "f0_method": "crepe",
+                "clean_audio": True,
+                "clean_strength": 0.6,
+                "split_audio": True,
+                "post_process": True,
+                "description": "Optimized for singing voice"
+            }
+        }
 
 
 # Global instance for easy access
