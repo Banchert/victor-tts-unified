@@ -1321,9 +1321,19 @@ class CompleteWebInterface:
 
 def main():
     """ฟังก์ชันหลัก"""
-    print("🚀 Starting Complete Web Interface...")
+    import argparse
     
-    interface = CompleteWebInterface()
+    parser = argparse.ArgumentParser(description="VICTOR-TTS Complete Web Interface")
+    parser.add_argument("--port", type=int, default=7000, help="Port number")
+    parser.add_argument("--host", default="localhost", help="Host address")
+    
+    args = parser.parse_args()
+    
+    print("🚀 Starting Complete Web Interface...")
+    print(f"🌐 Host: {args.host}")
+    print(f"🔌 Port: {args.port}")
+    
+    interface = CompleteWebInterface(port=args.port)
     interface.start()
 
 if __name__ == "__main__":
