@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # VICTOR-TTS API Server (Test Mode)
   victor-tts-test:

@@ -1,5 +1,5 @@
-# VICTOR-TTS Requirements
-# Core dependencies for unlimited voice conversion
+# VICTOR-TTS Docker Requirements
+# Optimized for Docker deployment with GPU support
 
 # Web Interface
 gradio>=4.0.0
@@ -14,12 +14,6 @@ soundfile>=0.12.1
 librosa>=0.10.0
 numpy>=1.24.0
 scipy>=1.10.0
-
-# Deep Learning (PyTorch)
-# PyTorch packages are installed separately in Dockerfile for GPU/CPU optimization
-# torch>=2.0.0
-# torchaudio>=2.0.0
-# torchvision>=0.15.0
 
 # Machine Learning
 transformers>=4.30.0
@@ -68,21 +62,11 @@ pytest>=7.4.0
 pytest-asyncio>=0.21.0
 httpx>=0.25.0
 
-# Development & Debug
-# logging is a built-in Python module, no need to install
-
-# Web Server
-uvicorn>=0.22.0
-fastapi>=0.100.0
-
-# System utilities
-# pathlib and argparse are built-in Python modules, no need to install
-
 # Audio codecs
 ffmpeg-python>=0.2.0
 
 # Additional dependencies for advanced features
 onnxruntime>=1.15.0
 protobuf>=4.23.0
-sentencepiece>=0.1.99 
+sentencepiece>=0.1.99
 einops>=0.6.0 

@@ -1,4 +1,4 @@
-# VICTOR-TTS UNIFIED Docker Image for N8N Integration
+# VICTOR-TTS UNIFIED Docker Image for N8N Integration (CPU Version)
 FROM python:3.10-slim
 
 # Set environment variables
@@ -33,9 +33,9 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 # Copy requirements first for better caching
 COPY docker/requirements_docker.txt ./requirements_docker.txt
 
-# Install Python dependencies with GPU support
+# Install Python dependencies (CPU version)
 RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118 && \
+    pip install --no-cache-dir torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu && \
     pip install --no-cache-dir -r requirements_docker.txt
 
 # Copy application code

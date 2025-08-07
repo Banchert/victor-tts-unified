@@ -328,10 +328,12 @@ class TTSRVCCore:
                         async def process_segment(segment_text, language):
                             async with semaphore:
                                 segment_voice = self.get_voice_for_language(language, voice)
-                                logger.info(f"Processing segment '{segment_text[:30]}...' with language '{language}' using voice '{segment_voice}'")
+                                # ใช้ speed ที่เหมาะสมสำหรับแต่ละภาษา
+                                segment_speed = self.get_speed_for_language(language, speed)
+                                logger.info(f"Processing segment '{segment_text[:30]}...' with language '{language}' using voice '{segment_voice}' speed {segment_speed}")
                                 
                                 try:
-                                    segment_audio = await self._generate_single_tts(segment_text, segment_voice, speed, pitch)
+                                    segment_audio = await self._generate_single_tts(segment_text, segment_voice, segment_speed, pitch)
                                     if segment_audio and len(segment_audio) > 0:
                                         return segment_audio
                                 except Exception as e:
@@ -350,10 +352,12 @@ class TTSRVCCore:
                         # ใช้ sequential processing
                         for segment_text, language in valid_segments:
                             segment_voice = self.get_voice_for_language(language, voice)
-                            logger.info(f"Processing segment '{segment_text[:30]}...' with language '{language}' using voice '{segment_voice}'")
+                            # ใช้ speed ที่เหมาะสมสำหรับแต่ละภาษา
+                            segment_speed = self.get_speed_for_language(language, speed)
+                            logger.info(f"Processing segment '{segment_text[:30]}...' with language '{language}' using voice '{segment_voice}' speed {segment_speed}")
                             
                             try:
-                                segment_audio = await self._generate_single_tts(segment_text, segment_voice, speed, pitch)
+                                segment_audio = await self._generate_single_tts(segment_text, segment_voice, segment_speed, pitch)
                                 if segment_audio and len(segment_audio) > 0:
                                     all_audio_data.append(segment_audio)
                             except Exception as e:
@@ -713,10 +717,12 @@ class TTSRVCCore:
                 language_segments_detail = []
                 for segment_text, language in language_segments:
                     voice = self.get_voice_for_language(language, tts_voice)
+                    speed = self.get_speed_for_language(language, tts_speed)
                     language_segments_detail.append({
                         "text": segment_text,
                         "language": language,
-                        "voice": voice
+                        "voice": voice,
+                        "speed": speed
                     })
                 result["stats"]["language_segments_detail"] = language_segments_detail
                 
@@ -1213,10 +1219,10 @@ class TTSRVCCore:
         Returns:
             str: เสียงที่เหมาะสม
         """
-        # แมปปิ้งภาษาไปยังเสียง
+        # แมปปิ้งภาษาไปยังเสียงหลัก (ถ้าไม่ระบุเสียงเฉพาะ)
         language_voice_mapping = {
             'english': 'en-US-AriaNeural',
-            'lao': 'lo-LA-KeomanyNeural',
+            'lao': 'lo-LA-KeomanyNeural',      # เสียงผู้หญิงเป็นหลัก
             'thai': 'th-TH-PremwadeeNeural',
             'chinese': 'zh-CN-XiaoxiaoNeural',
             'japanese': 'ja-JP-NanamiNeural'
@@ -1230,7 +1236,113 @@ class TTSRVCCore:
         if language == 'unknown':
             return 'lo-LA-KeomanyNeural'
         
+        # ถ้า base_voice เป็นเสียงลาวเฉพาะ ให้ใช้เสียงนั้น
+        if language == 'lao' and base_voice in self.get_available_lao_voices():
+            return base_voice
+            
         return language_voice_mapping.get(language, base_voice)
+    
+    def get_available_lao_voices(self) -> List[str]:
+        """
+        ดึงรายชื่อเสียงภาษาลาวที่มีอยู่
+        
+        Returns:
+            List[str]: รายการเสียงภาษาลาว
+        """
+        return [
+            'lo-LA-KeomanyNeural',      # ผู้หญิง - เสียงหลัก
+            'lo-LA-ChanthavongNeural'   # ผู้ชาย - เสียงรอง
+        ]
+    
+    def get_voice_info(self, voice_name: str) -> Dict[str, Any]:
+        """
+        ดึงข้อมูลของเสียง
+        
+        Args:
+            voice_name: ชื่อเสียง
+            
+        Returns:
+            Dict: ข้อมูลเสียง
+        """
+        voice_info_mapping = {
+            # เสียงภาษาลาว
+            'lo-LA-KeomanyNeural': {
+                'language': 'lao',
+                'gender': 'female',
+                'name_lao': 'ແກ້ວມະນີ',
+                'name_thai': 'แก้วมณี',
+                'description': 'เสียงผู้หญิงลาว นุ่มนวล เป็นธรรมชาติ',
+                'recommended_speed': 0.7
+            },
+            'lo-LA-ChanthavongNeural': {
+                'language': 'lao',
+                'gender': 'male', 
+                'name_lao': 'ຈັນທະວົງ',
+                'name_thai': 'จันทวง',
+                'description': 'เสียงผู้ชายลาว แข็งแกร่ง ชัดเจน',
+                'recommended_speed': 0.7
+            },
+            # เสียงภาษาไทย
+            'th-TH-PremwadeeNeural': {
+                'language': 'thai',
+                'gender': 'female',
+                'name_thai': 'เปรมวดี',
+                'description': 'เสียงผู้หญิงไทย นุ่มนวล',
+                'recommended_speed': 0.8
+            },
+            'th-TH-NiwatNeural': {
+                'language': 'thai', 
+                'gender': 'male',
+                'name_thai': 'นิวัฒน์',
+                'description': 'เสียงผู้ชายไทย แข็งแกร่ง',
+                'recommended_speed': 0.8
+            },
+            # เสียงภาษาอังกฤษ
+            'en-US-AriaNeural': {
+                'language': 'english',
+                'gender': 'female',
+                'description': 'American Female - Natural and expressive',
+                'recommended_speed': 1.0
+            },
+            'en-US-GuyNeural': {
+                'language': 'english',
+                'gender': 'male', 
+                'description': 'American Male - Clear and confident',
+                'recommended_speed': 1.0
+            }
+        }
+        
+        return voice_info_mapping.get(voice_name, {
+            'language': 'unknown',
+            'gender': 'unknown',
+            'description': 'Unknown voice',
+            'recommended_speed': 1.0
+        })
+    
+    def get_speed_for_language(self, language: str, base_speed: float = 1.0) -> float:
+        """
+        เลือกความเร็วที่เหมาะสมสำหรับแต่ละภาษา
+        
+        Args:
+            language: ภาษาที่ต้องการ
+            base_speed: ความเร็วเริ่มต้น
+            
+        Returns:
+            float: ความเร็วที่เหมาะสม
+        """
+        # แมปปิ้งภาษาไปยังความเร็วที่เหมาะสม
+        language_speed_mapping = {
+            'english': base_speed,          # อังกฤษใช้ความเร็วปกติ
+            'lao': base_speed * 0.7,       # ลาวช้าลง 30% เพื่อให้ฟังชัดและเป็นธรรมชาติ
+            'thai': base_speed * 0.8,      # ไทยช้าลงเล็กน้อย
+            'chinese': base_speed * 0.9,   # จีนช้าลงเล็กน้อย
+            'japanese': base_speed * 0.85, # ญี่ปุ่นช้าลงเล็กน้อย
+            'numbers': base_speed * 0.8,   # ตัวเลขช้าลงเพื่อให้ฟังชัด
+            'punctuation': base_speed,     # เครื่องหมายใช้ความเร็วปกติ
+            'unknown': base_speed * 0.7    # ไม่ทราบภาษาให้ช้าลงเพื่อความชัด
+        }
+        
+        return language_speed_mapping.get(language, base_speed)
 
     def apply_audio_effects(self, audio_data: bytes, effects: Dict[str, Any]) -> bytes:
         """

@@ -10,7 +10,6 @@ services:
       - "7000:7000"  # Web Interface Port
     environment:
       - PYTHONPATH=/app
-      - CUDA_VISIBLE_DEVICES=0
       - TZ=Asia/Bangkok
       - VICTOR_TTS_MODE=production
       - VICTOR_TTS_GPU_ENABLED=false  # Set to CPU mode for compatibility
@@ -39,7 +38,7 @@ services:
       start_period: 60s
     networks:
       - victor-network
-    # Memory limits for stability (disable GPU for compatibility)
+    # Memory limits for stability
     deploy:
       resources:
         limits:
@@ -94,4 +93,4 @@ networks:
     driver: bridge
     ipam:
       config:
-        - subnet: 172.25.0.0/16 
+        - subnet: 172.20.0.0/16

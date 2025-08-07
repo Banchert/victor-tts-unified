@@ -11,6 +11,7 @@ import asyncio
 import logging
 import json
 import argparse
+import base64
 from pathlib import Path
 from datetime import datetime
 from typing import Dict, List, Any, Optional
@@ -554,23 +555,35 @@ async def root():
             
             async function loadModels() {{
                 try {{
+                    console.log('Loading RVC models...');
                     const response = await fetch('/models');
+                    
+                    if (!response.ok) {{
+                        throw new Error(`HTTP ${{response.status}}: ${{response.statusText}}`);
+                    }}
+                    
                     const data = await response.json();
                     const select = document.getElementById('rvcModel');
                     select.innerHTML = '';
                     
-                    if (data.success && data.data.models.length > 0) {{
+                    console.log('Models response:', data);
+                    
+                    if (data.success && data.data && data.data.models && data.data.models.length > 0) {{
                         data.data.models.forEach(model => {{
                             const option = document.createElement('option');
                             option.value = model;
                             option.textContent = model;
                             select.appendChild(option);
                         }});
+                        console.log(`Loaded ${{data.data.models.length}} RVC models`);
                     }} else {{
                         select.innerHTML = '<option value="">No RVC models available</option>';
+                        console.log('No RVC models found');
                     }}
                 }} catch (error) {{
                     console.error('Error loading models:', error);
+                    const select = document.getElementById('rvcModel');
+                    select.innerHTML = '<option value="">Error loading models</option>';
                 }}
             }}
             
@@ -612,19 +625,31 @@ async def root():
                         body: JSON.stringify(requestData)
                     }});
                     
+                    if (!response.ok) {{
+                        const errorText = await response.text();
+                        throw new Error(`HTTP ${{response.status}}: ${{errorText || 'Unknown server error'}}`);
+                    }}
+                    
                     const data = await response.json();
                     
                     if (data.success) {{
-                        const audioBlob = new Blob([Uint8Array.from(atob(data.data.audio_base64), c => c.charCodeAt(0))], {{type: 'audio/wav'}});
-                        const audioUrl = URL.createObjectURL(audioBlob);
-                        result.src = audioUrl;
-                        result.style.display = 'block';
-                        status.innerHTML = '<div class="success">Audio generated successfully!</div>';
+                        if (data.data && data.data.audio_base64) {{
+                            const audioBlob = new Blob([Uint8Array.from(atob(data.data.audio_base64), c => c.charCodeAt(0))], {{type: 'audio/wav'}});
+                            const audioUrl = URL.createObjectURL(audioBlob);
+                            result.src = audioUrl;
+                            result.style.display = 'block';
+                            status.innerHTML = '<div class="success">Audio generated successfully!</div>';
+                        }} else {{
+                            status.innerHTML = '<div class="error">Error: No audio data received from server</div>';
+                        }}
                     }} else {{
-                        status.innerHTML = `<div class="error">Error: ${{data.message}}</div>`;
+                        const errorMessage = data.message || data.error || 'Unknown error occurred';
+                        status.innerHTML = `<div class="error">Error: ${{errorMessage}}</div>`;
                     }}
                 }} catch (error) {{
-                    status.innerHTML = `<div class="error">Error: ${{error.message}}</div>`;
+                    console.error('TTS Generation Error:', error);
+                    const errorMessage = error.message || error.toString() || 'Unknown error occurred';
+                    status.innerHTML = `<div class="error">Error: ${{errorMessage}}</div>`;
                 }}
             }}
             
@@ -638,11 +663,98 @@ async def root():
 
 @app.get("/voices")
 async def get_voices():
-    """Get available TTS voices"""
+    """Get available TTS voices with detailed information"""
+    
+    # เสียงพื้นฐาน
+    basic_voices = {
+        "lao": [
+            {
+                "value": "lo-LA-KeomanyNeural",
+                "label": "แก้วมณี (ผู้หญิง)",
+                "name_lao": "ແກ້ວມະນີ",
+                "gender": "female",
+                "language": "lao",
+                "description": "เสียงผู้หญิงลาว นุ่มนวล เป็นธรรมชาติ",
+                "recommended_speed": 0.7,
+                "icon": "👩"
+            },
+            {
+                "value": "lo-LA-ChanthavongNeural", 
+                "label": "จันทวง (ผู้ชาย)",
+                "name_lao": "ຈັນທະວົງ",
+                "gender": "male",
+                "language": "lao", 
+                "description": "เสียงผู้ชายลาว แข็งแกร่ง ชัดเจน",
+                "recommended_speed": 0.7,
+                "icon": "👨"
+            }
+        ],
+        "thai": [
+            {
+                "value": "th-TH-PremwadeeNeural",
+                "label": "เปรมวดี (ผู้หญิง)",
+                "gender": "female",
+                "language": "thai",
+                "description": "เสียงผู้หญิงไทย นุ่มนวล",
+                "recommended_speed": 0.8,
+                "icon": "👩"
+            },
+            {
+                "value": "th-TH-NiwatNeural",
+                "label": "นิวัฒน์ (ผู้ชาย)", 
+                "gender": "male",
+                "language": "thai",
+                "description": "เสียงผู้ชายไทย แข็งแกร่ง",
+                "recommended_speed": 0.8,
+                "icon": "👨"
+            }
+        ],
+        "english": [
+            {
+                "value": "en-US-AriaNeural",
+                "label": "Aria (Female)",
+                "gender": "female",
+                "language": "english",
+                "description": "American Female - Natural and expressive",
+                "recommended_speed": 1.0,
+                "icon": "👩"
+            },
+            {
+                "value": "en-US-GuyNeural",
+                "label": "Guy (Male)",
+                "gender": "male", 
+                "language": "english",
+                "description": "American Male - Clear and confident",
+                "recommended_speed": 1.0,
+                "icon": "👨"
+            },
+            {
+                "value": "en-US-JennyNeural",
+                "label": "Jenny (Female)",
+                "gender": "female",
+                "language": "english", 
+                "description": "American Female - Warm and friendly",
+                "recommended_speed": 1.0,
+                "icon": "👩"
+            }
+        ]
+    }
+    
+    # รวมเสียงทั้งหมด
+    all_voices = []
+    for lang_voices in basic_voices.values():
+        all_voices.extend(lang_voices)
+    
     return APIResponse(
         success=True,
         message="Voices retrieved successfully",
-        data={"voices": EDGE_VOICES}
+        data={
+            "voices": EDGE_VOICES,  # เสียงแบบเดิม
+            "voices_detailed": basic_voices,  # เสียงแบบละเอียด
+            "voices_list": all_voices,  # รายการทั้งหมด
+            "total_voices": len(all_voices),
+            "languages": list(basic_voices.keys())
+        }
     )
 
 @app.get("/models")

@@ -30,23 +30,23 @@ switch ($choice) {
     "1" {
         Write-Host ""
         Write-Host "กำลังรัน Simple Version..." -ForegroundColor Yellow
-        docker-compose -f docker-compose.simple.yml up --build
+        docker-compose -f docker/docker-compose.simple.yml up --build
     }
     "2" {
         Write-Host ""
         Write-Host "กำลังรัน Full Version..." -ForegroundColor Yellow
-        docker-compose up --build
+        docker-compose -f docker/docker-compose.yml up --build
     }
     "3" {
         Write-Host ""
         Write-Host "กำลังรัน VICTOR-TTS Only..." -ForegroundColor Yellow
-        docker-compose -f docker-compose.simple.yml up victor-tts-api --build
+        docker-compose -f docker/docker-compose.simple.yml up victor-tts-api --build
     }
     "4" {
         Write-Host ""
         Write-Host "กำลังหยุด services..." -ForegroundColor Yellow
-        docker-compose down
-        docker-compose -f docker-compose.simple.yml down
+        docker-compose -f docker/docker-compose.yml down
+        docker-compose -f docker/docker-compose.simple.yml down
     }
     "5" {
         Write-Host ""

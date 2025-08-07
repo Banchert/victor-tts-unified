@@ -25,20 +25,20 @@ set /p choice="เลือกตัวเลือก (1-4): "
 if "%choice%"=="1" (
     echo.
     echo กำลังรัน Simple Version...
-    docker-compose -f docker-compose.simple.yml up --build
+    docker-compose -f docker/docker-compose.simple.yml up --build
 ) else if "%choice%"=="2" (
     echo.
     echo กำลังรัน Full Version...
-    docker-compose up --build
+    docker-compose -f docker/docker-compose.yml up --build
 ) else if "%choice%"=="3" (
     echo.
     echo กำลังรัน VICTOR-TTS Only...
-    docker-compose -f docker-compose.simple.yml up victor-tts-api --build
+    docker-compose -f docker/docker-compose.simple.yml up victor-tts-api --build
 ) else if "%choice%"=="4" (
     echo.
     echo กำลังหยุด services...
-    docker-compose down
-    docker-compose -f docker-compose.simple.yml down
+    docker-compose -f docker/docker-compose.yml down
+    docker-compose -f docker/docker-compose.simple.yml down
 ) else (
     echo.
     echo ตัวเลือกไม่ถูกต้อง

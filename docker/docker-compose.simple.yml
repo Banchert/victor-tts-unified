@@ -1,53 +1,84 @@
-version: '3.8'
-
 services:
-  # VICTOR-TTS UNIFIED API Server
+  # VICTOR-TTS UNIFIED API Server - ระบบหลัก TTS + RVC เต็มประสิทธิภาพ
   victor-tts-api:
-    build: .
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
     container_name: victor-tts-api
     ports:
-      - "6969:6969"  # Main API for N8N
-      - "7000:7000"  # Web Interface
+      - "6969:6969"  # Main API Port for N8N Integration
+      - "7000:7000"  # Web Interface Port
     environment:
       - PYTHONPATH=/app
+      - CUDA_VISIBLE_DEVICES=0
       - TZ=Asia/Bangkok
-      - VICTOR_TTS_MODE=docker
+      - VICTOR_TTS_MODE=production
+      - VICTOR_TTS_GPU_ENABLED=true
+      - VICTOR_TTS_MAX_TEXT_LENGTH=10000000
+      - VICTOR_TTS_MAX_CHUNK_SIZE=8000
       - VICTOR_TTS_N8N_INTEGRATION=true
+      - VICTOR_TTS_RVC_ENABLED=true
+      - VICTOR_TTS_EDGE_TTS_ENABLED=true
     volumes:
-      - ./storage:/app/storage
-      - ./models:/app/models
-      - ./logs:/app/logs
-      - ./config:/app/config
-      - ./voice_models:/app/voice_models
+      # ข้อมูลสำคัญ
+      - ../storage:/app/storage
+      - ../models:/app/models
+      - ../voice_models:/app/voice_models
+      - ../voice_samples:/app/voice_samples
+      - ../config:/app/config
+      - ../logs:/app/logs
+      # Cache และ performance
+      - victor_cache:/app/cache
+      - victor_temp:/app/temp
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:6969/health"]
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 40s
+      start_period: 60s
     networks:
       - victor-network
+    # GPU Support สำหรับ RVC เต็มประสิทธิภาพ
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+        limits:
+          memory: 8G
 
-  # N8N Workflow Automation (Simple)
+  # N8N Workflow Automation - เชื่อมต่อกับ VICTOR-TTS
   n8n:
     image: n8nio/n8n:latest
-    container_name: n8n
+    container_name: n8n-workflow
     ports:
       - "5678:5678"
     environment:
+      # N8N Core Settings
       - N8N_HOST=0.0.0.0
       - N8N_PORT=5678
       - N8N_PROTOCOL=http
       - N8N_USER_MANAGEMENT_DISABLED=true
       - N8N_BASIC_AUTH_ACTIVE=false
-      - WEBHOOK_URL=http://localhost:5678/
       - GENERIC_TIMEZONE=Asia/Bangkok
-      - N8N_VICTOR_TTS_URL=http://victor-tts-api:6969
-      - N8N_VICTOR_TTS_WEB_URL=http://victor-tts-api:7000
+      # VICTOR-TTS Integration Settings
+      - VICTOR_TTS_API_URL=http://victor-tts-api:6969
+      - VICTOR_TTS_WEB_URL=http://victor-tts-api:7000
+      - VICTOR_TTS_HEALTH_URL=http://victor-tts-api:6969/health
+      # Performance Settings
+      - N8N_PAYLOAD_SIZE_MAX=64
+      - N8N_METRICS=true
+      - N8N_LOG_LEVEL=info
+      - N8N_SKIP_WEBHOOK_DEREGISTRATION_SHUTDOWN=true
     volumes:
+      # N8N Data และ Workflows
       - n8n_data:/home/node/.n8n
-      - ./n8n_workflows:/home/node/.n8n/workflows
+      - ../n8n_workflows:/home/node/.n8n/workflows:ro
+      # Shared storage กับ VICTOR-TTS
+      - ../storage:/app/shared_storage:ro
     restart: unless-stopped
     depends_on:
       victor-tts-api:
@@ -56,8 +87,17 @@ services:
       - victor-network
 
 volumes:
+  # Persistent data volumes
   n8n_data:
+    driver: local
+  victor_cache:
+    driver: local
+  victor_temp:
+    driver: local
 
 networks:
   victor-network:
-    driver: bridge 
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.25.0.0/16 
