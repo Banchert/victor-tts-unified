@@ -1,0 +1,169 @@
+{
+  "examples": {
+    "tts_only": {
+      "description": "TTS อย่างเดียว",
+      "endpoint": "/tts",
+      "url": "http://host.docker.internal:6969/tts",
+      "method": "POST",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "text": "{{ $json.text }}",
+        "voice": "th-TH-PremwadeeNeural",
+        "speed": 1.0
+      }
+    },
+    "tts_rvc_unified": {
+      "description": "TTS + RVC (Unified Endpoint)",
+      "endpoint": "/unified",
+      "url": "http://host.docker.internal:6969/unified",
+      "method": "POST",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "text": "{{ $json.text }}",
+        "tts_voice": "th-TH-PremwadeeNeural",
+        "speed": 1.0,
+        "enable_rvc": true,
+        "rvc_params": {
+          "model_name": "VANXAI",
+          "transpose": 0,
+          "index_ratio": 0.75,
+          "f0_method": "rmvpe"
+        }
+      }
+    },
+    "tts_rvc_full": {
+      "description": "TTS + RVC (Full TTS Endpoint)",
+      "endpoint": "/full_tts",
+      "url": "http://host.docker.internal:6969/full_tts",
+      "method": "POST",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "text": "{{ $json.text }}",
+        "tts_voice": "th-TH-PremwadeeNeural",
+        "tts_speed": 1.0,
+        "enable_rvc": true,
+        "rvc_model": "VANXAI",
+        "rvc_transpose": 0,
+        "rvc_index_ratio": 0.75,
+        "rvc_f0_method": "rmvpe"
+      }
+    },
+    "voice_conversion_only": {
+      "description": "Voice Conversion อย่างเดียว",
+      "endpoint": "/voice_conversion",
+      "url": "http://host.docker.internal:6969/voice_conversion",
+      "method": "POST",
+      "headers": {
+        "Content-Type": "multipart/form-data"
+      },
+      "body": {
+        "audio": "{{ $binary.audio_file }}",
+        "request_data": "{\"model_name\":\"VANXAI\",\"transpose\":0,\"index_ratio\":0.75,\"f0_method\":\"rmvpe\"}"
+      }
+    }
+  },
+  "rvc_models": [
+    "VANXAI",
+    "al_bundy",
+    "BoSunita",
+    "boy_peacemaker",
+    "ChalermpolMalakham",
+    "DangHMD2010v2New",
+    "illslick",
+    "JO",
+    "knomjean",
+    "Law_By_Mike_e160_s4800",
+    "Michael",
+    "MonkanKaenkoon",
+    "MusicV1Carti_300_Epochs",
+    "pang",
+    "STS73",
+    "test_model",
+    "YingyongYodbuangarm"
+  ],
+  "tts_voices": {
+    "thai": [
+      "th-TH-PremwadeeNeural",
+      "th-TH-NiwatNeural"
+    ],
+    "english": [
+      "en-US-JennyNeural",
+      "en-US-GuyNeural"
+    ],
+    "chinese": [
+      "zh-CN-XiaoxiaoNeural",
+      "zh-CN-YunxiNeural"
+    ]
+  },
+  "url_variations": {
+    "same_machine": "http://localhost:6969",
+    "docker_to_host": "http://host.docker.internal:6969",
+    "different_machine": "http://[IP_ADDRESS]:6969"
+  },
+  "workflow_examples": {
+    "simple_tts": {
+      "description": "TTS อย่างง่าย",
+      "nodes": [
+        "Webhook Trigger",
+        "HTTP Request (TTS)",
+        "Save File"
+      ],
+      "webhook_body": {
+        "text": "สวัสดีครับ นี่คือการทดสอบ TTS"
+      }
+    },
+    "tts_with_rvc": {
+      "description": "TTS + RVC Voice Conversion",
+      "nodes": [
+        "Form Trigger",
+        "HTTP Request (Unified)",
+        "Save File"
+      ],
+      "form_fields": [
+        "text (Text Input)",
+        "voice (Select)",
+        "rvc_model (Select)",
+        "transpose (Number Input)"
+      ]
+    },
+    "batch_processing": {
+      "description": "ประมวลผลหลายข้อความ",
+      "nodes": [
+        "Webhook Trigger",
+        "Split In Batches",
+        "HTTP Request (TTS)",
+        "Merge",
+        "Save Files"
+      ]
+    }
+  },
+  "error_handling": {
+    "connection_refused": {
+      "error": "The service refused the connection",
+      "solution": "ตรวจสอบ URL และสถานะ TTS Server",
+      "check_urls": [
+        "http://localhost:6969/health",
+        "http://host.docker.internal:6969/health"
+      ]
+    },
+    "field_required": {
+      "error": "Field required",
+      "solution": "ตรวจสอบ JSON Body ให้ตรงกับ API Schema",
+      "common_mistakes": {
+        "tts_endpoint": "ใช้ 'voice' ไม่ใช่ 'tts_voice'",
+        "unified_endpoint": "ใช้ 'tts_voice' ไม่ใช่ 'voice'"
+      }
+    },
+    "model_not_found": {
+      "error": "RVC model not found",
+      "solution": "ตรวจสอบชื่อ RVC model ที่ API endpoint /models",
+      "check_command": "curl http://localhost:6969/models"
+    }
+  }
+} 

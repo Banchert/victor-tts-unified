@@ -124,9 +124,9 @@ checkpoints/
 rvc/models/embedders/*/model.safetensors
 rvc/models/embedders/*/pytorch_model.bin
 
-# Test files
-test_*.py
-*_test.py
+# Test files (moved to tests/ directory)
+tests/test_*.py
+tests/*_test.py
 
 # Backup files
 *_backup/
@@ -140,11 +140,11 @@ rvc_test*.py
 temp_*.py
 *_temp.*
 
-# Documentation that's frequently updated
-*_SUMMARY.md
-*_FIX_*.md
-*_GUIDE.md
-README_*.md
+# Documentation that's frequently updated (moved to docs/ directory)
+docs/*_SUMMARY.md
+docs/*_FIX_*.md
+docs/*_GUIDE.md
+docs/README_*.md
 
 # OS files
 .DS_Store
@@ -157,5 +157,6 @@ Thumbs.db
 *.swo
 
 # Large model directories
-logs/*
-!logs/.gitkeep 
+voice_models/
+voice_samples/
+storage/output/ 

@@ -44,13 +44,9 @@ COPY . .
 # Create necessary directories
 RUN mkdir -p /app/storage/output /app/storage/temp /app/models /app/logs /app/voice_models /app/config
 
-# Set permissions for Python scripts
-RUN chmod +x start.py && \
-    chmod +x main_api_server.py && \
-    chmod +x web_interface.py && \
-    chmod +x web_interface_docker.py && \
-    chmod +x docker_startup.py && \
-    chmod +x victor_tts_launcher.py
+# Set permissions for Python scripts (only files that exist)
+RUN chmod +x main_api_server.py && \
+    chmod +x web_interface_complete.py
 
 # Create non-root user for security
 RUN useradd -m -u 1000 victor && \
@@ -64,5 +60,5 @@ EXPOSE 6969 7000 8000
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:6969/health || exit 1
 
-# Default command - Start both API Server and Web Interface
-CMD ["python", "docker_startup.py"] 
+# Default command - Start API Server
+CMD ["python", "main_api_server.py", "--port", "6969", "--host", "0.0.0.0"] 

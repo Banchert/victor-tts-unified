@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  # VICTOR-TTS UNIFIED API Server
+  victor-tts-api:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: victor-tts-api
+    ports:
+      - "6969:6969"
+      - "7000:7000"
+    environment:
+      - PYTHONPATH=/app
+      - CUDA_VISIBLE_DEVICES=0
+      - TZ=Asia/Bangkok
+      - VICTOR_TTS_MODE=production
+      - VICTOR_TTS_GPU_ENABLED=true
+      - VICTOR_TTS_MAX_TEXT_LENGTH=10000000
+      - VICTOR_TTS_N8N_INTEGRATION=true
+      - VICTOR_TTS_RVC_ENABLED=true
+      - VICTOR_TTS_EDGE_TTS_ENABLED=true
+    volumes:
+      - ./storage:/app/storage
+      - ./models:/app/models
+      - ./voice_models:/app/voice_models
+      - ./voice_samples:/app/voice_samples
+      - ./config:/app/config
+      - ./logs:/app/logs
+      - ./rvc:/app/rvc
+    restart: unless-stopped
+    networks:
+      - victor-network
+    # GPU Support
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    command: python main_api_server.py --port 6969 --host 0.0.0.0
+
+networks:
+  victor-network:
+    driver: bridge 
